@@ -8,5 +8,6 @@ public interface DeviceConnector {
 	InputStream getInputStream();
 	
 	OutputStream getOutputStream();
+	
 
 }

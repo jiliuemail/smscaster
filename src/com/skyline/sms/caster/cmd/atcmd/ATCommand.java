@@ -1,4 +1,4 @@
-package com.skyline.sms.caster.cmd.sms;
+package com.skyline.sms.caster.cmd.atcmd;
 
 import com.skyline.sms.caster.cmd.Command;
 
@@ -29,10 +29,10 @@ public abstract class ATCommand implements Command {
 	}
 
 	protected String content() {
-		return COMMAND_PREFIX + getClass().getSimpleName().toUpperCase();
+		return COMMAND_PREFIX + getClass().getSimpleName().toUpperCase();  //测试是否只获取到父类名
 	}
 	
 	// 设置命令的参数
-	protected abstract String getCommandParam();
+	public abstract String getCommandParam();
 
 }

@@ -1,4 +1,4 @@
-package com.skyline.sms.caster.cmd.sms;
+package com.skyline.sms.caster.cmd.atcmd;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,7 +12,7 @@ import com.skyline.sms.caster.cmd.CommandExecutor;
 import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.DeviceConnector;
 
-public class SMSCommandExecutor implements CommandExecutor {
+public class ATCommandExecutor implements CommandExecutor {
 	
 	protected DeviceConnector deviceConnector;
 
