@@ -21,7 +21,7 @@ public class MessageBundle
 	private static ResourceBundle resourceBundle;
 	
 	
-	public static void buildeMessageBundle(Locale locale) throws FileNotFoundException, IOException{
+	public static void buildMessageBundle(Locale locale) throws FileNotFoundException, IOException{
 		InputStream input = null;
 		try {
 			input = findResourceFileAsInputStream(locale);
