@@ -8,6 +8,8 @@ import com.skyline.sms.caster.core.MessageBundle;
 public class MainFrame extends BaseFrame {
 	
 	
+	private MainPanel mainPanel;
+
 	public MainFrame(){
 		initTitle();
 		initMainFrame();
@@ -21,7 +23,8 @@ public class MainFrame extends BaseFrame {
 		this.setSize(UIConstants.WIDTH_UNIT * 4, UIConstants.HEIGHT_UNIT * 4);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.getContentPane().add(new MainPanel());
+		mainPanel = new MainPanel();
+		this.getContentPane().add(mainPanel);
 		this.setVisible(true);
 	}
 	

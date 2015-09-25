@@ -5,7 +5,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import com.skyline.sms.caster.ui.MessageLabel;
 import com.skyline.sms.caster.ui.UIConstants;
 
 public class InputField extends JPanel {

@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.skyline.sms.caster.core.MessageBundle;
+import com.skyline.sms.caster.ui.component.ImagePanel;
 
 /**
  * 启动时显示的界面，用于选择语言
@@ -83,7 +84,7 @@ public class StartFrame extends BaseFrame{
 						boolean finishBuildMessageBundle = false;
 						localeItem = (LocaleSelectItem)localeComboBox.getSelectedItem();
 						try {
-							MessageBundle.buildeMessageBundle(localeItem.getLocale());
+							MessageBundle.buildMessageBundle(localeItem.getLocale());
 							finishBuildMessageBundle = true;
 						} catch (FileNotFoundException ex) {
 							JOptionPane.showMessageDialog(StartFrame.this, ex.getMessage(), "ERROR",

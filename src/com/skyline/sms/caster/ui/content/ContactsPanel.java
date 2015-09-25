@@ -6,6 +6,8 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.skyline.sms.caster.ui.component.DataTable;
+
 public class ContactsPanel extends JPanel {
 	
 	private DataTable<Object> table;

@@ -42,7 +42,7 @@ public class MainPanel extends JPanel {
 	private ImageButton sentButton;
 	
 	private ContentPanel composePanel;
-	private ContentPanel contractsPanel;
+	private ContentPanel contactsPanel;
 	
 	private Rectangle contentBound;
 	private CardLayout cardLayout;
@@ -55,7 +55,7 @@ public class MainPanel extends JPanel {
 		initContentPanel();
 		
 		initComposePanel();
-		initContractsPanel();
+		initContactsPanel();
 	}
 	
 	private void initToolbar(){
@@ -121,14 +121,14 @@ public class MainPanel extends JPanel {
 	}
 	
 	
-	private void registryContentPanel(final JButton button, final JPanel panel){
+	private void registryContentPanel(final String panelKey, final JButton button, final JPanel panel){
 		String panelName = panel.getName();
 		contentPanel.add(panelName,panel);
-		contentMap.put(button.getName(), panelName);
+		contentMap.put(panelKey, panelName);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cardLayout.show(contentPanel, contentMap.get(button.getName()));
+				cardLayout.show(contentPanel, contentMap.get(panelKey));
 			}
 		});
 	}
@@ -138,15 +138,15 @@ public class MainPanel extends JPanel {
 		composePanel.setBounds(contentBound);
 		composePanel.addToolButton(new JButton("test"));
 		composePanel.setContent(new SmsMessagePanel());
-		registryContentPanel(composeButton,composePanel);
+		registryContentPanel(UIConstants.COMPOSE_PANEL_KEY, composeButton,composePanel);
 	}
 
-	private void initContractsPanel(){
-		contractsPanel = new ContentPanel("sms.caster.label.panel.contacts");
-		contractsPanel.setBounds(contentBound);
-		contractsPanel.addToolButton(new JButton("Contact"));
-		contractsPanel.setContent(new ContactsPanel());
-		registryContentPanel(contactsButton,contractsPanel);
+	private void initContactsPanel(){
+		contactsPanel = new ContentPanel("sms.caster.label.panel.contacts");
+		contactsPanel.setBounds(contentBound);
+		contactsPanel.addToolButton(new JButton("Contact"));
+		contactsPanel.setContent(new ContactsPanel());
+		registryContentPanel(UIConstants.CONTACTS_PANEL_KEY, contactsButton,contactsPanel);
 	}
 	
 }

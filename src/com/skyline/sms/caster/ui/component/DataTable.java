@@ -1,4 +1,4 @@
-package com.skyline.sms.caster.ui.content;
+package com.skyline.sms.caster.ui.component;
 
 
 import java.util.List;
@@ -15,6 +15,7 @@ public class DataTable<T> extends JTable {
 	
 	public DataTable(){
 		tabelMedel = new DataTabelMedel();
+		setModel(tabelMedel);
 	}
 	
 	public void setData(List<T> data){

@@ -1,4 +1,4 @@
-package com.skyline.sms.caster.ui;
+package com.skyline.sms.caster.ui.component;
 
 import java.awt.Graphics;
 import java.awt.Image;

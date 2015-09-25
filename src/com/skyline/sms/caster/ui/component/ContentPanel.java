@@ -6,8 +6,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.skyline.sms.caster.core.MessageBundle;
-import com.skyline.sms.caster.ui.MessageLabel;
 import com.skyline.sms.caster.ui.UIConstants;
 
 public class ContentPanel extends JPanel {
@@ -42,7 +40,7 @@ public class ContentPanel extends JPanel {
 	}
 	
 	public void setTitle(String title){
-		titleLabel.setText(MessageBundle.getMessage(title));
+		titleLabel.setText(title);
 	}
 
 	public void addToolButton(JButton button){
