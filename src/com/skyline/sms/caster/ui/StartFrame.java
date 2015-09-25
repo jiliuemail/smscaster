@@ -40,7 +40,7 @@ public class StartFrame extends BaseFrame{
 	}
 
 	private void initSize(){
-		this.setBounds((int)((SCREEN_WIDTH - COL_WIDTH * 4)/2), (int)((SCREEN_HEIGHT - ROW_HEIGHT * 2)/2), COL_WIDTH * 4, ROW_HEIGHT * 2);
+		this.setBounds((int)((SCREEN_WIDTH - WIDTH_UNIT * 4)/2), (int)((SCREEN_HEIGHT - HEIGHT_UNIT * 2)/2), WIDTH_UNIT * 4, HEIGHT_UNIT * 2);
 	}
 	
 	// 设置背景

@@ -5,12 +5,15 @@ import java.awt.Toolkit;
 
 public interface UIConstants {
 	
-	public static final int ROW_HEIGHT = 70;
-	public static final int COL_WIDTH = 200;
+	public static final int HEIGHT_UNIT = 40;
+	public static final int WIDTH_UNIT = 160;
+	
+	public static final int COMPONENT_HEIGHT_UNIT = 20;
+	public static final int COMPONENT_WIDTH_UNIT = 10;
 	
 	public static final Dimension SCREEN_DEMENSION = Toolkit.getDefaultToolkit().getScreenSize();
-	public static final double SCREEN_WIDTH = SCREEN_DEMENSION.getWidth();
-	public static final double SCREEN_HEIGHT = SCREEN_DEMENSION.getHeight();
+	public static final int SCREEN_WIDTH = Double.valueOf(SCREEN_DEMENSION.getWidth()).intValue();
+	public static final int SCREEN_HEIGHT = Double.valueOf(SCREEN_DEMENSION.getHeight()).intValue();
 
 
 }

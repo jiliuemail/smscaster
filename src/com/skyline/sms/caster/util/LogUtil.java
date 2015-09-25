@@ -30,6 +30,10 @@ public class LogUtil {
 			logger.info(exception.getMessage(), exception);
 		}
 	}
+	
+	public static void warn(Exception exception){
+		logger.warn(exception.getMessage(), exception);
+	}
 
 	public static void error(Exception exception){
 		logger.error(exception.getMessage(), exception);
