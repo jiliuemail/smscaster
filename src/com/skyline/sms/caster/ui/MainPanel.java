@@ -145,7 +145,7 @@ public class MainPanel extends JPanel {
 		contactsPanel = new ContentPanel("sms.caster.label.panel.contacts");
 		contactsPanel.setBounds(contentBound);
 		contactsPanel.addToolButton(new JButton("Contact"));
-		contactsPanel.setContent(new ContactsPanel());
+		contactsPanel.setContent(new ContactsPanel(null));
 		registryContentPanel(UIConstants.CONTACTS_PANEL_KEY, contactsButton,contactsPanel);
 	}
 	

@@ -13,17 +13,18 @@ public class ContactsPanel extends JPanel {
 	private DataTable<Object> table;
 	private JButton searchButton;
 
-	public ContactsPanel() {
+	public ContactsPanel(DataTable<Object> table) {
 		super();
-		initTable();
+		this.table = table;
+		initTable(); //test
 	}
 	
 	private void initTable(){
-		table = new DataTable<Object>();
+		List<Object> data = new ArrayList<Object>();
 		List<String> columnNames = new ArrayList<String>();
 		columnNames.add("name");
 		columnNames.add("number");
-		table.selectColumns(columnNames);
+		table = new DataTable<Object>(data, columnNames);
 		add(table);
 	}
 	

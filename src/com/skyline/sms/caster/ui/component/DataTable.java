@@ -13,8 +13,10 @@ public class DataTable<T> extends JTable {
 	
 	private DataTabelMedel tabelMedel;
 	
-	public DataTable(){
+	public DataTable(List<T> data, List<String> columnNames){
 		tabelMedel = new DataTabelMedel();
+		setData(data);
+		selectColumns(columnNames);
 		setModel(tabelMedel);
 	}
 	
