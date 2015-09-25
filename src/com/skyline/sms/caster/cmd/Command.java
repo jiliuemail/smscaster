@@ -29,5 +29,7 @@ public interface Command {
 	 * @return 命令内容
 	 */
 	String set();
+	
+	byte[] stream();
 
 }

@@ -16,8 +16,9 @@ public class ExecuteResult {
 		return result;
 	}
 
-	public void setResult(String result) {
+	public ExecuteResult setResult(String result) {
 		this.result = result;
+		return this;
 	}
 	
 	public String getErrorMessage(){
