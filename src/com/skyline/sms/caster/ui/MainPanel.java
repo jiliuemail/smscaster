@@ -88,11 +88,22 @@ public class MainPanel extends JPanel {
 		groupsButton.setImagePath("resource/image/groups.png");
 		
 		inboxButton = new ImageButton("sms.caster.label.button.inbox");
+		inboxButton.setImagePath("resource/image/inbox.png");
+		
 		outboxButton = new ImageButton("sms.caster.label.button.outbox");
+		outboxButton.setImagePath("resource/image/outbox.png");
+		
 		phoneButton = new ImageButton("sms.caster.label.button.phone");
+		phoneButton.setImagePath("resource/image/phone.png");
+		
 		responderButton = new ImageButton("sms.caster.label.button.responder");
+		responderButton.setImagePath("resource/image/responder.png");
+		
 		schedulerButton = new ImageButton("sms.caster.label.button.scheduler");
+		schedulerButton.setImagePath("resource/image/scheduler.png");
+		
 		sentButton = new ImageButton("sms.caster.label.button.sent");
+		sentButton.setImagePath("resource/image/sent.png");
 		
 		explorer.add(composeButton);
 		explorer.add(contactsButton);

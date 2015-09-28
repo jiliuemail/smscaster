@@ -1,4 +1,4 @@
-package com.skyline.sms.caster.cmd.sms;
+package com.skyline.sms.caster.cmd.atcmd;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,15 +6,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Set;
 
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
 import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.DeviceConnector;
+import com.skyline.sms.caster.connector.Port;
 
-public class SMSCommandExecutor implements CommandExecutor {
+public class ATCommandExecutor implements CommandExecutor {
 	
-	protected DeviceConnector deviceConnector;
+	private Set<Port> ports;
+	
+	
+
+	public ATCommandExecutor(Set<Port> ports) {
+		super();
+		this.ports = ports;
+	}
 
 	@Override
 	public ExecuteResult check(Command cmd) throws Exception {
@@ -32,20 +41,26 @@ public class SMSCommandExecutor implements CommandExecutor {
 	}
 
 	
+	
 	protected ExecuteResult execute(String cmdContent) throws Exception {
-		OutputStream out = deviceConnector.getOutputStream();
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
-		writer.write(cmdContent);
-		InputStream in = deviceConnector.getInputStream();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		StringBuffer resultBuffer = new StringBuffer();
-		String resultTemp;
-		while((resultTemp = reader.readLine()) != null){
-			resultBuffer.append(resultTemp);
+		
+		for(Port port:ports){
+			port.writeString(cmdContent);
+			
 		}
-		ExecuteResult executeResult = new ExecuteResult();
-		executeResult.setResult(resultBuffer.toString());
-		return executeResult;
+		
+		return new ExecuteResult().setResult("ok");
+
+	}
+
+	@Override
+	public ExecuteResult stream(Command cmd) throws Exception {
+		for(Port port:ports){
+			port.writeBytes(cmd.stream());
+			
+		}
+		
+		return new ExecuteResult().setResult("ok");
 	}
 
 }

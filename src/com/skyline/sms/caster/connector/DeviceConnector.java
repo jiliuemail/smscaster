@@ -5,8 +5,9 @@ import java.io.OutputStream;
 
 public interface DeviceConnector {
 	
-	InputStream getInputStream();
+	public String readCommandResult(String commandContent);
 	
-	OutputStream getOutputStream();
+	public void writeCommand(String commandContent) throws Exception;
+	
 
 }

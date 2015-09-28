@@ -13,4 +13,6 @@ public interface CommandExecutor {
 	
 	public ExecuteResult set(Command cmd) throws Exception;
 	
+	public ExecuteResult stream(Command cmd) throws Exception;
+	
 }
