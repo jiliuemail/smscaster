@@ -27,10 +27,7 @@ public class Message {
 		this.content = content;
 	}
 	
-	
-	public String getSentMessage(){
-		return contacter.getPhoneNumber()+"\n"+content.getByteBuffer()+"\\x1A";
-	} 
+
 
 
 	

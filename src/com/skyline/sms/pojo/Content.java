@@ -4,15 +4,27 @@ import java.nio.ByteBuffer;
 
 public class Content {
 	
-	private ByteBuffer byteBuffer;
+	private String content;
 
-	public Content(ByteBuffer byteBuffer) {
+	
+	public Content(String content) {
 		super();
-		this.byteBuffer = byteBuffer;
+		this.content = content;
 	}
 
-	public ByteBuffer getByteBuffer() {
-		return byteBuffer;
+	/**
+	 * @return the content
+	 */
+	public String getContent() {
+		return content;
 	}
+
+	/**
+	 * @param content the content to set
+	 */
+	public void setContent(String content) {
+		this.content = content;
+	}
+
 	
 }

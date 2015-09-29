@@ -22,6 +22,9 @@ public interface  Port  {
 	public  String readString(int byteCount, int timeout)  throws Exception;
 	
 	public  boolean isOpened();
+	public String getPortName();
+
+	String getResponse();
 	
 	
 
