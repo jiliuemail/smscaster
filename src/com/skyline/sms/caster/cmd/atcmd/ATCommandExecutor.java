@@ -46,7 +46,7 @@ public class ATCommandExecutor implements CommandExecutor {
 		
 		for(Port port:ports){
 			port.writeString(cmdContent);
-			
+			Thread.sleep(100);
 		}
 		
 		return new ExecuteResult().setResult("ok");

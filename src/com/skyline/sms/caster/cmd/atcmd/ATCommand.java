@@ -8,19 +8,11 @@ import com.skyline.sms.caster.cmd.Command;
  *  设置 AT+<x>=<...>
  *
  */
-public  class ATCommand implements Command {
+public abstract class ATCommand implements Command {
 	
 	private static String COMMAND_PREFIX = "AT+";
 	private static String COMMAND_SUBFIX = "\n";
-	private String value="";
-	
-	public String getValue() {
-		return value;
-	}
 
-	public void setValue(String value) {
-		this.value = value;
-	}
 
 	@Override
 	public String check() {
@@ -42,11 +34,9 @@ public  class ATCommand implements Command {
 	}
 	
 	// 设置命令的参数
-	protected  String getCommandParam(){
-		return  this.value;
-	}
+	protected abstract  String getCommandParam();
 
-
+	
 	@Override
 	public byte[] stream() {
 		// TODO Auto-generated method stub
