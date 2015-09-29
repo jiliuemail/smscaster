@@ -1,15 +1,10 @@
 package com.skyline.sms.caster.cmd.message;
 
-public class CMGS extends ValueCommand {
+public class CSQ extends ValueCommand {
 
-	public CMGS(String value) {
+	public CSQ(String value) {
 		super(value);
 		// TODO Auto-generated constructor stub
 	}
-
-	
-
-	
-	
 
 }

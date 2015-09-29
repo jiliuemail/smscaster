@@ -27,8 +27,8 @@ public interface  Port  {
 
 	String getResponse();
 
-	
-	
+
+	Object getObj();
 
 
 	

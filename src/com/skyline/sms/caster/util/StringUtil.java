@@ -40,9 +40,10 @@ public class StringUtil {
 				paramList.add(value);
 			}
 		}
-		String param = paramList.toArray().toString();
+		String param = paramList.toArray().toString(); //这里有问题,返回的类似:[Ljava.lang.Object;@2bdcd04
+
 		if (StringUtil.hasText(param)) {
-			param = param.substring(1,param.length()-1);
+			param = param.substring(0,param.length()-1);
 		}
 		return param;
 	}
@@ -55,7 +56,7 @@ public class StringUtil {
 				paramList.add(value);
 			}
 		}
-		String param = paramList.toArray().toString();
+		String param = paramList.toArray().toString();  
 		if (StringUtil.hasText(param)) {
 			param = param.substring(1,param.length()-1);
 		}
