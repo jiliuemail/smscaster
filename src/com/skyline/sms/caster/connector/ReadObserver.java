@@ -1,14 +1,12 @@
 package com.skyline.sms.caster.connector;
 
-import java.util.Set;
+import java.text.MessageFormat;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
 
 /**
  * 监听者类除非是port 的内部类,要不无法在port 类内当作一个成员变量
@@ -19,7 +17,7 @@ public class ReadObserver implements SerialPortEventListener {
 	
 	private JsscPort port;
 	private String response="";
-	private static Logger logger=LoggerFactory.getLogger(ReadObserver.class);
+	private static Logger logger=Logger.getLogger(ReadObserver.class);
 
 
 	public JsscPort getPort() {
@@ -53,7 +51,7 @@ public class ReadObserver implements SerialPortEventListener {
 			try {
 				
 				response=port.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
-				logger.debug("the response from [{}]'s observer is [{}]",port.getPortName(),response);
+				logger.debug(MessageFormat.format("the response from [{0}]'s observer is [{1}]",port.getPortName(),response));
 				
 				
 

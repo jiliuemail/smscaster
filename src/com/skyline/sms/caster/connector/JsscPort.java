@@ -3,11 +3,7 @@ package com.skyline.sms.caster.connector;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.skyline.sms.caster.util.LogUtil;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -51,7 +47,7 @@ public class JsscPort implements Port{
 				}
 			}
 
-		System.out.println("there are "+count+"  port instances already");
+		LogUtil.info("there are "+count+"  port instances already");
 
 			return port;
 
@@ -155,7 +151,7 @@ public class JsscPort implements Port{
 	public boolean writeInt(int singleInt) throws Exception {
 		// TODO Auto-generated method stub
 		return serialPort.writeInt(singleInt);
-<<<<<<< HEAD
+
 
 	}
 
@@ -180,7 +176,7 @@ public class JsscPort implements Port{
 
 	//内部类:监听者
 	private  class SerialPortReader implements SerialPortEventListener{
-		private  Logger logger=LoggerFactory.getLogger(SerialPortReader.class);
+	
 		private   String response;
 		
 		public String getResponse(){
@@ -194,13 +190,12 @@ public class JsscPort implements Port{
 				try {
 					
 					response=serialPort.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
-					logger.debug("the response from [{}]'s observer is [{}]",serialPort.getPortName(),response);
+					LogUtil.debug("the response from [{0}]'s observer is [{1}]",serialPort.getPortName(),response);
 
 					
 					
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LogUtil.error(e);
 
 				}finally{
 

@@ -1,34 +1,23 @@
 package com.skyline.sms.caster.cmd.atcmd;
 
+import com.skyline.sms.caster.cmd.AbstractCommand;
 import com.skyline.sms.caster.cmd.Command;
+import com.skyline.sms.caster.cmd.CommandType;
+import com.skyline.sms.caster.util.StringUtil;
 
-public class UnicodeCommand implements Command {
+public class UnicodeCommand extends AbstractCommand implements Command {
+	
 	
 	private String value="";
 	
-	public String getValue() {
-		return value;
-	}
 
-	public void setValue(String value) {
+	public UnicodeCommand(String value) {
+		super();
 		this.value = value;
 	}
-	
-	private String toUnicode(){
-		
-	    StringBuffer unicode = new StringBuffer();
-		 
-	    for (int i = 0; i < value.length(); i++) {
-	 
-	        // 取出每一个字符
-	        char c = value.charAt(i);
-	 
-	        // 转换为unicode
-	        unicode.append( Integer.toHexString(c));
-	    }
-	 
-	    return unicode.toString();
 
+	private String toUnicode(){
+	  return StringUtil.toUnicode(value);
 	}
 
 	@Override
@@ -46,10 +35,12 @@ public class UnicodeCommand implements Command {
 		return toUnicode();
 	}
 
+
 	@Override
-	public byte[] stream() {
-		// TODO Auto-generated method stub
-		return null;
+	public CommandType geCommandType() {
+		return CommandType.SET;
 	}
+	
+	
 
 }

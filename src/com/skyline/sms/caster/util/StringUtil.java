@@ -1,5 +1,7 @@
-<<<<<<< HEAD
 package com.skyline.sms.caster.util;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StringUtil {
 	
@@ -28,6 +30,36 @@ public class StringUtil {
 	
 	public static boolean hasText(String text){
 		return text != null && (text.trim().length() > 0);
+	}
+	
+	public static String concattValue(Integer...values){
+		List<Integer> paramList = new ArrayList<Integer>();
+		for (int i = 0; i < values.length; i++) {
+			Integer value = values[i];
+			if (value != null) {
+				paramList.add(value);
+			}
+		}
+		String param = paramList.toArray().toString();
+		if (StringUtil.hasText(param)) {
+			param = param.substring(1,param.length()-1);
+		}
+		return param;
+	}
+	
+	public static String concattValue(String...values){
+		List<String> paramList = new ArrayList<String>();
+		for (int i = 0; i < values.length; i++) {
+			String value = values[i];
+			if (StringUtil.hasText(value)) {
+				paramList.add(value);
+			}
+		}
+		String param = paramList.toArray().toString();
+		if (StringUtil.hasText(param)) {
+			param = param.substring(1,param.length()-1);
+		}
+		return param;
 	}
 }
 

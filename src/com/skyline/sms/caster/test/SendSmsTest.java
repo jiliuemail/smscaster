@@ -1,13 +1,21 @@
 package com.skyline.sms.caster.test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.skyline.sms.caster.cmd.Command;
+import com.skyline.sms.caster.cmd.CommandExecutor;
+import com.skyline.sms.caster.cmd.CommandType;
+import com.skyline.sms.caster.cmd.atcmd.ATCommandExecutor;
+import com.skyline.sms.caster.cmd.atcmd.CommandFactory;
+import com.skyline.sms.caster.cmd.atcmd.SetCommand;
+import com.skyline.sms.caster.cmd.message.CMGF;
+import com.skyline.sms.caster.cmd.message.CSCS;
+import com.skyline.sms.caster.cmd.message.CSMP;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
-import com.skyline.sms.caster.connector.ReadObserver;
-import com.skyline.sms.caster.service.SendSmsTask;
-import com.skyline.sms.caster.util.StringUtil;
 import com.skyline.sms.pojo.Contacter;
 import com.skyline.sms.pojo.Content;
 import com.skyline.sms.pojo.Message;
@@ -16,7 +24,6 @@ public class SendSmsTest {
 
 	
 	public static void main(String[] args) throws Exception{
-		Logger logger =LoggerFactory.getLogger(SendSmsTest.class);
 
 		Port port = JsscPort.getInstance("/dev/ttyXRUSB3");
 		Set<Port> ports=new HashSet<>();
@@ -34,15 +41,16 @@ public class SendSmsTest {
 		
 
 		
-		CMGF cmgf= new CMGF();
-		cmgf.setValue("1");
+		Command cmgf= new CMGF("1");
+		cmgf.setCommandType(CommandType.SET);
+		//cmgf.setValue("1");
 		
-		CSCS cscs = new CSCS();
-		cscs.setValue("\"UCS2\"");
+		Command cscs = new SetCommand(new CSCS("\"UCS2\""));
+		//cscs.setValue("\"UCS2\"");
 
 
-		CSMP csmp= new CSMP();
-		csmp.setValue("17,71,0,8");
+		Command csmp = CommandFactory.forSet(new CSMP(17,71,0,8));
+		//csmp.setValue("17,71,0,8");
 		
 
 
@@ -51,11 +59,11 @@ public class SendSmsTest {
 		
 
 		CommandExecutor atExecutor = new ATCommandExecutor(ports);
-		atExecutor.set(cmgf);
+		atExecutor.execute(cmgf);
 
-		atExecutor.set(cscs);
+		atExecutor.execute(cscs);
 
-		atExecutor.set(csmp);
+		atExecutor.execute(csmp);
 
 
 		Thread.sleep(1000);

@@ -1,15 +1,8 @@
 package com.skyline.sms.caster.connector;
 
 import java.util.List;
-import java.util.Set;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.skyline.sms.caster.util.LogUtil;
 import com.skyline.sms.caster.util.StringUtil;
 import com.skyline.sms.pojo.Message;
 
@@ -34,7 +27,7 @@ public class sendSmsExecutor implements Runnable{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		logger.info("sendSms from [{}] start",port.getPortName());
+		LogUtil.info("sendSms from [{}] start",port.getPortName());
 		for(Message message:messages){
 
 			try {
@@ -65,6 +58,6 @@ public class sendSmsExecutor implements Runnable{
 			}catch (Exception e) {}
 
 
-	
-
+		}
+	}
 }

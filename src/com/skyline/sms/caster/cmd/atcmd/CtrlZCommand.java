@@ -1,6 +1,10 @@
 package com.skyline.sms.caster.cmd.atcmd;
 
-public class CtrlZCommand extends ATCommand{
+import com.skyline.sms.caster.cmd.AbstractCommand;
+import com.skyline.sms.caster.cmd.Command;
+import com.skyline.sms.caster.cmd.CommandType;
+
+public class CtrlZCommand extends AbstractCommand implements Command{
 	
 	private static byte[] VALUE = new byte[]{(byte)0x1A};
 	
@@ -8,5 +12,14 @@ public class CtrlZCommand extends ATCommand{
 	public byte[] stream() {
 		return VALUE;
 	}
+
+	@Override
+	public CommandType geCommandType() {
+		return CommandType.STREAM;
+	}
+
+	
+	
+	
 
 }

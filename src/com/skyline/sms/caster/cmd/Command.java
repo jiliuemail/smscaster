@@ -31,5 +31,9 @@ public interface Command {
 	String set();
 	
 	byte[] stream();
+	
+	public void setCommandType(CommandType commandType);
+	
+	public CommandType geCommandType();
 
 }

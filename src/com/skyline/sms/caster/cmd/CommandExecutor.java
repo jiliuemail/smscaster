@@ -7,12 +7,14 @@ package com.skyline.sms.caster.cmd;
  */
 public interface CommandExecutor {
 	
-	public ExecuteResult check(Command cmd) throws Exception;
+//	public ExecuteResult check(Command cmd) throws Exception;
+//	
+//	public ExecuteResult get(Command cmd) throws Exception;
+//	
+//	public ExecuteResult set(Command cmd) throws Exception;
+//	
+//	public ExecuteResult stream(Command cmd) throws Exception;
 	
-	public ExecuteResult get(Command cmd) throws Exception;
-	
-	public ExecuteResult set(Command cmd) throws Exception;
-	
-	public ExecuteResult stream(Command cmd) throws Exception;
+	public ExecuteResult execute(Command cmd) throws Exception;
 	
 }

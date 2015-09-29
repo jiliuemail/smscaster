@@ -1,6 +1,6 @@
 package com.skyline.sms.caster.cmd.atcmd;
 
-import com.skyline.sms.caster.cmd.Command;
+import com.skyline.sms.caster.cmd.AbstractCommand;
 
 /**
  *  测试 AT+<x>=?
@@ -8,7 +8,7 @@ import com.skyline.sms.caster.cmd.Command;
  *  设置 AT+<x>=<...>
  *
  */
-public abstract class ATCommand implements Command {
+public abstract class ATCommand extends AbstractCommand {
 	
 	private static String COMMAND_PREFIX = "AT+";
 	private static String COMMAND_SUBFIX = "\n";
@@ -39,9 +39,9 @@ public abstract class ATCommand implements Command {
 	
 	@Override
 	public byte[] stream() {
-		// TODO Auto-generated method stub
-		return null;
+		String setContent = set();
+		return (setContent == null ? new byte[0] : setContent.getBytes());
 	}
 	
-
+	
 }
