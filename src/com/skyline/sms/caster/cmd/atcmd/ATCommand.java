@@ -34,8 +34,9 @@ public abstract class ATCommand implements Command {
 	}
 	
 	// 设置命令的参数
-	protected abstract  String getCommandParam(String value);
+	protected abstract  String getCommandParam();
 
+	
 	@Override
 	public byte[] stream() {
 		// TODO Auto-generated method stub

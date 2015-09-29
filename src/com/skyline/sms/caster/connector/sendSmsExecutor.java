@@ -2,6 +2,7 @@ package com.skyline.sms.caster.connector;
 
 import java.util.List;
 import java.util.Set;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -13,7 +14,7 @@ import com.skyline.sms.caster.util.StringUtil;
 import com.skyline.sms.pojo.Message;
 
 public class sendSmsExecutor implements Runnable{
-	private static Logger logger =LoggerFactory.getLogger(sendSmsExecutor.class);
+
 	
 	private Port port;  // 没法做到面对接口编程,疑问ReadObserver 的原因
 	private List<Message> messages;
@@ -61,29 +62,9 @@ public class sendSmsExecutor implements Runnable{
 				}*/
 				
 
-			}catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				
-				//需要通知主线程,或者上一层....,how ?非运行时异常可以如何通知呢?throw runtimeException ?
-			}finally{
-				try {
-					port.writeInt(0x1B);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		}
-		
-
-		System.out.println("task finish");
-	}
+			}catch (Exception e) {}
 
 
-
-
-
+	
 
 }

@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 public class Content {
 	
+
 	private String content;
 
 	
@@ -26,5 +27,4 @@ public class Content {
 		this.content = content;
 	}
 
-	
 }

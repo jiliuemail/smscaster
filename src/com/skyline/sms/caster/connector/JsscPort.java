@@ -2,6 +2,7 @@ package com.skyline.sms.caster.connector;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
@@ -28,6 +29,7 @@ public class JsscPort implements Port{
 		serialPort.setParams(115200, 8, 1, 0);  //只初始化一次.也是默认的初始化
 		serialPort.addEventListener(observer ,SerialPort.MASK_RXCHAR);  //添加监听
 		obj=new Object();
+
 	};
 
 	/**
@@ -48,16 +50,20 @@ public class JsscPort implements Port{
 					}
 				}
 			}
+
 		System.out.println("there are "+count+"  port instances already");
+
 			return port;
 
 
 	}
+
 	
 	@Override
 	public String getPortName(){
 		return serialPort.getPortName();
 	}
+
 	 
 	@Override
 	public boolean openPort() throws Exception {
@@ -149,6 +155,7 @@ public class JsscPort implements Port{
 	public boolean writeInt(int singleInt) throws Exception {
 		// TODO Auto-generated method stub
 		return serialPort.writeInt(singleInt);
+<<<<<<< HEAD
 
 	}
 
@@ -204,5 +211,6 @@ public class JsscPort implements Port{
 		}
 		
 	}
+
 	
 }

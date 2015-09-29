@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.skyline.sms.caster.util;
 
 public class StringUtil {
@@ -24,4 +25,10 @@ public class StringUtil {
 
 		
 	}
+	
+	public static boolean hasText(String text){
+		return text != null && (text.trim().length() > 0);
+	}
 }
+
+
