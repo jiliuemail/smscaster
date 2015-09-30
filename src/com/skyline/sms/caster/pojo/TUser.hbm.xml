@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-9-30 11:50:53 by Hibernate Tools 4.0.0.Final -->
+<hibernate-mapping>
+    <class name="com.skyline.sms.caster.pojo.TUser" table="t_user" catalog="smsdb">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="identity" />
+        </id>
+        <property name="userName" type="string">
+            <column name="USER_NAME" length="50" not-null="true">
+                <comment>&#208;&#213;&#195;&#251;</comment>
+            </column>
+        </property>
+        <property name="nickName" type="string">
+            <column name="NICK_NAME" length="50">
+                <comment>&#234;&#199;&#179;&#198;</comment>
+            </column>
+        </property>
+        <property name="number" type="string">
+            <column name="NUMBER" length="100" not-null="true">
+                <comment>&#181;&#231;&#187;&#176;&#186;&#197;&#194;&#235;&#161;&#162;&#202;&#214;&#187;&#250;&#186;&#197;&#194;&#235;</comment>
+            </column>
+        </property>
+        <property name="userType" type="string">
+            <column name="USER_TYPE" length="20">
+                <comment>&#211;&#195;&#187;&#167;&#192;&#224;&#208;&#205;</comment>
+            </column>
+        </property>
+        <property name="receive" type="int">
+            <column name="RECEIVE" not-null="true">
+                <comment>
+                &#202;&#199;&#183;&#241;&#189;&#211;&#202;&#213;&#182;&#204;&#208;&#197;,0&#163;&#186;&#178;&#187;&#189;&#211;&#202;&#213;&#163;&#172;1&#163;&#186;&#189;&#211;&#202;&#213;</comment>
+            </column>
+        </property>
+        <set name="TGroups" table="t_user_group" inverse="false" lazy="true" fetch="select">
+            <key>
+                <column name="T_USER_ID" not-null="true" />
+            </key>
+            <many-to-many entity-name="com.skyline.sms.caster.pojo.TGroup">
+                <column name="T_GROUP_ID" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>
