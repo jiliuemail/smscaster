@@ -53,22 +53,27 @@ public class ATCommandExecutor implements CommandExecutor {
 	
 	
 	protected ExecuteResult execute(String cmdContent) throws Exception {
-		
+		ExecuteResult result=new ExecuteResult();
 		for(Port port:ports){
+			synchronized(port.getObj()) {
+
 			port.writeString(cmdContent);
-			Thread.sleep(100);
+			port.getObj().wait();
+			result.setResult(port.getResponse());
+			}
 		}
 		
-		return new ExecuteResult().setResult("ok");
+		return result;
 
 	}
 
 	public ExecuteResult stream(Command cmd) throws Exception {
 		for(Port port:ports){
 			port.writeBytes(cmd.stream());
+
 		}
 		
-		return new ExecuteResult().setResult("ok");
+		return null;
 	}
 
 }

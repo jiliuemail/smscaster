@@ -14,6 +14,7 @@ import com.skyline.sms.caster.cmd.atcmd.SetCommand;
 import com.skyline.sms.caster.cmd.message.CMGF;
 import com.skyline.sms.caster.cmd.message.CSCS;
 import com.skyline.sms.caster.cmd.message.CSMP;
+import com.skyline.sms.caster.cmd.message.CSQ;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.pojo.Contacter;
@@ -49,7 +50,7 @@ public class SendSmsTest {
 		//cscs.setValue("\"UCS2\"");
 
 
-		Command csmp = CommandFactory.forSet(new CSMP(17,71,0,8));
+		Command csmp = CommandFactory.forSet(new CSMP("17,71,0,8"));
 		//csmp.setValue("17,71,0,8");
 		
 
@@ -59,14 +60,15 @@ public class SendSmsTest {
 		
 
 		CommandExecutor atExecutor = new ATCommandExecutor(ports);
-		atExecutor.execute(cmgf);
+		System.out.println(atExecutor.execute(cmgf).getResult());
 
-		atExecutor.execute(cscs);
+		System.out.println(atExecutor.execute(cscs).getResult());
 
-		atExecutor.execute(csmp);
-
-
-		Thread.sleep(1000);
+		System.out.println(atExecutor.execute(csmp).isOK());
+		
+		Command cmgf2= CommandFactory.forSet(new CMGF("2"));
+		System.out.println(atExecutor.execute(cmgf2).isOK());
+	//	Thread.sleep(1000);
 
 		
 		

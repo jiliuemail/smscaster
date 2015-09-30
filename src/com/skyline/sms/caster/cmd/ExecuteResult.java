@@ -2,10 +2,10 @@ package com.skyline.sms.caster.cmd;
 
 public class ExecuteResult {
 	
-	private String result;
+	private String result="";
 	
 	public boolean isOK(){
-		return "OK".equals(result);
+		return this.result.contains("OK");
 	}
 	
 	public boolean isError(){
@@ -16,9 +16,9 @@ public class ExecuteResult {
 		return result;
 	}
 
-	public ExecuteResult setResult(String result) {
+	public void setResult(String result) {
 		this.result = result;
-		return this;
+
 	}
 	
 	public String getErrorMessage(){

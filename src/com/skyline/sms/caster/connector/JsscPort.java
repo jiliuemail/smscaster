@@ -14,8 +14,7 @@ public class JsscPort implements Port{
 	private static int count=0;
 	private SerialPort serialPort;
 	private SerialPortReader  observer=new SerialPortReader();
-	private Object obj;  //通过obj.wait() 和obj.notifyAll 在多线程间通讯 
-
+	private Object obj; //通过obj.wait() 和obj.notifyAll 在多线程间通讯 
 	
 	private static Map<String,Port> portMap= new HashMap<String, Port>();
 	
@@ -47,7 +46,7 @@ public class JsscPort implements Port{
 				}
 			}
 
-		LogUtil.info("there are "+count+"  port instances already");
+		LogUtil.info("there are "+count+"  port instances now"+"port name is "+port.getPortName());
 
 			return port;
 
@@ -163,13 +162,13 @@ public class JsscPort implements Port{
 	}
 	
 	
+@Override
+public Object getObj(){
+	return obj;
+}
 
-	/**
-	 * @return the obj
-	 */
-	public Object getObj() {
-		return obj;
-	}
+
+
 
 
 
@@ -190,16 +189,18 @@ public class JsscPort implements Port{
 				try {
 					
 					response=serialPort.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
-					LogUtil.debug("the response from [{0}]'s observer is [{1}]",serialPort.getPortName(),response);
-
+		//			LogUtil.debug("the response from [{0}]'s observer is [{1}]",serialPort.getPortName(),response);
+//					LogUtil.info("response is "+response);
 					
 					
 				} catch (Exception e) {
 					LogUtil.error(e);
 
 				}finally{
-
-						notifyAll();
+					synchronized (obj) {
+						obj.notifyAll();
+					}
+	
 
 				}
 			}
