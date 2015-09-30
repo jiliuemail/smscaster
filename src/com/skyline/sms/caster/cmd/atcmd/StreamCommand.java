@@ -16,7 +16,7 @@ public class StreamCommand extends CommandDelegate {
 	}
 
 	@Override
-	public CommandType geCommandType() {
+	public CommandType getCommandType() {
 		return CommandType.STREAM;
 	}
 

@@ -15,7 +15,7 @@ public class JsscPort implements Port{
 	private SerialPort serialPort;
 	private SerialPortReader  observer=new SerialPortReader();
 	private Object obj; //通过obj.wait() 和obj.notifyAll 在多线程间通讯 
-	
+
 	private static Map<String,Port> portMap= new HashMap<String, Port>();
 	
 	private  JsscPort(String portName) throws SerialPortException{
@@ -189,8 +189,8 @@ public Object getObj(){
 				try {
 					
 					response=serialPort.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
-		//			LogUtil.debug("the response from [{0}]'s observer is [{1}]",serialPort.getPortName(),response);
-//					LogUtil.info("response is "+response);
+					LogUtil.debug("the response from [{0}]'s observer is [{1}]",serialPort.getPortName(),response);
+					LogUtil.info("response is "+response);
 					
 					
 				} catch (Exception e) {

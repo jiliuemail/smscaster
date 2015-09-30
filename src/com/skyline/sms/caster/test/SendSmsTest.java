@@ -17,6 +17,7 @@ import com.skyline.sms.caster.cmd.message.CSMP;
 import com.skyline.sms.caster.cmd.message.CSQ;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
+import com.skyline.sms.caster.service.SendSmsTask;
 import com.skyline.sms.pojo.Contacter;
 import com.skyline.sms.pojo.Content;
 import com.skyline.sms.pojo.Message;
@@ -72,8 +73,8 @@ public class SendSmsTest {
 
 		
 		
-//		SendSmsTask sendSmsTask = new SendSmsTask(smsList, ports,executorReader);
-//		sendSmsTask.start();
+		SendSmsTask sendSmsTask = new SendSmsTask(smsList, ports);
+		sendSmsTask.start();
 		
 		
 
