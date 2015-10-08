@@ -4,7 +4,7 @@ package com.skyline.sms.caster.ui.component;
 import java.util.List;
 
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import com.skyline.sms.caster.util.ClassUtil;
 
@@ -13,11 +13,22 @@ public class DataTable<T> extends JTable {
 	
 	private DataTabelMedel tabelMedel;
 	
+	public DataTable(List<String> columnNames){
+		tabelMedel = new DataTabelMedel();
+		selectColumns(columnNames);
+		setModel(tabelMedel);
+	}
+	
 	public DataTable(List<T> data, List<String> columnNames){
 		tabelMedel = new DataTabelMedel();
 		setData(data);
 		selectColumns(columnNames);
 		setModel(tabelMedel);
+	}
+	
+	private void intTableHeader(){
+		//JTableHeader tableHeader = getTableHeader();
+		//tableHeader.
 	}
 	
 	public void setData(List<T> data){
@@ -32,7 +43,7 @@ public class DataTable<T> extends JTable {
 		return tabelMedel.getColumnNames();
 	}
 	
-	class DataTabelMedel extends AbstractTableModel{
+	class DataTabelMedel extends DefaultTableModel{ // AbstractTableModel{
 
 		private List<T> data;
 		private List<String> columnMetas;
@@ -49,14 +60,28 @@ public class DataTable<T> extends JTable {
 			return columnMetas;
 		}
 		
+		
+		
+		@Override
+		public String getColumnName(int column) {
+			return columnMetas.get(column);
+		}
+
 		@Override
 		public int getRowCount() {
-			return data.size();
+			return data == null ? 0 : data.size();
 		}
 
 		@Override
 		public int getColumnCount() {
 			return columnMetas.size();
+		}
+		
+		
+
+		@Override
+		public void setValueAt(Object aValue, int row, int column) {
+			
 		}
 
 		@Override
