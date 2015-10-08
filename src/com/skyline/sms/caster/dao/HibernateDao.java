@@ -42,6 +42,20 @@ public class HibernateDao<T> implements BaseDao<T> {
 			}
 		});
 	}
+	
+	@Override
+	public void batchUpdate(final List<T> entitys) throws Exception {
+		doHibernateTemplate(new HibernateCallBack<Boolean>() {
+			@Override
+			public Boolean doSession(Session session) {
+				for (T entity : entitys) {
+					session.saveOrUpdate(entity);
+				}
+				session.flush();
+				return true;
+			}
+		});
+	}
 
 	@Override
 	public void insert(final T entity) throws Exception {

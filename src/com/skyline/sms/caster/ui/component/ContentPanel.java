@@ -22,7 +22,7 @@ public class ContentPanel extends JPanel {
 		setName(title);
 		initTitleLabel(title);
 		initToolPanel();
-		finishUpdate();
+		afterInit();
 	}
 	
 	private void initTitleLabel(String title){
@@ -69,11 +69,18 @@ public class ContentPanel extends JPanel {
 		}
 	}
 	
-	public void finishUpdate(){
+	public void afterInit(){
 		this.setLayout(null);
 		this.add(titleLabel);
 		this.add(toolPanel);
 	}
 	
+	public void beforeDisplay(){
+		
+	}
+
+	public void afterDisplay(){
+		
+	}
 	
 }
