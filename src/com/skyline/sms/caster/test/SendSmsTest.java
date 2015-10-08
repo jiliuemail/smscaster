@@ -56,19 +56,19 @@ public class SendSmsTest {
 		
 
 
-		
+
 		
 		
 
-		CommandExecutor atExecutor = new ATCommandExecutor(ports);
+		CommandExecutor atExecutor = new ATCommandExecutor(port);
 		System.out.println(atExecutor.execute(cmgf).getResult());
 
 		System.out.println(atExecutor.execute(cscs).getResult());
 
 		System.out.println(atExecutor.execute(csmp).isOK());
 		
-		Command cmgf2= CommandFactory.forSet(new CMGF("2"));
-		System.out.println(atExecutor.execute(cmgf2).isOK());
+//		Command cmgf2= CommandFactory.forSet(new CMGF("2"));
+	//	System.out.println(atExecutor.execute(cmgf2).isOK());
 	//	Thread.sleep(1000);
 
 		

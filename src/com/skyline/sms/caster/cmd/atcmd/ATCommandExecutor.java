@@ -57,7 +57,8 @@ public class ATCommandExecutor implements CommandExecutor {
 		ExecuteResult result=new ExecuteResult();
 
 			synchronized(port.getObj()) {
-			port.writeString(cmdContent);
+				port.writeBytes(cmdContent.getBytes());
+		//		port.writeString(cmdContent);
 			port.getObj().wait();  //jsscport 中的监听器来激活这个线程.
 			result.setResult(port.getResponse());
 			}

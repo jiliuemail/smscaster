@@ -1,4 +1,4 @@
-package com.skyline.sms.caster.cmd.atcmd;
+package com.skyline.sms.caster.cmd.message;
 
 import com.skyline.sms.caster.cmd.AbstractCommand;
 import com.skyline.sms.caster.cmd.Command;

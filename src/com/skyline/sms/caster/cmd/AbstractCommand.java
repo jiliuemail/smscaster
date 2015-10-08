@@ -1,9 +1,15 @@
 package com.skyline.sms.caster.cmd;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AbstractCommand implements Command {
 	
 	private CommandType commandType; 
 
+
+
+	
 	@Override
 	public String check() {
 		// TODO Auto-generated method stub
@@ -38,7 +44,6 @@ public abstract class AbstractCommand implements Command {
 	public CommandType getCommandType() {
 		return commandType;
 	}
-	
 	
 
 }

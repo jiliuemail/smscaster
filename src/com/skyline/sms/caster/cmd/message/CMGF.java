@@ -1,5 +1,9 @@
 package com.skyline.sms.caster.cmd.message;
 
+import java.util.List;
+
+
+
 public class CMGF extends ValueCommand {
 
 
@@ -7,4 +11,6 @@ public class CMGF extends ValueCommand {
 		super(value);
 	}
 
+
+	
 }
