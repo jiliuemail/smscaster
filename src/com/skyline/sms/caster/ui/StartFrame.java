@@ -11,12 +11,14 @@ import java.util.Locale;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.ui.component.ImagePanel;
+import com.skyline.sms.caster.util.DialogUtil;
 
 /**
  * 启动时显示的界面，用于选择语言
@@ -96,7 +98,8 @@ public class StartFrame extends BaseFrame{
 						if (finishBuildMessageBundle) {
 							okButton.setEnabled(false);
 							StartFrame.this.dispose();
-							new MainFrame();
+							JFrame mainFrame = new MainFrame();
+							DialogUtil.registryMainFrame(mainFrame);
 						}
 					}
 				});

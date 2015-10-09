@@ -10,6 +10,8 @@ public interface BaseDao<T> {
  
     void update(T entity)throws Exception;
     
+    void batchUpdate(final List<T> entitys) throws Exception;
+    
     void insert(T entity)throws Exception;
      
     List<T> findAll();

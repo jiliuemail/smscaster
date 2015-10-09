@@ -20,4 +20,12 @@ public class UserServiceImpl implements UserService {
 		return userDao.findUser(user);
 	}
 
+	@Override
+	public void saveOrUpdateUsers(List<TUser> users) throws Exception {
+		userDao.saveOrUpdateUsers(users);
+		
+	}
+	
+	
+
 }

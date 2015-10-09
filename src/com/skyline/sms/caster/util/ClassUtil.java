@@ -25,5 +25,30 @@ public class ClassUtil {
 			return null;
 		}
 	}
+	
+	public static void setPropertyValue(Object target, String propertyName, Object value){
+		if (!StringUtil.hasText(propertyName)) {
+			return ;
+		}
+		StringBuilder setMethodName = new StringBuilder();
+		setMethodName.append("set").append(propertyName.substring(0, 1).toUpperCase())
+			.append(propertyName.substring(1));
+		Class<?> targetClass = target.getClass();
+		try {
+			Method[] methods = targetClass.getMethods();
+			Method setMethod = null;
+			for (Method method : methods) {
+				if (method.getName().equals(setMethodName.toString())) {
+					setMethod = method;
+					break;
+				}
+			}
+			if (setMethod != null) {
+				setMethod.invoke(target, new Object[]{value});
+			}
+		}  catch (Exception e) {
+			LogUtil.error(e);
+		}
+	}
 
 }

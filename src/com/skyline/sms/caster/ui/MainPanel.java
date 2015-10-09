@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.ImageButton;
@@ -132,31 +133,33 @@ public class MainPanel extends JPanel {
 	}
 	
 	
-	private void registryContentPanel(final String panelKey, final JButton button, final JPanel panel){
+	private void registryContentPanel(final String panelKey, final JButton button, final ContentPanel panel){
 		String panelName = panel.getName();
 		contentPanel.add(panelName,panel);
 		contentMap.put(panelKey, panelName);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				panel.beforeDisplay();
 				cardLayout.show(contentPanel, contentMap.get(panelKey));
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						panel.afterDisplay();
+					}
+				});
 			}
 		});
 	}
 	
 	private void initComposePanel(){
-		composePanel = new ContentPanel("sms.caster.label.panel.compose");
+		composePanel = new SmsMessagePanel("sms.caster.label.panel.compose");
 		composePanel.setBounds(contentBound);
-		composePanel.addToolButton(new JButton("test"));
-		composePanel.setContent(new SmsMessagePanel());
 		registryContentPanel(UIConstants.COMPOSE_PANEL_KEY, composeButton,composePanel);
 	}
 
 	private void initContactsPanel(){
-		contactsPanel = new ContentPanel("sms.caster.label.panel.contacts");
+		contactsPanel = new ContactsPanel("sms.caster.label.panel.contacts");
 		contactsPanel.setBounds(contentBound);
-		contactsPanel.addToolButton(new JButton("Contact"));
-		contactsPanel.setContent(new ContactsPanel(null));
 		registryContentPanel(UIConstants.CONTACTS_PANEL_KEY, contactsButton,contactsPanel);
 	}
 	

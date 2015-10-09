@@ -13,4 +13,10 @@ public class UserDaoImpl extends HibernateDao<TUser> implements UserDao {
 		return findAll();
 	}
 
+	@Override
+	public void saveOrUpdateUsers(List<TUser> users) throws Exception {
+		batchUpdate(users);
+	}
+
+	
 }
