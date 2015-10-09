@@ -38,6 +38,7 @@ public class JsscPort implements Port{
 
 		 if(port==null){
 				synchronized (portName) {
+					port=portMap.get(portName);
 					if(port==null){
 						port=new JsscPort(portName);
 						portMap.put(portName, port);

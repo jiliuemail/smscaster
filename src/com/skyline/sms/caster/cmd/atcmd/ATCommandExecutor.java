@@ -1,6 +1,8 @@
 package com.skyline.sms.caster.cmd.atcmd;
 
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
@@ -17,6 +19,9 @@ public class ATCommandExecutor implements CommandExecutor {
 		super();
 		this.port=port;
 	}
+	
+	
+
 	
 
 	@Override
