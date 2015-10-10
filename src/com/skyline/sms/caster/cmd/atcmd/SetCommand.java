@@ -17,7 +17,7 @@ public class SetCommand extends CommandDelegate {
 	}
 
 	@Override
-	public CommandType geCommandType() {
+	public CommandType getCommandType() {
 		return CommandType.SET;
 	}
 

@@ -34,6 +34,6 @@ public interface Command {
 	
 	public void setCommandType(CommandType commandType);
 	
-	public CommandType geCommandType();
+	public CommandType getCommandType();
 
 }

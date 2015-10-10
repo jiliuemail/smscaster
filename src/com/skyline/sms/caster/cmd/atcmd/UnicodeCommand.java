@@ -37,7 +37,7 @@ public class UnicodeCommand extends AbstractCommand implements Command {
 
 
 	@Override
-	public CommandType geCommandType() {
+	public CommandType getCommandType() {
 		return CommandType.SET;
 	}
 	

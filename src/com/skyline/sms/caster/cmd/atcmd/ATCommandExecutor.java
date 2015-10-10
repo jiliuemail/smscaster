@@ -22,7 +22,7 @@ public class ATCommandExecutor implements CommandExecutor {
 
 	@Override
 	public ExecuteResult execute(Command cmd) throws Exception {
-		switch (cmd.geCommandType()) {
+		switch (cmd.getCommandType()) {
 		case CHECK:
 			return check(cmd);
 		case GET:

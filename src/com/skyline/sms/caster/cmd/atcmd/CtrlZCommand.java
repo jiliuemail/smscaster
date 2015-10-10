@@ -14,7 +14,7 @@ public class CtrlZCommand extends AbstractCommand implements Command{
 	}
 
 	@Override
-	public CommandType geCommandType() {
+	public CommandType getCommandType() {
 		return CommandType.STREAM;
 	}
 

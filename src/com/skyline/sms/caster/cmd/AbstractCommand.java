@@ -35,7 +35,7 @@ public abstract class AbstractCommand implements Command {
 	}
 
 	@Override
-	public CommandType geCommandType() {
+	public CommandType getCommandType() {
 		return commandType;
 	}
 	
