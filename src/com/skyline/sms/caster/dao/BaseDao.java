@@ -16,6 +16,8 @@ public interface BaseDao<T> {
      
     List<T> findAll();
     
+    List<T> findByEntity(T entity, Page page);
+    
     List<T> findByPage(Page page);
     
     List<T> findByCondition(List<QueryCondition> conditions, Page page);

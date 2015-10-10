@@ -12,13 +12,13 @@ public enum ConditionType {
 	
 	RIGHT_LIKE, // LIKE VALUE%
 	
-	LT, // >
+	GT, // >
 	
-	RT, // <
+	LT, // <
 	
-	LGT, // >=
+	GE, // >=
 	
-	RGT, // <=
+	LE, // <=
 
 	NULL, // IS NULL
 	
