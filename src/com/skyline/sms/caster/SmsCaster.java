@@ -22,7 +22,7 @@ public class SmsCaster {
 			UIManager.setLookAndFeel(lookAndFeel);
 		} catch (Exception e) {
 		}
-		
+
 		new StartFrame();
 	}
 

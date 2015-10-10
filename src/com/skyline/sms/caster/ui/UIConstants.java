@@ -25,6 +25,7 @@ public interface UIConstants {
 	// 各个内容面板的KEY，用于布局
 	public static final String COMPOSE_PANEL_KEY = "componsePanel";
 	public static final String CONTACTS_PANEL_KEY = "contactsPanel";
+	public static final String PHONES_PANEL_KEY = "phonesPanel";
 
 
 }

@@ -24,15 +24,15 @@ import com.skyline.sms.caster.core.MessageBundle;
  * 吐司提示框组件
  * 
  * 
- * @author ccw
- * @since:2014-2-28
+ * @author linyuning
+ * @since:2015-10-8
  */
 public class Toast extends JWindow {
 
 	private static final long serialVersionUID = 1L;
 	private String message = "";
 	private final Insets insets = new Insets(12, 24, 12, 24);
-	private int period = 1500;
+	private int delay = 1500;
 	private Font font;
 	public static final int MESSAGE_STYLE = 0;// 提示 黑色背景色
 	public static final int SUCCESS_STYLE = 1;// 成功提示 浅蓝色背景色
@@ -47,7 +47,7 @@ public class Toast extends JWindow {
 	 *            父窗体 (Frame Dialog Window)
 	 * @param message
 	 *            消息
-	 * @param period
+	 * @param delay
 	 *            显示时间
 	 */
 	public Toast(Window parent, String message) {
@@ -61,11 +61,11 @@ public class Toast extends JWindow {
 	 *            父窗体 (Frame Dialog Window)
 	 * @param message
 	 *            消息
-	 * @param period
+	 * @param delay
 	 *            显示时间
 	 */
-	public Toast(Window parent, String message, int period) {
-		this(parent, message, period, 0);
+	public Toast(Window parent, String message, int delay) {
+		this(parent, message, delay, 0);
 
 	}
 
@@ -73,14 +73,14 @@ public class Toast extends JWindow {
 	 * 
 	 * @param parent
 	 * @param message
-	 * @param period
+	 * @param delay
 	 * @param type
 	 *            提示类型 msg:黑色背景色 success :浅蓝色背景色  error: 粉红色背景色
 	 */
-	public Toast(Window parent, String message, int period, int type) {
+	public Toast(Window parent, String message, int delay, int type) {
 		super(parent);
 		this.message = MessageBundle.getMessage(message);
-		this.period = period;
+		this.delay = delay;
 		//font = new Font("宋体", Font.PLAIN, 14);
 		font = UIManager.getFont("Label.font");
 		setSize(getStringSize(font, true, message));
@@ -120,7 +120,7 @@ public class Toast extends JWindow {
 			public void run() {
 				setVisible(false);
 			}
-		}, period);
+		}, delay);
 	}
 
 	/**

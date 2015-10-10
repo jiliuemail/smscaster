@@ -1,5 +1,8 @@
 package com.skyline.sms.caster.dao;
 
+import com.skyline.sms.caster.util.FormatUtil;
+import com.skyline.sms.caster.util.StringUtil;
+
 public class QueryCondition {
 	
 	private String paramName;
@@ -60,6 +63,11 @@ public class QueryCondition {
 		this.conditionType = conditionType;
 	}
 	
-	
+	public String formatedParamValue(){
+		return FormatUtil.formatToString(paramValue);
+	}
 
+	public boolean isValidCondition(){
+		return (StringUtil.hasText(paramName) && paramValue != null);
+	}
 }
