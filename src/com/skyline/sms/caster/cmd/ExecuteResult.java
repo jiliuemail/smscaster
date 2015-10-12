@@ -9,7 +9,7 @@ public class ExecuteResult {
 	}
 	
 	public boolean isError(){
-		return !isOK();
+		return this.result.contains("ERROR");
 	}
 
 	public String getResult() {

@@ -24,8 +24,10 @@ import javax.swing.table.TableColumnModel;
 
 import jssc.SerialPortList;
 
+import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.core.MessageBundle;
+import com.skyline.sms.caster.service.PortService;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.InputField;
 import com.skyline.sms.caster.util.LogUtil;
@@ -85,7 +87,7 @@ public class PhonesPanel extends ContentPanel {
 		
 		Object[][] content=getPhonesListContent();
 		
-		final JTable	 phoneTable=new JTable(content,title);
+		 JTable  phoneTable=new JTable(content,title);
 		TableColumnModel tcm=phoneTable.getColumnModel();
 		
 		tcm.getColumn(0).setCellRenderer(new JCheckBoxTableRender());
@@ -98,16 +100,28 @@ public class PhonesPanel extends ContentPanel {
 	}
 	
 	//获取电脑上的端口
-	public Object[][] getPhonesListContent(){
+	public Object[][] getPhonesListContent() {
 		String[] portNames = JsscPortList.getPortNames();
+
 		int rowCount=portNames.length;
 		int columnCount=3;
+		
+		String[] status=new String[rowCount];
+		for(int j=0;j<rowCount;j++){
+			try {
+				status[j]=PortService.getInstance(JsscPort.getInstance(portNames[j])).getPortStatus(); //线性执行,会被阻塞死锁
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		Object[][] cells = new Object[rowCount][columnCount];
 		
 		for(int i=0;i<rowCount;i++){
 			cells[i][0]=false;
 			cells[i][1]=portNames[i];
+			cells[i][2]=status[i];
 //			LogUtil.info(Arrays.toString(cells[i]));
 		}
 		

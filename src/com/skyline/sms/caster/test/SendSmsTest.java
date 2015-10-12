@@ -8,7 +8,6 @@ import java.util.Set;
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
 import com.skyline.sms.caster.cmd.CommandType;
-import com.skyline.sms.caster.cmd.atcmd.ATCommandExecutor;
 import com.skyline.sms.caster.cmd.atcmd.CommandFactory;
 import com.skyline.sms.caster.cmd.atcmd.SetCommand;
 import com.skyline.sms.caster.cmd.message.CMGF;
@@ -16,7 +15,10 @@ import com.skyline.sms.caster.cmd.message.CSCS;
 import com.skyline.sms.caster.cmd.message.CSMP;
 import com.skyline.sms.caster.cmd.message.CSQ;
 import com.skyline.sms.caster.connector.JsscPort;
+import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.connector.Port;
+import com.skyline.sms.caster.executor.ATCommandExecutor;
+import com.skyline.sms.caster.service.PortService;
 import com.skyline.sms.caster.service.SendSmsTask;
 import com.skyline.sms.pojo.Contacter;
 import com.skyline.sms.pojo.Content;
@@ -27,7 +29,7 @@ public class SendSmsTest {
 	
 	public static void main(String[] args) throws Exception{
 
-		Port port = JsscPort.getInstance("/dev/ttyXRUSB3");
+		Port port = JsscPort.getInstance("/dev/ttyXRUSB1");
 		Set<Port> ports=new HashSet<>();
 		ports.add(port);
 		
@@ -60,7 +62,7 @@ public class SendSmsTest {
 		
 		
 
-		CommandExecutor atExecutor = new ATCommandExecutor(port);
+		CommandExecutor atExecutor = ATCommandExecutor.getInstance(port);
 		System.out.println(atExecutor.execute(cmgf).getResult());
 
 		System.out.println(atExecutor.execute(cscs).getResult());
@@ -71,10 +73,14 @@ public class SendSmsTest {
 		System.out.println(atExecutor.execute(cmgf2).isOK());
 	//	Thread.sleep(1000);
 
-		
+//		System.out.println(PortService.getInstance(port).getPortStatus());
+
 		
 //		SendSmsTask sendSmsTask = new SendSmsTask(smsList, ports);
 //		sendSmsTask.start();
+		
+		
+
 		
 		
 

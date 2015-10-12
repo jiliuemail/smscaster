@@ -3,29 +3,37 @@ package com.skyline.sms.caster.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
+import com.skyline.sms.caster.cmd.ExecuteResult;
+import com.skyline.sms.caster.cmd.atcmd.CommandFactory;
+import com.skyline.sms.caster.cmd.message.CPIN;
+import com.skyline.sms.caster.cmd.message.CREG;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
+import com.skyline.sms.caster.executor.ATCommandExecutor;
 
 public class PortService {
 	private Port port;
 	private CommandExecutor executor;
 	
 	
-	private PortService(String portName) throws Exception {
-		port = JsscPort.getInstance(portName);
+	private PortService(Port port) throws Exception {
+		this.port = port;
+		executor=ATCommandExecutor.getInstance(port);
 	}
 	
 	private static Map<String,PortService> map=new HashMap<>();
 	
-	public static PortService getInstance(String portName) throws Exception{
+	public static PortService getInstance(Port port) throws Exception{
+		String portName=port.getPortName();
 		PortService portService = map.get(portName);
 		
 		if(portService==null){
 			synchronized (portName) {
 				portService=map.get(portName);
 				if(portService==null){
-					portService = new PortService(portName);
+					portService = new PortService(port);
 					map.put(portName, portService);
 				}
 			}
@@ -35,9 +43,27 @@ public class PortService {
 	}
 	
 	
-	public String getPortStatus(){
+	public synchronized String getPortStatus() throws Exception{
+		System.out.println("get Status: "+port.getPortName());
+		String message="";
+		Command cpin=CommandFactory.forGet(new CPIN());
+		Command creg=CommandFactory.forGet(new CREG());
+		ExecuteResult result;
+		result = executor.execute(cpin);
 		
-		
-		return null;
+		if(result.isOK()){
+			
+			result=executor.execute(creg);
+			if(result.getResult().contains(",1")){
+				message="Ready";
+			}else{
+				message="has not register to the operator";
+			}
+
+		}else if(result.isError()){
+			message="Please Insert the simcard";
+		}
+	
+		return message;
 	}
 }
