@@ -60,7 +60,7 @@ public class SendSmsTest {
 		
 		
 
-		CommandExecutor atExecutor = new ATCommandExecutor(ports);
+		CommandExecutor atExecutor = new ATCommandExecutor(port);
 		System.out.println(atExecutor.execute(cmgf).getResult());
 
 		System.out.println(atExecutor.execute(cscs).getResult());
@@ -73,8 +73,8 @@ public class SendSmsTest {
 
 		
 		
-		SendSmsTask sendSmsTask = new SendSmsTask(smsList, ports);
-		sendSmsTask.start();
+//		SendSmsTask sendSmsTask = new SendSmsTask(smsList, ports);
+//		sendSmsTask.start();
 		
 		
 

@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,9 +22,13 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import jssc.SerialPortList;
+
+import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.InputField;
+import com.skyline.sms.caster.util.LogUtil;
 
 public class PhonesPanel extends ContentPanel {
 
@@ -63,6 +69,7 @@ public class PhonesPanel extends ContentPanel {
 		initPhoneList();
 	//	jpanel.add(phoneTable,BorderLayout.CENTER);
 		jpanel.add(phoneListPane,BorderLayout.CENTER);
+	
 		initPhoneInfoPanel();
 		jpanel.add(phoneInfoPanel,BorderLayout.SOUTH);
 		
@@ -75,59 +82,39 @@ public class PhonesPanel extends ContentPanel {
 	public void initPhoneList(){
 
 		String[] title={"选择","端口","状态"};
-		Object[][] content={
-				{true,"port1","ready"},
-				{false,"port2","not ok"}
-				
-		};
+		
+		Object[][] content=getPhonesListContent();
+		
 		final JTable	 phoneTable=new JTable(content,title);
 		TableColumnModel tcm=phoneTable.getColumnModel();
-
+		
+		tcm.getColumn(0).setCellRenderer(new JCheckBoxTableRender());
 		tcm.getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-		phoneTable.addMouseListener(new MouseAdapter(){
-		    public void mouseClicked(MouseEvent e){
-		        if(e.getClickCount() == 1){
-		            int columnIndex = phoneTable.columnAtPoint(e.getPoint()); //获取点击的列
-		            int rowIndex = phoneTable.rowAtPoint(e.getPoint()); //获取点击的行
+//		tcm.getColumn(0).setWidth(20); 控制列宽度.....
 
-		            if(columnIndex == 0) {//第0列时，执行代码
-		                if(phoneTable.getValueAt(rowIndex,columnIndex) == null){ //如果未初始化，则设置为false
-		                	phoneTable.setValueAt(false, rowIndex, columnIndex);
-		                  }
-
-		                if(((Boolean)phoneTable.getValueAt(rowIndex,columnIndex)).booleanValue()){ //原来选中
-		                	phoneTable.setValueAt(false, rowIndex, 0); //点击后，取消选中
-		                  }
-		                else {//原来未选中
-		                	phoneTable.setValueAt(true, rowIndex, 0);
-		                  }
-		             }
-
-		        }
-		    }
-		});
 		phoneListPane= new JScrollPane(phoneTable);
 		
 		
 	}
 	
-	
-	class checkboxRender extends JCheckBox implements TableCellRenderer{
-		checkboxRender(){
-			super();
+	//获取电脑上的端口
+	public Object[][] getPhonesListContent(){
+		String[] portNames = JsscPortList.getPortNames();
+		int rowCount=portNames.length;
+		int columnCount=3;
+		
+		Object[][] cells = new Object[rowCount][columnCount];
+		
+		for(int i=0;i<rowCount;i++){
+			cells[i][0]=false;
+			cells[i][1]=portNames[i];
+//			LogUtil.info(Arrays.toString(cells[i]));
 		}
 		
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-			// TODO Auto-generated method stub
-		//	JCheckBox checkbox = new JCheckBox
-			
-			return null;
-		}
+		return cells;
 		
 	}
+
 
 	public void initPhoneInfoPanel(){
 
@@ -146,5 +133,19 @@ public class PhonesPanel extends ContentPanel {
 		
 
 	}
+	
+	
+	//checkbox 渲染器
+	class JCheckBoxTableRender extends JCheckBox implements TableCellRenderer{
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			// TODO Auto-generated method stub
+			this.setSelected((boolean)value);
+			return this;
+		}}
+	
 	
 }
