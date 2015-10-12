@@ -6,7 +6,10 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -19,14 +22,15 @@ import com.skyline.sms.caster.connector.Port;
 public class ATCommandExecutor implements CommandExecutor,Runnable{
 	
 	private Port  port;
-	private BlockingQueue<Command> cmdQueue;
 	private static Map<String,CommandExecutor> map = new HashMap<String, CommandExecutor>();
 	private ExecuteResult result;
-
+	private Command cmd;
+	private ExecutorService executorService;
+	
 	private ATCommandExecutor(Port port) {
 		super();
 		this.port=port;
-		this.cmdQueue=new LinkedBlockingQueue<>();
+		executorService = Executors.newSingleThreadExecutor();
 	}
 	
 	public static CommandExecutor getInstance(Port port){
@@ -45,17 +49,18 @@ public class ATCommandExecutor implements CommandExecutor,Runnable{
 		return executor;
 	}
 	
-/*	@Override
+	@Override
 	public ExecuteResult execute(Command cmd)  throws Exception{
-		cmdQueue.put(cmd);
+		this.cmd=cmd;
 
-		return result;
-	}*/
+		Future<ExecuteResult> cmdResult = executorService.submit((Runnable)getInstance(port),result);
+		return cmdResult.get();
+	}
 	
 	
 	
 
-	public synchronized ExecuteResult execute(Command cmd) throws Exception {
+	private  ExecuteResult executeCmd(Command cmd) throws Exception {
 
 		switch (cmd.getCommandType()) {
 		case CHECK:
@@ -93,7 +98,7 @@ public class ATCommandExecutor implements CommandExecutor,Runnable{
 			ExecuteResult result=new ExecuteResult();
 		
 			port.writeString(cmdContent);
-			port.getObj().wait();  //jsscport 中的监听器来激活这个线程.
+			port.getObj().wait(300);  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
 			
 			result.setResult(port.getResponse());
 			return result;
@@ -103,27 +108,23 @@ public class ATCommandExecutor implements CommandExecutor,Runnable{
 
 	public ExecuteResult stream(Command cmd) throws Exception {
 
-			port.writeBytes(cmd.stream());
+		port.writeBytes(cmd.stream());
 
-
-		
 		return null;
 	}
 
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-	/*	while(true){
-			try {
-				Command cmd=cmdQueue.take();
-				result=executeCmd(cmd);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}*/
+
+		try {
+		executeCmd(cmd);  //是否会返回result 呢?? 在executorService的submit 中....
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 
