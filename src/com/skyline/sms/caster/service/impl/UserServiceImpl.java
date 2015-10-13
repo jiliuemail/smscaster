@@ -2,6 +2,10 @@ package com.skyline.sms.caster.service.impl;
 
 import java.util.List;
 
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.DetachedCriteria;
+
+import com.skyline.sms.caster.dao.Page;
 import com.skyline.sms.caster.dao.UserDao;
 import com.skyline.sms.caster.dao.impl.UserDaoImpl;
 import com.skyline.sms.caster.pojo.TUser;
@@ -16,13 +20,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<TUser> findUser(TUser user) throws Exception {
-		return userDao.findUser(user);
+	public List<TUser> findUsers(TUser user, Page page) throws Exception {
+		return userDao.findByDetachedCriteria(DetachedCriteria.forClass(TUser.class)
+				//.createCriteria("TGroups", JoinType.LEFT_OUTER_JOIN)
+				.setFetchMode("TGroups", FetchMode.JOIN), page);
 	}
 
 	@Override
 	public void saveOrUpdateUsers(List<TUser> users) throws Exception {
-		userDao.saveOrUpdateUsers(users);
+		userDao.batchUpdate(users);
 		
 	}
 	

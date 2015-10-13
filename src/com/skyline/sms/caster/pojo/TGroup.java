@@ -70,4 +70,10 @@ public class TGroup implements java.io.Serializable {
 		this.TUsers = TUsers;
 	}
 
+	@Override
+	public String toString() {
+		return getGroupName();
+	}
+
+	
 }

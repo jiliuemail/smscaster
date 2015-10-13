@@ -2,8 +2,8 @@ package com.skyline.sms.caster.ui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -30,6 +30,7 @@ public class MainPanel extends JPanel {
 	
 	private JToolBar toolBar;
 	private JSplitPane workPanel;
+	private int splitLocation;
 	private JPanel explorer;
 	private JPanel contentPanel;
 	
@@ -47,11 +48,12 @@ public class MainPanel extends JPanel {
 	private ContentPanel contactsPanel;
 	private ContentPanel phonesPanel;
 	
-	private Rectangle contentBound;
+	private Dimension contentSize;
 	private CardLayout cardLayout;
 	
 	public MainPanel(){
 		setLayout(new BorderLayout());
+		initPanelSize();
 		initToolbar();
 		initWorkPanel();
 		initExplorerPanel();
@@ -61,6 +63,10 @@ public class MainPanel extends JPanel {
 		initContactsPanel();
 		initPhonesPanel();
 	}
+
+	private void initPanelSize() {
+		setSize(UIConstants.MAX_FRAME_WIDTH, UIConstants.MAX_FRAME_HEIGHT);
+	}
 	
 	private void initToolbar(){
 		toolBar = new MainToolBar();
@@ -68,11 +74,12 @@ public class MainPanel extends JPanel {
 	}
 	
 	private void initWorkPanel(){
+		splitLocation = 150;
 		workPanel = new JSplitPane();
+		workPanel.setSize(getWidth(), getHeight() - (int)toolBar.getPreferredSize().getHeight());
 		workPanel.addComponentListener(new ComponentAdapter(){
-			@Override
 			public void componentResized(ComponentEvent e) {
-				workPanel.setDividerLocation(1.0 / 6.0);  
+				workPanel.setDividerLocation(splitLocation);  
 			}
 		});
 		add(workPanel,BorderLayout.CENTER);
@@ -124,19 +131,19 @@ public class MainPanel extends JPanel {
 	
 	private void initContentPanel(){
 		contentPanel = new JPanel();
-		contentBound = new Rectangle(UIConstants.WIDTH_UNIT, toolBar.getHeight()
-				, UIConstants.SCREEN_WIDTH - UIConstants.WIDTH_UNIT
-				, UIConstants.SCREEN_HEIGHT - toolBar.getHeight());
-		
-		contentPanel.setBounds(contentBound);
+		contentSize = new Dimension(workPanel.getWidth() - splitLocation, workPanel.getHeight());
+		contentPanel.setSize(contentSize);
 		cardLayout = new CardLayout();
 		contentPanel.setLayout(cardLayout);
-		
 		workPanel.add(contentPanel, JSplitPane.RIGHT);
 	}
 	
 	
 	private void registryContentPanel(final String panelKey, final JButton button, final ContentPanel panel){
+		if (button == null || panel == null) {
+			return;
+		}
+		panel.setSize(contentSize);
 		String panelName = panel.getName();
 		contentPanel.add(panelName,panel);
 		contentMap.put(panelKey, panelName);
@@ -156,19 +163,17 @@ public class MainPanel extends JPanel {
 	
 	private void initComposePanel(){
 		composePanel = new SmsMessagePanel("sms.caster.label.panel.compose");
-		composePanel.setBounds(contentBound);
 		registryContentPanel(UIConstants.COMPOSE_PANEL_KEY, composeButton,composePanel);
 	}
 
 	private void initContactsPanel(){
 		contactsPanel = new ContactsPanel("sms.caster.label.panel.contacts");
-		contactsPanel.setBounds(contentBound);
 		registryContentPanel(UIConstants.CONTACTS_PANEL_KEY, contactsButton,contactsPanel);
 	}
 	
 	private void initPhonesPanel(){
 		phonesPanel=new PhonesPanel("sms.caster.label.panle.phones");
-		phonesPanel.setBounds(contentBound);
+
 		registryContentPanel(UIConstants.PHONES_PANEL_KEY, phoneButton,phonesPanel);
 	}
 }

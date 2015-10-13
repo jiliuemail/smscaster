@@ -1,7 +1,7 @@
 package com.skyline.sms.caster.ui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 
 /**
  * UI常量
@@ -18,9 +18,9 @@ public interface UIConstants {
 	public static final int COMPONENT_WIDTH_UNIT = 10;
 	
 	// 屏幕大小
-	public static final Dimension SCREEN_DEMENSION = Toolkit.getDefaultToolkit().getScreenSize();
-	public static final int SCREEN_WIDTH = Double.valueOf(SCREEN_DEMENSION.getWidth()).intValue();
-	public static final int SCREEN_HEIGHT = Double.valueOf(SCREEN_DEMENSION.getHeight()).intValue();
+	public static final Rectangle MAX_FRAME_BOUND = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+	public static final int MAX_FRAME_WIDTH = Double.valueOf(MAX_FRAME_BOUND.getWidth()).intValue(); 
+	public static final int MAX_FRAME_HEIGHT = Double.valueOf(MAX_FRAME_BOUND.getHeight()).intValue();
 	
 	// 各个内容面板的KEY，用于布局
 	public static final String COMPOSE_PANEL_KEY = "componsePanel";

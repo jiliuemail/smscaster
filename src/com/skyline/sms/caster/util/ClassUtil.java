@@ -47,6 +47,7 @@ public class ClassUtil {
 				setMethod.invoke(target, new Object[]{value});
 			}
 		}  catch (Exception e) {
+			LogUtil.warn("Invoke set method error, {0}.{1}={2} ", target.getClass(), propertyName, value);
 			LogUtil.error(e);
 		}
 	}

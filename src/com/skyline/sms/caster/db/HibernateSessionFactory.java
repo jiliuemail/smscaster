@@ -25,5 +25,15 @@ public class HibernateSessionFactory {
     public static Session getSession(){
         return sessionFactory.openSession();
     }
+    
+    public static void close(){
+    	Session session = sessionFactory.getCurrentSession();
+    	if (session != null) {
+			session.close();
+		}
+    	if (!sessionFactory.isClosed()) {
+			sessionFactory.close();
+		}
+    }
 
 }

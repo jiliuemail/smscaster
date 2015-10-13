@@ -1,5 +1,7 @@
 package com.skyline.sms.caster.ui;
 
+import java.awt.Dimension;
+
 import javax.swing.JFrame;
 
 import com.skyline.sms.caster.core.MessageBundle;
@@ -20,7 +22,13 @@ public class MainFrame extends BaseFrame {
 	}
 	
 	private void initMainFrame(){
-		this.setSize(UIConstants.WIDTH_UNIT * 5, UIConstants.HEIGHT_UNIT * 14);
+
+		this.setBounds(UIConstants.MAX_FRAME_BOUND);
+		Dimension frameSize = new Dimension(MAX_FRAME_WIDTH, MAX_FRAME_HEIGHT);
+		this.setMaximumSize(frameSize);
+		this.setMinimumSize(frameSize);
+		this.setPreferredSize(frameSize);
+
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new MainPanel();

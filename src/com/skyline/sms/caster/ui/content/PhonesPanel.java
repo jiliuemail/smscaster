@@ -40,7 +40,7 @@ import com.skyline.sms.caster.executor.ATCommandExecutor;
 import com.skyline.sms.caster.service.PortService;
 import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
-import com.skyline.sms.caster.ui.component.InputField;
+import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.util.LogUtil;
 
 public class PhonesPanel extends ContentPanel {
@@ -54,8 +54,8 @@ public class PhonesPanel extends ContentPanel {
 	private JScrollPane phoneListPane;
 
 	
-	private InputField csq;
-	private InputField csca;
+	private InputTextField csq;
+	private InputTextField csca;
 	
 	public PhonesPanel(String title) {
 		super(title);
@@ -109,8 +109,8 @@ public class PhonesPanel extends ContentPanel {
 	public void initContent(){
 		jpanel=new JPanel();
 		jpanel.setLayout(new BorderLayout());
-		jpanel.setOpaque(true);
-		jpanel.setBackground(Color.BLUE);
+	//	jpanel.setOpaque(true);
+	//	jpanel.setBackground(Color.BLUE);
 
 		initPhoneList();
 		jpanel.add(phoneListPane,BorderLayout.CENTER);
@@ -233,16 +233,16 @@ public class PhonesPanel extends ContentPanel {
 	public void initPhoneInfoPanel(){
 
 		phoneInfoPanel=new JPanel();
-		phoneInfoPanel.setOpaque(true);
-		phoneInfoPanel.setBackground(Color.red);
+//		phoneInfoPanel.setOpaque(true);
+//		phoneInfoPanel.setBackground(Color.red);
 		phoneInfoPanel.setLayout(new BoxLayout(phoneInfoPanel,BoxLayout.Y_AXIS));
 //		phoneInfoPanel.setLayout(null);
 		phoneInfoPanel.setPreferredSize(new Dimension(100,300));  //设置borderLayout采用的大小....
 		phoneInfoPanel.setOpaque(true);
 
-		csq=new InputField("sms.caster.label.input.csq", 60);  //为什么没有高度?? contentPanel ?
+		csq=new InputTextField("sms.caster.label.input.csq", 60);  //为什么没有高度?? contentPanel ?
 	//	csq.setInputValue(ATCommandExecutor.getInstance(JsscPort.getInstance(portName)));
-		csca=new InputField("sms.caster.label.input.csca", 60);
+		csca=new InputTextField("sms.caster.label.input.csca", 60);
 		phoneInfoPanel.add(csq);
 		phoneInfoPanel.add(csca);
 		
