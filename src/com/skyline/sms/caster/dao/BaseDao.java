@@ -2,6 +2,8 @@ package com.skyline.sms.caster.dao;
 
 import java.util.List;
 
+import org.hibernate.criterion.DetachedCriteria;
+
 public interface BaseDao<T> {
 	
 	T findById(Integer id);
@@ -20,6 +22,5 @@ public interface BaseDao<T> {
     
     List<T> findByPage(Page page);
     
-    List<T> findByCondition(List<QueryCondition> conditions, Page page);
-
+    List<T> findByDetachedCriteria(DetachedCriteria detachedCriteria, Page page);
 }

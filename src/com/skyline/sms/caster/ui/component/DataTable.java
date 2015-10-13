@@ -33,6 +33,10 @@ public class DataTable<T> extends JTable {
 		tabelMedel.setData(data);
 	}
 	
+	public T getRowData(int row){
+		return tabelMedel.getData().get(row);
+	}
+	
 	public void selectColumns(List<String> columnNames){
 		tabelMedel.selectColumns(columnNames);
 	}
@@ -52,7 +56,7 @@ public class DataTable<T> extends JTable {
 	public void clearUpdateRecords(){
 		updateRecords.clear();
 	}
-
+	
 	class DataTabelMedel extends DefaultTableModel{ // AbstractTableModel{
 
 		private List<T> data;
@@ -63,6 +67,13 @@ public class DataTable<T> extends JTable {
 			this.data = data;
 		}
 		
+		
+		
+		public List<T> getData() {
+			return data;
+		}
+		
+
 		public void selectColumns(List<String> columnNames){
 			columnMetas = columnNames;
 		}
@@ -114,4 +125,6 @@ public class DataTable<T> extends JTable {
 		}
 		
 	}
+	
+
 }

@@ -1,6 +1,7 @@
 package com.skyline.sms.caster.pojo;
 // Generated 2015-9-30 11:50:52 by Hibernate Tools 4.0.0.Final
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,8 @@ public class TUser implements java.io.Serializable {
 	private String number;
 	private String userType;
 	private int receive;
+	private Date createDate;
+	
 	private Set<TGroup> TGroups = new HashSet<TGroup>(0);
 
 	public TUser() {
@@ -90,5 +93,15 @@ public class TUser implements java.io.Serializable {
 	public void setTGroups(Set<TGroup> TGroups) {
 		this.TGroups = TGroups;
 	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+	
+	
 
 }
