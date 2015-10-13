@@ -13,6 +13,7 @@ import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.executor.ATCommandExecutor;
 
+
 public class PortService {
 	private Port port;
 	private CommandExecutor executor;
@@ -44,13 +45,13 @@ public class PortService {
 	
 	
 	public synchronized String getPortStatus() throws Exception{
-		System.out.println("get Status: "+port.getPortName());
+
 		String message="";
 		Command cpin=CommandFactory.forGet(new CPIN());
 		Command creg=CommandFactory.forGet(new CREG());
 		ExecuteResult result;
 		result = executor.execute(cpin);
-		
+		System.out.println("xxxxxxxx"+port.getPortName() +"result'ok is "+result.isOK()+" error is "+result.isError()+" response is "+result.getResult());
 		if(result.isOK()){
 			
 			result=executor.execute(creg);
@@ -66,4 +67,10 @@ public class PortService {
 	
 		return message;
 	}
+	
+	
+	public void getPhoneInfo(){
+		
+	}
+	
 }

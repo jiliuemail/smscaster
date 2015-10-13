@@ -22,7 +22,7 @@ public class JsscPort implements Port{
 		serialPort=new SerialPort(portName);
 		serialPort.openPort();
 		serialPort.setParams(115200, 8, 1, 0);  //只初始化一次.也是默认的初始化
-		serialPort.addEventListener(observer ,SerialPort.MASK_RXCHAR+SerialPort.MASK_CTS+SerialPort.MASK_DSR);  //添加监听
+		serialPort.addEventListener(observer ,SerialPort.MASK_RXCHAR);  //添加监听
 		obj=new Object();
 
 	};
@@ -158,7 +158,7 @@ public class JsscPort implements Port{
 
 	@Override
 	public String getResponse(){
-
+		
 		return observer.getResponse();
 	}
 	
@@ -185,13 +185,13 @@ public Object getObj(){
 		
 		@Override
 		public void serialEvent(SerialPortEvent event) {
-			System.out.println("entering listener event");
+
 			// TODO Auto-generated method stub
 			if(event.isRXCHAR()){
 				try {
 					
 					response=serialPort.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
-					LogUtil.debug("the response from [{0}]'s observer is [{1}]",serialPort.getPortName(),response);
+					LogUtil.debug("the response from [{0}]  is [{1}] ",serialPort.getPortName(),response);
 					LogUtil.info("response is "+response);
 					
 					
@@ -207,7 +207,7 @@ public Object getObj(){
 				}
 			}
 			
-			else if(event.isCTS()){//If CTS line has changed state
+			/*else if(event.isCTS()){//If CTS line has changed state
                 if(event.getEventValue() == 1){//If line is ON
                     System.out.println("CTS - ON");
                 }
@@ -223,7 +223,7 @@ public Object getObj(){
                 else {
                     System.out.println("DSR - OFF");
                 }
-			}
+			}*/
 			
 		}
 		

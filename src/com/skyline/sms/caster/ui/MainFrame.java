@@ -20,7 +20,7 @@ public class MainFrame extends BaseFrame {
 	}
 	
 	private void initMainFrame(){
-		this.setSize(UIConstants.WIDTH_UNIT * 4, UIConstants.HEIGHT_UNIT * 4);
+		this.setSize(UIConstants.WIDTH_UNIT * 5, UIConstants.HEIGHT_UNIT * 14);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new MainPanel();

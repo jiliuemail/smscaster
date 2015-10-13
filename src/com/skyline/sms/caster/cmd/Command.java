@@ -29,11 +29,12 @@ public interface Command {
 	 * @return 命令内容
 	 */
 	String set();
-	
+
 	byte[] stream();
 	
 	public void setCommandType(CommandType commandType);
 	
 	public CommandType getCommandType();
-
+	
+	public String formatResult(String str);
 }

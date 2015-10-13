@@ -7,6 +7,8 @@ public class ValueCommand extends ATCommand implements Command {
 	
 	private String value;
 	
+	public ValueCommand(){}
+	
 	public ValueCommand(String value){
 		this.value = value;
 	}
@@ -14,6 +16,12 @@ public class ValueCommand extends ATCommand implements Command {
 	@Override
 	protected String getCommandParam() {
 		return value;
+	}
+
+	@Override
+	public String formatResult(String str) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

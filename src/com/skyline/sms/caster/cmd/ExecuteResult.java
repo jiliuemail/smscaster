@@ -3,7 +3,16 @@ package com.skyline.sms.caster.cmd;
 public class ExecuteResult {
 	
 	private String result="";
+	private String value="";
 	
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	public boolean isOK(){
 		return this.result.contains("OK");
 	}

@@ -18,12 +18,12 @@ import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
 import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.Port;
+import com.skyline.sms.caster.util.LogUtil;
 
-public class ATCommandExecutor implements CommandExecutor,Runnable{
+public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult>{
 	
 	private Port  port;
 	private static Map<String,CommandExecutor> map = new HashMap<String, CommandExecutor>();
-	private ExecuteResult result;
 	private Command cmd;
 	private ExecutorService executorService;
 	
@@ -53,7 +53,7 @@ public class ATCommandExecutor implements CommandExecutor,Runnable{
 	public ExecuteResult execute(Command cmd)  throws Exception{
 		this.cmd=cmd;
 
-		Future<ExecuteResult> cmdResult = executorService.submit((Runnable)getInstance(port),result);
+		Future<ExecuteResult> cmdResult =executorService.submit((Callable<ExecuteResult>) getInstance(port));
 		return cmdResult.get();
 	}
 	
@@ -93,13 +93,13 @@ public class ATCommandExecutor implements CommandExecutor,Runnable{
 	
 	
 	protected ExecuteResult execute(String cmdContent) throws Exception {
-		
+
 		synchronized(port.getObj()) {
 			ExecuteResult result=new ExecuteResult();
 		
 			port.writeString(cmdContent);
 			port.getObj().wait(300);  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
-			
+			result.setValue(cmd.formatResult(port.getResponse()));
 			result.setResult(port.getResponse());
 			return result;
 		}
@@ -114,17 +114,14 @@ public class ATCommandExecutor implements CommandExecutor,Runnable{
 	}
 
 	
-	@Override
-	public void run() {
 
-		try {
-		executeCmd(cmd);  //是否会返回result 呢?? 在executorService的submit 中....
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+	@Override
+	public ExecuteResult call() throws Exception {
+		// TODO Auto-generated method stub
+		  ExecuteResult result=executeCmd(cmd); 
 		
-		
+		return result;
 	}
 
 
