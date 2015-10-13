@@ -135,7 +135,7 @@ public class PhonesPanel extends ContentPanel {
 		tcm.getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
 		tcm.getColumn(0).setPreferredWidth(UIConstants.COMPONENT_WIDTH_UNIT*5); //why can not change the width of column.
 		
-		phoneTable.addMouseListener(new tableMouseAdapter());
+//		phoneTable.addMouseListener(new tableMouseAdapter());
 		phoneListPane= new JScrollPane(phoneTable);
 		
 		
@@ -259,10 +259,10 @@ public class PhonesPanel extends ContentPanel {
 			if(e.getClickCount()==1){
 				String portName=(String)phoneTable.getValueAt(clickRow, 1);
 				try {
-					String csqValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(CommandFactory.forGet(new CSQ())).getValue();
-					String cscaValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(CommandFactory.forGet(new CSCA())).getValue();
-					csq.setInputValue(csqValue);
-					csca.setInputValue(cscaValue);
+//					String csqValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(CommandFactory.forGet(new CSQ())).getValue();
+//					String cscaValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(CommandFactory.forGet(new CSCA())).getValue();
+//					csq.setInputValue(csqValue);
+	//				csca.setInputValue(cscaValue);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

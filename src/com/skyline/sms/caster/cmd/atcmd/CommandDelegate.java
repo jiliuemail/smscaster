@@ -42,10 +42,6 @@ public abstract class CommandDelegate implements Command {
 		return command.stream();
 	}
 
-	@Override
-	public String formatResult(String str) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }

@@ -99,7 +99,7 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 		
 			port.writeString(cmdContent);
 			port.getObj().wait(300);  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
-			result.setValue(cmd.formatResult(port.getResponse()));
+
 			result.setResult(port.getResponse());
 			return result;
 		}

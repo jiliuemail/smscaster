@@ -39,6 +39,6 @@ public interface Command {
 	public CommandType getCommandType();
 
 	
-	public String formatResult(String str);
+
 
 }

@@ -10,10 +10,5 @@ public class CPIN extends ATCommand {
 		return null;
 	}
 
-	@Override
-	public String formatResult(String str) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
