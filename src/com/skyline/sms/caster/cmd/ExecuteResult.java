@@ -4,13 +4,23 @@ public class ExecuteResult {
 	
 	private String result="";
 
+	private String value="";
+
 	
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	public boolean isOK(){
 		return this.result.contains("OK");
 	}
 	
 	public boolean isError(){
-		return !isOK();
+		return this.result.contains("ERROR");
 	}
 
 	public String getResult() {

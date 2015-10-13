@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.password"></property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/smsdb</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="show_sql">true</property>
+        
+        <mapping resource = "com/skyline/sms/caster/pojo/TUser.hbm.xml" />
+        <mapping resource = "com/skyline/sms/caster/pojo/TGroup.hbm.xml" />
+        <mapping resource = "com/skyline/sms/caster/pojo/TMessage.hbm.xml" />
+        <mapping resource = "com/skyline/sms/caster/pojo/TMessageReceive.hbm.xml" />
+         <mapping resource = "com/skyline/sms/caster/pojo/TMessageSent.hbm.xml" />
+    </session-factory>
+</hibernate-configuration>

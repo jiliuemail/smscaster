@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-9-30 11:50:53 by Hibernate Tools 4.0.0.Final -->
+<hibernate-mapping>
+    <class name="com.skyline.sms.caster.pojo.TMessageSent" table="t_message_sent" catalog="smsdb">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="identity" />
+        </id>
+        <property name="contactId" type="int">
+            <column name="CONTACT_ID" not-null="true">
+                <comment>&#211;&#195;&#187;&#167;ID&#187;&#242;&#213;&#223;&#200;&#186;&#215;&#233;ID</comment>
+            </column>
+        </property>
+        <property name="contactName" type="string">
+            <column name="CONTACT_NAME" length="50" not-null="true">
+                <comment>&#211;&#195;&#187;&#167;&#187;&#242;&#213;&#223;&#200;&#186;&#215;&#233;&#195;&#251;&#179;&#198;</comment>
+            </column>
+        </property>
+        <property name="contactType" type="int">
+            <column name="CONTACT_TYPE" not-null="true">
+                <comment>
+                &#181;&#165;&#183;&#162;&#187;&#242;&#213;&#223;&#200;&#186;&#183;&#162;&#163;&#172;0&#163;&#186;&#181;&#165;&#183;&#162;&#163;&#172;1&#163;&#186;&#200;&#186;&#183;&#162;</comment>
+            </column>
+        </property>
+        <property name="message" type="string">
+            <column name="MESSAGE" length="30" not-null="true">
+                <comment>&#182;&#204;&#208;&#197;&#196;&#218;&#200;&#221;</comment>
+            </column>
+        </property>
+        <property name="portName" type="string">
+            <column name="PORT_NAME" length="50" not-null="true">
+                <comment>&#182;&#203;&#191;&#218;&#195;&#251;&#179;&#198;</comment>
+            </column>
+        </property>
+        <property name="portNumber" type="string">
+            <column name="PORT_NUMBER" length="30">
+                <comment>&#182;&#203;&#191;&#218;&#186;&#197;&#194;&#235;</comment>
+            </column>
+        </property>
+        <property name="sentDate" type="timestamp">
+            <column name="SENT_DATE" length="19" not-null="true">
+                <comment>&#182;&#203;&#191;&#218;&#186;&#197;&#194;&#235;</comment>
+            </column>
+        </property>
+        <property name="status" type="int">
+            <column name="STATUS" not-null="true">
+                <comment>
+                &#183;&#162;&#203;&#205;&#215;&#180;&#204;&#172;&#163;&#172;0&#163;&#186;&#206;&#180;&#183;&#162;&#203;&#205;&#163;&#172;1&#163;&#186;&#183;&#162;&#203;&#205;&#179;&#201;&#185;&#166;&#163;&#172;2&#163;&#186;&#183;&#162;&#203;&#205;&#202;&#167;&#176;&#220;</comment>
+            </column>
+        </property>
+        <property name="createDate" type="timestamp">
+            <column name="CREATE_DATE" length="19" not-null="true">
+                <comment>&#180;&#180;&#189;&#168;&#202;&#177;&#188;&#228;</comment>
+            </column>
+        </property>
+        <property name="updateDate" type="timestamp">
+            <column name="UPDATE_DATE" length="19" not-null="true">
+                <comment>&#184;&#252;&#208;&#194;&#202;&#177;&#188;&#228;</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

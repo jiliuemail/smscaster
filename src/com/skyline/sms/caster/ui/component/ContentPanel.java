@@ -11,6 +11,7 @@ import com.skyline.sms.caster.ui.UIConstants;
 public class ContentPanel extends JPanel {
 	
 	private static int CONTENT_WIDTH = UIConstants.SCREEN_WIDTH - UIConstants.WIDTH_UNIT;
+	private static int CONTENT_HEIGTH = UIConstants.SCREEN_HEIGHT-UIConstants.HEIGHT_UNIT*3;
 	
 	private JLabel titleLabel;
 	private JPanel toolPanel;
@@ -22,7 +23,7 @@ public class ContentPanel extends JPanel {
 		setName(title);
 		initTitleLabel(title);
 		initToolPanel();
-		finishUpdate();
+		afterInit();
 	}
 	
 	private void initTitleLabel(String title){
@@ -64,16 +65,23 @@ public class ContentPanel extends JPanel {
 				this.remove(content);
 			}
 			content = contentPanel;
-			content.setBounds(0, UIConstants.HEIGHT_UNIT * 2 + 5, CONTENT_WIDTH, UIConstants.HEIGHT_UNIT * 2);
+			content.setBounds(0, UIConstants.HEIGHT_UNIT * 2 + 5, CONTENT_WIDTH, CONTENT_HEIGTH);
 			this.add(content);
 		}
 	}
 	
-	public void finishUpdate(){
+	public void afterInit(){
 		this.setLayout(null);
 		this.add(titleLabel);
 		this.add(toolPanel);
 	}
 	
+	public void beforeDisplay(){
+		
+	}
+
+	public void afterDisplay(){
+		
+	}
 	
 }
