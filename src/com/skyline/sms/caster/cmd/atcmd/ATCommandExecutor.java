@@ -1,6 +1,8 @@
 package com.skyline.sms.caster.cmd.atcmd;
 
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
@@ -9,19 +11,23 @@ import com.skyline.sms.caster.connector.Port;
 
 public class ATCommandExecutor implements CommandExecutor {
 	
-	private Set<Port> ports;
-	
-	
+	private Port  port;
 
-	public ATCommandExecutor(Set<Port> ports) {
+
+
+	public ATCommandExecutor(Port port) {
 		super();
-		this.ports = ports;
+		this.port=port;
 	}
 	
 	
 
+	
+
 	@Override
 	public ExecuteResult execute(Command cmd) throws Exception {
+
+		
 		switch (cmd.getCommandType()) {
 		case CHECK:
 			return check(cmd);
@@ -54,24 +60,24 @@ public class ATCommandExecutor implements CommandExecutor {
 	
 	protected ExecuteResult execute(String cmdContent) throws Exception {
 		ExecuteResult result=new ExecuteResult();
-		for(Port port:ports){
-			synchronized(port.getObj()) {
 
-			port.writeString(cmdContent);
-			port.getObj().wait();
+			synchronized(port.getObj()) {
+				port.writeBytes(cmdContent.getBytes());
+		//		port.writeString(cmdContent);
+			port.getObj().wait();  //jsscport 中的监听器来激活这个线程.
 			result.setResult(port.getResponse());
 			}
-		}
+
 		
 		return result;
 
 	}
 
 	public ExecuteResult stream(Command cmd) throws Exception {
-		for(Port port:ports){
+
 			port.writeBytes(cmd.stream());
 
-		}
+
 		
 		return null;
 	}

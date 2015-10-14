@@ -15,7 +15,7 @@ public class JsscPort implements Port{
 	private SerialPort serialPort;
 	private SerialPortReader  observer=new SerialPortReader();
 	private Object obj; //通过obj.wait() 和obj.notifyAll 在多线程间通讯 
-	
+
 	private static Map<String,Port> portMap= new HashMap<String, Port>();
 	
 	private  JsscPort(String portName) throws SerialPortException{
@@ -38,6 +38,7 @@ public class JsscPort implements Port{
 
 		 if(port==null){
 				synchronized (portName) {
+					port=portMap.get(portName);
 					if(port==null){
 						port=new JsscPort(portName);
 						portMap.put(portName, port);
@@ -158,6 +159,7 @@ public class JsscPort implements Port{
 
 	@Override
 	public String getResponse(){
+		
 		return observer.getResponse();
 	}
 	
@@ -176,7 +178,7 @@ public Object getObj(){
 	//内部类:监听者
 	private  class SerialPortReader implements SerialPortEventListener{
 	
-		private   String response;
+		private   String response="";
 		
 		public String getResponse(){
 			return response;
@@ -184,13 +186,14 @@ public Object getObj(){
 		
 		@Override
 		public void serialEvent(SerialPortEvent event) {
+
 			// TODO Auto-generated method stub
 			if(event.isRXCHAR()){
 				try {
 					
 					response=serialPort.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
-		//			LogUtil.debug("the response from [{0}]'s observer is [{1}]",serialPort.getPortName(),response);
-//					LogUtil.info("response is "+response);
+					LogUtil.debug("the response from [{0}]  is [{1}] ",serialPort.getPortName(),response);
+					LogUtil.info("response is "+response);
 					
 					
 				} catch (Exception e) {
@@ -204,6 +207,25 @@ public Object getObj(){
 
 				}
 			}
+			
+			/*else if(event.isCTS()){//If CTS line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("CTS - ON");
+                }
+                else {
+                    System.out.println("CTS - OFF");
+                }
+            }
+			
+			else if(event.isDSR()){///If DSR line has changed state
+                if(event.getEventValue() == 1){//If line is ON
+                    System.out.println("DSR - ON");
+                }
+                else {
+                    System.out.println("DSR - OFF");
+                }
+			}*/
+			
 		}
 		
 	}

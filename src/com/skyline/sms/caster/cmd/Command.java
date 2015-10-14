@@ -1,5 +1,7 @@
 package com.skyline.sms.caster.cmd;
 
+import java.util.List;
+
 /**
  * 命令接口
  *
@@ -29,11 +31,14 @@ public interface Command {
 	 * @return 命令内容
 	 */
 	String set();
-	
+
 	byte[] stream();
 	
 	public void setCommandType(CommandType commandType);
 	
 	public CommandType getCommandType();
+
+	
+
 
 }

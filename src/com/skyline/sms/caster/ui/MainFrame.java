@@ -22,11 +22,13 @@ public class MainFrame extends BaseFrame {
 	}
 	
 	private void initMainFrame(){
+
 		this.setBounds(UIConstants.MAX_FRAME_BOUND);
 		Dimension frameSize = new Dimension(MAX_FRAME_WIDTH, MAX_FRAME_HEIGHT);
 		this.setMaximumSize(frameSize);
 		this.setMinimumSize(frameSize);
 		this.setPreferredSize(frameSize);
+
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new MainPanel();

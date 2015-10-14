@@ -43,5 +43,8 @@ public abstract class ATCommand extends AbstractCommand {
 		return (setContent == null ? new byte[0] : setContent.getBytes());
 	}
 	
+
+	
+	
 	
 }

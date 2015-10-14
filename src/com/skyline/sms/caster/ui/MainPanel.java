@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.ImageButton;
 import com.skyline.sms.caster.ui.content.ContactsPanel;
+import com.skyline.sms.caster.ui.content.PhonesPanel;
 import com.skyline.sms.caster.ui.content.SmsMessagePanel;
 import com.skyline.sms.caster.ui.toolbar.MainToolBar;
 
@@ -45,6 +46,7 @@ public class MainPanel extends JPanel {
 	
 	private ContentPanel composePanel;
 	private ContentPanel contactsPanel;
+	private ContentPanel phonesPanel;
 	
 	private Dimension contentSize;
 	private CardLayout cardLayout;
@@ -59,6 +61,7 @@ public class MainPanel extends JPanel {
 		
 		initComposePanel();
 		initContactsPanel();
+		initPhonesPanel();
 	}
 
 	private void initPanelSize() {
@@ -168,4 +171,9 @@ public class MainPanel extends JPanel {
 		registryContentPanel(UIConstants.CONTACTS_PANEL_KEY, contactsButton,contactsPanel);
 	}
 	
+	private void initPhonesPanel(){
+		phonesPanel=new PhonesPanel("sms.caster.label.panle.phones");
+
+		registryContentPanel(UIConstants.PHONES_PANEL_KEY, phoneButton,phonesPanel);
+	}
 }

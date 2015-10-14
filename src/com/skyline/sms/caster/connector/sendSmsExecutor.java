@@ -27,19 +27,23 @@ public class sendSmsExecutor implements Runnable{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		LogUtil.info("sendSms from [{}] start",port.getPortName());
+	//	LogUtil.info("sendSms from [{}] start",port.getPortName());
 		for(Message message:messages){
 
 			try {
-				
-				port.writeString("AT+CMGS=\""+StringUtil.toUnicode(message.getContacter().getPhoneNumber())+"\"\n" );
+				String sms="AT+CMGS=\""+StringUtil.toUnicode(message.getContacter().getPhoneNumber())+"\"\n";
+				port.writeBytes(sms.getBytes());
+				//port.writeString( "AT+CMGS=\""+StringUtil.toUnicode(message.getContacter().getPhoneNumber())+"\"\n");
 
 				Thread.sleep(1500);
 				System.out.println("what is the response from observer");
 				if(port.getResponse().contains(">")){
 					System.out.println("inputing the sms content");
-					port.writeString(StringUtil.toUnicode(message.getContent().getContent()));
-					port.writeInt(0x1A);
+					port.writeBytes(StringUtil.toUnicode(message.getContent().getContent()).getBytes());
+
+					port.writeBytes(new byte[]{ (byte)0x1A});
+					//port.writeString(StringUtil.toUnicode(message.getContent().getContent()));
+					//port.writeInt(0x1A);
 				}else{
 					System.out.println("esc");
 					port.writeInt(0x1B);
