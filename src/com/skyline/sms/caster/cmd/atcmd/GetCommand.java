@@ -1,7 +1,5 @@
 package com.skyline.sms.caster.cmd.atcmd;
 
-import java.util.List;
-
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandType;
 

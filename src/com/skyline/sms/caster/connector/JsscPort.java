@@ -64,7 +64,7 @@ public class JsscPort implements Port{
 	@Override
 	public boolean openPort() throws Exception {
 		// TODO Auto-generated method stub
-		
+
 		return serialPort.openPort();
 	}
 

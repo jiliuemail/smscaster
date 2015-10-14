@@ -23,4 +23,7 @@ public class CommandFactory {
 		return new StreamCommand(command);
 	}
 
+	public static OriginCommand forOrigin(Command command){
+		return new OriginCommand(command);
+	}
 }

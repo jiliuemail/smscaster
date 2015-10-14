@@ -5,6 +5,6 @@ public enum CommandType {
 	CHECK,
 	GET,
 	SET,
-	STREAM
-
+	STREAM,
+	ORIGIN
 }

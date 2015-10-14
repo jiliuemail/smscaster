@@ -71,6 +71,8 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 			return set(cmd);
 		case STREAM :
 			return stream(cmd);
+		case ORIGIN:
+			return origin(cmd);
 		default:
 			return null;
 		}
@@ -90,11 +92,15 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 		return execute(cmd.set());
 	}
 
-	
+
+	public ExecuteResult origin(Command cmd) throws Exception{
+		return execute(cmd.origin());
+	}
 	
 	protected ExecuteResult execute(String cmdContent) throws Exception {
 
 		synchronized(port.getObj()) {
+
 			ExecuteResult result=new ExecuteResult();
 		
 			port.writeString(cmdContent);

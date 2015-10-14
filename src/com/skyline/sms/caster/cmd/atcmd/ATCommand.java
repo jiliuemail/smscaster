@@ -29,6 +29,12 @@ public abstract class ATCommand extends AbstractCommand {
 		return content() + COMMAND_SET + getCommandParam()+COMMAND_SUBFIX;
 	}
 
+	@Override
+	public String origin() {
+		// TODO Auto-generated method stub
+		return content()+COMMAND_SUBFIX;
+	}
+	
 	protected String content() {
 		return COMMAND_PREFIX + getClass().getSimpleName().toUpperCase(); 
 	}
