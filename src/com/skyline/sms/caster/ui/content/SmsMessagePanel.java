@@ -88,7 +88,7 @@ public class SmsMessagePanel extends ContentPanel{
 	}
 	
 	public TMessage getMessage(){
-		String contactors=toNubmerField.getInputField().gett
+		//String contactors=toNubmerField.getInputField().gett //getText() ????;父类继承的问题??
 		
 		return null;
 	}
