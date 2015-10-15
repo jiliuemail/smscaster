@@ -1,5 +1,7 @@
 package com.skyline.sms.caster.ui.component;
 
+import java.awt.Dimension;
+
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
@@ -32,7 +34,8 @@ public class InputPanel extends JPanel {
 		int width = Math.max(fieldsPanel.getWidth(), inputField.getWidth());
 		int height = fieldsPanel.getHeight() + inputField.getHeight();
 		fieldsPanel.setBounds(0,0,width, height);
-		this.setSize(width,height);
+		this.setPreferredSize(new Dimension(width, height));
+		this.setBounds(0, 0, width, height);
 	}
 	
 }

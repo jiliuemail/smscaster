@@ -5,18 +5,23 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.skyline.sms.caster.core.MessageBundle;
+
 public class FormatUtil {
 	
-	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	public static DateFormat DATE_FORMAT;
+	static{
+		DATE_FORMAT = new SimpleDateFormat(MessageBundle.getMessage("sms.caster.constants.format.date"));
+	}
 	
 	private FormatUtil(){}
 	
 	public static String formatToString(Object target){
 		if (target == null) {
-			return "null";
+			return "";
 		}
-		Class valueType = target.getClass();
-		if (Date.class.equals(valueType)) {
+		Class<?> valueType = target.getClass();
+		if (Date.class.isAssignableFrom(valueType)) {
 			return DATE_FORMAT.format(target);
 		}else {
 			return target.toString();

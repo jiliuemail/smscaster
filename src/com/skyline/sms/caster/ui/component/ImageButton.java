@@ -6,15 +6,12 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
-import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.util.IOUtil;
 import com.skyline.sms.caster.util.LogUtil;
 
-public class ImageButton extends JButton {
-	
+public class ImageButton extends MessageButton {
 	
 
 	public ImageButton() {
@@ -37,11 +34,6 @@ public class ImageButton extends JButton {
 		super.setHorizontalAlignment(SwingConstants.LEFT);
 	}
 
-	@Override
-	public void setText(String text) {
-		String message = MessageBundle.getMessage(text);
-		super.setText(message);
-	}
 
 	public void setImagePath(String imagePath) {
 		Image iconImage = null;

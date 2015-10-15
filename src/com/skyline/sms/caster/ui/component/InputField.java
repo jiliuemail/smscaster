@@ -44,6 +44,16 @@ public class InputField<C extends JComponent> extends JPanel {
 	
 	
 
+	@Override
+	public boolean isEnabled() {
+		return inputField.isEnabled();
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		inputField.setEnabled(enabled);
+	}
+
 	public int getLabelWidth() {
 		return labelWidth;
 	}

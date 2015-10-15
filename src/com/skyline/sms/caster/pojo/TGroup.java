@@ -12,7 +12,8 @@ public class TGroup implements java.io.Serializable {
 	private Integer id;
 	private String groupName;
 	private String groupType;
-	private int receive;
+	private Integer receive;
+	
 	private Set<TUser> TUsers = new HashSet<TUser>(0);
 
 	public TGroup() {
@@ -54,11 +55,11 @@ public class TGroup implements java.io.Serializable {
 		this.groupType = groupType;
 	}
 
-	public int getReceive() {
+	public Integer getReceive() {
 		return this.receive;
 	}
 
-	public void setReceive(int receive) {
+	public void setReceive(Integer receive) {
 		this.receive = receive;
 	}
 

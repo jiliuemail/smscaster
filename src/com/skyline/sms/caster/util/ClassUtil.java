@@ -51,5 +51,24 @@ public class ClassUtil {
 			LogUtil.error(e);
 		}
 	}
+	
+	public static Class<?> getPropertyType(Class<?> targetClass, String propertyName){
+		if (!StringUtil.hasText(propertyName)) {
+			return null;
+		}
+		StringBuilder getMethodName = new StringBuilder();
+		getMethodName.append("get").append(propertyName.substring(0, 1).toUpperCase())
+			.append(propertyName.substring(1));
+		try {
+			Method getMethod = targetClass.getMethod(getMethodName.toString(), new Class[]{});
+			return getMethod.getReturnType();
+		} catch (NoSuchMethodException e) {
+			LogUtil.warn(e);
+			return null;
+		} catch (Exception e) {
+			LogUtil.error(e);
+			return null;
+		}
+	}
 
 }
