@@ -30,9 +30,12 @@ import javax.swing.table.TableColumnModel;
 
 import jssc.SerialPortList;
 
+import com.skyline.sms.caster.cmd.Command;
+import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.cmd.atcmd.CommandFactory;
 import com.skyline.sms.caster.cmd.message.CSCA;
 import com.skyline.sms.caster.cmd.message.CSQ;
+import com.skyline.sms.caster.cmd.parser.ParserRegister;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.core.MessageBundle;
@@ -56,12 +59,14 @@ public class PhonesPanel extends ContentPanel {
 	
 	private InputTextField csq;
 	private InputTextField csca;
+	private Command csqCmd=CommandFactory.forOrigin(new CSQ());
+	private Command cscaCmd=CommandFactory.forGet(new CSCA());;
 	
 	public PhonesPanel(String title) {
 		super(title);
 		initToolBarButton();
 		initContent();
-
+		
 	}
 
 	
@@ -135,7 +140,7 @@ public class PhonesPanel extends ContentPanel {
 		tcm.getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
 		tcm.getColumn(0).setPreferredWidth(UIConstants.COMPONENT_WIDTH_UNIT*5); //why can not change the width of column.
 		
-//		phoneTable.addMouseListener(new tableMouseAdapter());
+		phoneTable.addMouseListener(new tableMouseAdapter());
 		phoneListPane= new JScrollPane(phoneTable);
 		
 		
@@ -166,7 +171,8 @@ public class PhonesPanel extends ContentPanel {
 				status[j]=PortService.getInstance(JsscPort.getInstance(portNames[j])).getPortStatus(); 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				status[j]=e.getMessage();
+				LogUtil.error(e);
 			}
 		}
 		
@@ -233,15 +239,11 @@ public class PhonesPanel extends ContentPanel {
 	public void initPhoneInfoPanel(){
 
 		phoneInfoPanel=new JPanel();
-//		phoneInfoPanel.setOpaque(true);
-//		phoneInfoPanel.setBackground(Color.red);
 		phoneInfoPanel.setLayout(new BoxLayout(phoneInfoPanel,BoxLayout.Y_AXIS));
-//		phoneInfoPanel.setLayout(null);
+
 		phoneInfoPanel.setPreferredSize(new Dimension(100,300));  //设置borderLayout采用的大小....
-		phoneInfoPanel.setOpaque(true);
 
 		csq=new InputTextField("sms.caster.label.input.csq", 60);  //为什么没有高度?? contentPanel ?
-	//	csq.setInputValue(ATCommandExecutor.getInstance(JsscPort.getInstance(portName)));
 		csca=new InputTextField("sms.caster.label.input.csca", 60);
 		phoneInfoPanel.add(csq);
 		phoneInfoPanel.add(csca);
@@ -254,15 +256,16 @@ public class PhonesPanel extends ContentPanel {
 	
 	class tableMouseAdapter extends MouseAdapter{
 		public void mouseClicked(MouseEvent e){
-			int clickRow=phoneTable.convertColumnIndexToModel(phoneTable.getSelectedColumn());
-			LogUtil.info("mouse");
+			int clickRow=phoneTable.convertRowIndexToModel(phoneTable.getSelectedRow());
+			LogUtil.info("click "+clickRow);
 			if(e.getClickCount()==1){
 				String portName=(String)phoneTable.getValueAt(clickRow, 1);
 				try {
-//					String csqValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(CommandFactory.forGet(new CSQ())).getValue();
-//					String cscaValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(CommandFactory.forGet(new CSCA())).getValue();
-//					csq.setInputValue(csqValue);
-	//				csca.setInputValue(cscaValue);
+					
+					ExecuteResult csqValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(csqCmd);
+					ExecuteResult cscaValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(cscaCmd);
+					csq.getInputField().setText(ParserRegister.parserCommandResult(csqCmd, csqValue, String.class));
+					csca.getInputField().setText(ParserRegister.parserCommandResult(cscaCmd, cscaValue, String.class));
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
