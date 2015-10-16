@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -14,25 +16,30 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.skyline.sms.caster.pojo.TMessage;
+import com.skyline.sms.caster.service.MessageService;
+import com.skyline.sms.caster.service.impl.MessageServiceImpl;
 import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.InputField;
 import com.skyline.sms.caster.ui.component.InputPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
+import com.skyline.sms.caster.util.LogUtil;
 
 public class SmsMessagePanel extends ContentPanel{
 	
 	private JPanel contentPanel;
 	private InputPanel inputPanel;
-	private InputField toNubmerField;
-	private InputField toGroup;
-	private InputField subject;
+	private InputTextField toNubmerField;
+	private InputTextField toGroup;
+	private InputTextField subject;
 	
 	private JPanel messagePanel;
-
+	private JTextArea messageArea;
+	private MessageService msgService;
 	
 	public SmsMessagePanel(String title){
 		super(title);
+		msgService=new MessageServiceImpl();
 		initToolButton();
 		init();
 	}
@@ -45,7 +52,12 @@ public class SmsMessagePanel extends ContentPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+				try {
+					msgService.saveOrUpdate(getMessage());
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					LogUtil.error(e1);
+				}
 			}
 		});
 		
@@ -77,7 +89,7 @@ public class SmsMessagePanel extends ContentPanel{
 
 	public void initMessageArea(){
 		messagePanel=new JPanel();
-		JTextArea messageArea=new JTextArea("input message here");
+		messageArea=new JTextArea("input message here");
 		messageArea.setLineWrap(true);
 		JScrollPane scrollMessage= new JScrollPane(messageArea);
 		scrollMessage.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -87,9 +99,21 @@ public class SmsMessagePanel extends ContentPanel{
 
 	}
 	
-	public TMessage getMessage(){
-		//String contactors=toNubmerField.getInputField().gett //getText() ????;父类继承的问题??
-		
-		return null;
+	//转换成短信对象
+	public List<TMessage> getMessage(){
+		String phoneNumbers=toNubmerField.getInputField().getText();
+		String[] numbers=phoneNumbers.split(";|,");
+		String message=messageArea.getText();
+		String subjectContent=subject.getInputField().getText();
+		List<TMessage> messages = new ArrayList<>();
+		for(String number:numbers){
+			TMessage sms = new TMessage(0, message,number);
+			sms.setContactName(number);
+			sms.setSubject(subjectContent);
+			messages.add(sms);
+
+		}
+
+		return messages;
 	}
 }
