@@ -33,6 +33,7 @@ import com.skyline.sms.caster.ui.component.InputComboBox;
 import com.skyline.sms.caster.ui.component.InputPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.ui.component.Toast;
+import com.skyline.sms.caster.ui.data.UIDataStorer;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.FormatUtil;
@@ -49,7 +50,7 @@ public class ContactsPanel extends ContentPanel {
 	
 	private JPanel tablePanel;
 	private JScrollPane scrollPane;
-	private DataTable<TUser> table;
+	private DataTable<TUser> usersTable;
 	
 	private JPanel insertPanel;
 	private ImagePanel personPanel;
@@ -99,17 +100,18 @@ public class ContactsPanel extends ContentPanel {
 		columnFields.add("createDate");
 		columnFields.add("TGroups");
 		
-		table = new DataTable<TUser>(columnNames, columnFields);
-		table.addMouseListener(new MouseAdapter() {
+		usersTable = new DataTable<TUser>(columnNames, columnFields);
+		usersTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 1){
-					syncSelectedRowData(table.getSelectedRow());
+					syncSelectedRowData(usersTable.getSelectedRow());
 				}
 			}
 			
 		 });
 		
+		usersTable.addDataStorer(new UserDataStorer());
 		
 		
 		
@@ -119,13 +121,13 @@ public class ContactsPanel extends ContentPanel {
 		if (row < 0) {
 			editUser = null;
 		}else{
-			editUser = table.getRowData(row);
+			editUser = usersTable.getRowData(row);
 		}
 		fireInsertInput();
 	}
 	
 	private void initTabelPanel(){
-		scrollPane = new JScrollPane(this.table);
+		scrollPane = new JScrollPane(this.usersTable);
 		tablePanel = new JPanel();
 		tablePanel.setLayout(new BorderLayout());
 		tablePanel.add(scrollPane, BorderLayout.CENTER);
@@ -133,12 +135,12 @@ public class ContactsPanel extends ContentPanel {
 		scrollPane.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 1){
-						TableCellEditor cellEitor = table.getCellEditor();
+						TableCellEditor cellEitor = usersTable.getCellEditor();
 						if (cellEitor != null) {
 							cellEitor.stopCellEditing();
-							syncSelectedRowData(table.getLastEditRowIndex());
+							syncSelectedRowData(usersTable.getLastEditRowIndex());
 						}
-						table.clearSelection();
+						usersTable.clearSelection();
 				}
 			}
 		});
@@ -224,7 +226,7 @@ public class ContactsPanel extends ContentPanel {
 				if (editUser != null) {
 					editUser.setUserName(nameInput.getInputField().getText());
 					editUser.setNumber(numberInput.getInputField().getText());
-					table.notifyUpdateRecords();
+					usersTable.notifyUpdateRecords();
 				}
 			}
 		});
@@ -236,9 +238,11 @@ public class ContactsPanel extends ContentPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (editUser != null && editUser.getId() == null) {
-					table.cancelNewRecord(editUser);
+					usersTable.cancelNewRecord(editUser);
 					editUser = null;
 					disEnableInsertInput();
+				}else {
+					fireInsertInput();
 				}
 			}
 		});
@@ -291,7 +295,8 @@ public class ContactsPanel extends ContentPanel {
 				}
 				editUser = new TUser();
 				editUser.setCreateDate(new Date());
-				table.addNewRecord(editUser);
+				editUser.setReceive(0);
+				usersTable.addNewRecord(editUser);
 				fireInsertInput();
 			}
 		});
@@ -301,7 +306,7 @@ public class ContactsPanel extends ContentPanel {
 	
 	private void updateTable(){
 		try {
-			table.setData(userService.findUsers(new TUser(), new Page()));
+			usersTable.setData(userService.findUsers(new TUser(), new Page()));
 		} catch (Exception e1) {
 			LogUtil.error(e1);
 			DialogUtil.showSearchError(tablePanel);
@@ -315,20 +320,7 @@ public class ContactsPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					if (table.getUpdateRecords().size() > 0) {
-						userService.saveOrUpdateUsers(table.getUpdateRecords());
-						table.clearUpdateRecords();
-						DialogUtil.showSaveOK(tablePanel);
-					}else{
-						DialogUtil.showToast("sms.caster.message.toast.nodata.update");
-					}
-
-				} catch (Exception e1) {
-					LogUtil.error(e1);
-					DialogUtil.showSaveError(tablePanel);
-				}
-				
+				usersTable.notifyUpdateRecords();
 			}
 		});
 		
@@ -346,6 +338,17 @@ public class ContactsPanel extends ContentPanel {
 		loadDataToast.setVisible(false);
 	}
 	
-
+	
+	class UserDataStorer extends UIDataStorer<TUser>{
+		
+		public UserDataStorer() {
+			super(DialogUtil.getMainFrame());
+		}
+		
+		@Override
+		protected void submitUpdatedData(List<TUser> updatedData) throws Exception {
+			userService.saveOrUpdateUsers(updatedData);
+		}
+	}
 	
 }

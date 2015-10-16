@@ -4,31 +4,40 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
+import com.skyline.sms.caster.core.MessageBundle;
+import com.skyline.sms.caster.dao.Page;
 import com.skyline.sms.caster.pojo.TGroup;
 import com.skyline.sms.caster.pojo.TUser;
 import com.skyline.sms.caster.service.UserService;
 import com.skyline.sms.caster.service.impl.UserServiceImpl;
 import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.DataList;
+import com.skyline.sms.caster.ui.component.DataTable;
 import com.skyline.sms.caster.ui.component.ImageButton;
 import com.skyline.sms.caster.ui.component.InputPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.ui.component.MessageButton;
 import com.skyline.sms.caster.ui.component.MessageLabel;
+import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
+import com.skyline.sms.caster.util.LogUtil;
 
-public class AddGroupPanel extends JDialog {
+public class AddGroupDialog extends JDialog {
 	
-	private static final int DIALOG_WIDTH = UIConstants.COMPONENT_WIDTH_UNIT * 63;
+	private static final int DIALOG_WIDTH = UIConstants.COMPONENT_WIDTH_UNIT * 62;
 
 	private JPanel outPanel;
 	
@@ -46,7 +55,7 @@ public class AddGroupPanel extends JDialog {
 	private JPanel usersPanel;
 	private JPanel groupsPanel;
 	private DataList<TUser> usersList;
-	private DataList<TGroup> groupsList;
+	private DataList<TUser> groupMembersList;
 	
 	private JPanel switchButtonPanel;
 	private MessageButton toLeftButton;
@@ -61,19 +70,17 @@ public class AddGroupPanel extends JDialog {
 	
 	private UserService userService = new UserServiceImpl();
 	private TGroup editGroup;
-	private JFrame owner;
+	private DataTable<TGroup> groupTable;
 
 	private Dimension dialogSize = new Dimension(DIALOG_WIDTH, UIConstants.COMPONENT_HEIGHT_UNIT * 25);
+
 	
-	public AddGroupPanel(){
-		this(null);
-	}
-	
-	public AddGroupPanel(JFrame owner){
-		super(owner, true);
-		setOwner(owner);
+	public AddGroupDialog(DataTable<TGroup> groupTable){
+		super(DialogUtil.getMainFrame(), true);
+		setDataTable(groupTable);
 		setVisible(false);
 		setAlwaysOnTop(false);
+		initTitle();
 		initGroup();
 		initInputPanel();
 		initTopPanel();
@@ -88,8 +95,12 @@ public class AddGroupPanel extends JDialog {
 		initThis();
 	}
 	
-	private void setOwner(JFrame owner) {
-		this.owner = owner;
+	private void initTitle(){
+		setTitle(MessageBundle.getMessage("sms.caster.label.dialog.title.addGroup"));
+	}
+	
+	private void setDataTable(DataTable<TGroup> groupTable) {
+		this.groupTable = groupTable;
 	}
 
 	private void initThis(){
@@ -99,11 +110,11 @@ public class AddGroupPanel extends JDialog {
 		setLocationRelativeTo(DialogUtil.getMainFrame());
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
-				super.windowActivated(e);
-				if (owner == null) {
-					owner = DialogUtil.getMainFrame();
-				}
-				owner.setVisible(true);
+				DialogUtil.getMainFrame().setVisible(true);
+			}
+			
+			public void windowClosing(WindowEvent e) {
+				cancelAddGroup();
 			}
 		});
 	}
@@ -140,16 +151,34 @@ public class AddGroupPanel extends JDialog {
 	private void initUsersPanel(){
 		usersPanel = new JPanel();
 		usersPanel.setLayout(new BorderLayout());
-//		List<TUser> findUsers = null;
-//		try {
-//			findUsers = userService.findUsers(new TUser(), new Page());
-//		} catch (Exception e) {
-//			LogUtil.error(e);
-//			findUsers = new ArrayList<TUser>();
-//		}
 		usersList = new DataList<TUser>();
 		usersList.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+		
 		usersPanel.add(usersList);
+	}
+	
+	private void fireUsersListData(){
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					usersList.setData(userService.findUsers(new TUser(), new Page()));
+					fireToRightButton();
+				} catch (Exception e) {
+					LogUtil.error(e);
+					DialogUtil.showSearchError(AddGroupDialog.this);
+				}
+			}
+		});
+	}
+	
+	private void fireGroupMembersListData(){
+		final Set<TUser> users = editGroup.getTUsers();
+		if (CollectionUtil.hasElements(users)) {
+			groupMembersList.setData(CollectionUtil.setToList(users));
+		}
+		
 	}
 	
 	private void initSwitchButtonPanel(){
@@ -163,18 +192,87 @@ public class AddGroupPanel extends JDialog {
 		toLeftAllButton.marginHorizontal(1);
 		toRightAllButton = new MessageButton("sms.caster.label.button.toRightAll");
 		toRightAllButton.marginHorizontal(1);
-		switchButtonPanel.add(toLeftButton);
+		initSwitchButtonListeners();
 		switchButtonPanel.add(toRightButton);
-		switchButtonPanel.add(toLeftAllButton);
+		switchButtonPanel.add(toLeftButton);
 		switchButtonPanel.add(toRightAllButton);
+		switchButtonPanel.add(toLeftAllButton);
+	}
+	
+	private void initSwitchButtonListeners(){
+		toRightButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TUser user = usersList.getSelectedValue();
+				if (user != null) {
+					groupMembersList.addItem(user);
+					usersList.removeItem(user);
+				}else{
+					DialogUtil.showToast(AddGroupDialog.this,"sms.caster.message.toast.nodata.selected");
+				}
+				fireToLeftButton();
+				fireToRightButton();
+			}
+		});
+		
+		toLeftButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TUser user = groupMembersList.getSelectedValue();
+				if (user != null) {
+					usersList.addItem(user);
+					groupMembersList.removeItem(user);
+				}else{
+					DialogUtil.showToast(AddGroupDialog.this, "sms.caster.message.toast.nodata.selected");
+				}
+				fireToLeftButton();
+				fireToRightButton();
+			}
+		});
+		
+		toRightAllButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					groupMembersList.addItems(usersList.getData());
+					usersList.removeAllItem();
+					fireToLeftButton();
+					fireToRightButton();
+			}
+		});
+		
+		toLeftAllButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					usersList.addItems(groupMembersList.getData());
+					groupMembersList.removeAllItem();
+					fireToLeftButton();
+					fireToRightButton();
+			}
+		});
+	}
+	
+	private void fireToRightButton(){
+		if (usersList.isEmpty()) {
+			toRightButton.setEnabled(false);
+			toRightAllButton.setEnabled(false);
+		}else{
+			toRightButton.setEnabled(true);
+			toRightAllButton.setEnabled(true);
+		}
+	}
+	
+	private void fireToLeftButton(){
+		if (groupMembersList.isEmpty()) {
+			toLeftButton.setEnabled(false);
+			toLeftAllButton.setEnabled(false);
+		}else {
+			toLeftButton.setEnabled(true);
+			toLeftAllButton.setEnabled(true);
+		}
 	}
 	
 	private void initGroupsPanel(){
 		groupsPanel = new JPanel();
 		groupsPanel.setLayout(new BorderLayout());
-		groupsList = new DataList<TGroup>();
-		groupsList.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-		groupsPanel.add(groupsList);
+		groupMembersList = new DataList<TUser>();
+		groupMembersList.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+		groupsPanel.add(groupMembersList);
 	}
 	
 	private void initSwitchPanel(){
@@ -207,14 +305,48 @@ public class AddGroupPanel extends JDialog {
 	
 	private void initButtonPanel(){
 		tipLabel = new MessageLabel("sms.caster.label.message.addgroup.tip");
-		submitButton = new ImageButton("sms.caster.label.button.submit");
-		cancelButton = new ImageButton("sms.caster.label.button.cancel");
+		initSubmitButton();
+		initCancelButton();
 		
 		buttonPanel = new JPanel();
 		buttonPanel.setPreferredSize(new Dimension(DIALOG_WIDTH, UIConstants.COMPONENT_HEIGHT_UNIT*3));
 		buttonPanel.add(tipLabel);
 		buttonPanel.add(submitButton);
 		buttonPanel.add(cancelButton);
+	}
+	
+	private void initSubmitButton(){
+		submitButton = new ImageButton("sms.caster.label.button.submit");
+		submitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (editGroup != null) {
+					editGroup.setGroupName(groupNameInput.getInputField().getText());
+					List<TUser> members = groupMembersList.getData();
+					if (CollectionUtil.hasElements(members)) {
+						editGroup.getTUsers().addAll(members);
+					}
+					setVisible(false);
+					groupTable.notifyUpdateRecords();
+				}
+			}
+		});
+	}
+	
+	private void initCancelButton(){
+		cancelButton = new ImageButton("sms.caster.label.button.cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelAddGroup();
+			}
+		});
+	}
+	
+	private void cancelAddGroup(){
+		groupMembersList.removeAll();
+		if (editGroup != null && editGroup.getId() == null) {
+			groupTable.cancelNewRecord(editGroup);
+		}
+		setVisible(false);
 	}
 	
 	private void initOutPanel() {
@@ -229,6 +361,29 @@ public class AddGroupPanel extends JDialog {
 
 	public void setGroup(TGroup group){
 		editGroup = group;
+		if (editGroup == null) {
+			editGroup = new TGroup();
+		}
+		fireGroupNameInput();
+		fireGroupMemberInput();
+		fireUsersListData();
+		fireGroupMembersListData();
+		fireToRightButton();
+		fireToLeftButton();
+	}
+	
+	private void fireGroupNameInput(){
+		groupNameInput.getInputField().setText(editGroup.getGroupName());
+	}
+	
+	private void fireGroupMemberInput(){
+		List<TUser> users = CollectionUtil.setToList(editGroup.getTUsers());
+		if (CollectionUtil.hasElements(users)) {
+			groupMembersList.setData(users);
+			groupMembersList.updateUI();
+		}else{
+			groupMembersList.removeAllItem();
+		}
 	}
 	
 }

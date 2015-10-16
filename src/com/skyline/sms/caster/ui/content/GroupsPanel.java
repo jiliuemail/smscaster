@@ -33,6 +33,7 @@ import com.skyline.sms.caster.ui.component.InputComboBox;
 import com.skyline.sms.caster.ui.component.InputPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.ui.component.Toast;
+import com.skyline.sms.caster.ui.data.UIDataStorer;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.LogUtil;
@@ -68,13 +69,15 @@ public class GroupsPanel extends ContentPanel {
 	private ImageButton searchButton;
 	private ImageButton saveButton;
 	private ImageButton addButton;
+	private ImageButton editButton;
 	
 	private Toast loadDataToast;
-	private AddGroupPanel addGroupPanel;
+	private AddGroupDialog addGroupPanel;
 	
 	private UserService userService = new UserServiceImpl();
 	private GroupService groupService = new GroupServiceImpl();
 	
+	private TGroup editGroup;
 	private TUser editUser;
 
 	public GroupsPanel(String title) {
@@ -89,6 +92,7 @@ public class GroupsPanel extends ContentPanel {
 		initAddGroupPanel();
 		initSearchButton();
 		initAddButton();
+		initEditButton();
 		initSaveButton();
 	}
 	
@@ -106,7 +110,6 @@ public class GroupsPanel extends ContentPanel {
 //		columnFields.add("TGroups");
 		
 		groupsTable = new DataTable<TGroup>(columnNames, columnFields);
-		
 		groupsTable.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -115,10 +118,9 @@ public class GroupsPanel extends ContentPanel {
 					syncSelectedRowData(groupsTable.getSelectedRow());
 				}
 			}
-			
 		});
 		
-		
+		groupsTable.addDataStorer(new GroupDataStorer());
 	}
 	
 	
@@ -127,44 +129,29 @@ public class GroupsPanel extends ContentPanel {
 		columnNames.add(TABLE_HEADER_USER_NAME);
 		columnNames.add(TABLE_HEADER_USER_NUMBER);
 		columnNames.add(TABLE_HEADER_USER_CREATE_DATE);
-		columnNames.add(TABLE_HEADER_USER_GROUP);
+		//columnNames.add(TABLE_HEADER_USER_GROUP);
 		
 		List<String> columnFields = new ArrayList<String>();
 		columnFields.add("userName");
 		columnFields.add("number");
 		columnFields.add("createDate");
-		columnFields.add("TGroups");
+		//columnFields.add("TGroups");
 		
 		userTable = new DataTable<TUser>(columnNames, columnFields);
-		
-		userTable.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(e.getClickCount() == 1){
-					syncSelectedRowData(userTable.getSelectedRow());
-				}
-			}
-			
-		});
-		
-		
 	}
 	
 	private void syncSelectedRowData(int row){
 		if (row < 0) {
 			return;
 		}
-		editUser = userTable.getRowData(row);
-		nameInput.getInputField().setText(editUser.getUserName());
-		numberInput.getInputField().setText(editUser.getNumber());
-		Set<TGroup> groups = editUser.getTGroups();
-		if (CollectionUtil.hasElements(groups)) {
-			for (TGroup group : groups) {
-				groupList.getInputField().addItem(group);
-			}
-		}
+		editGroup = groupsTable.getRowData(row);
+		List<TUser> users = CollectionUtil.setToList(editGroup.getTUsers());
+//		if (CollectionUtil.hasElements(users)) {
+			userTable.setData(users);
+			userTable.updateUI();
+//		}
 	}
+	
 	
 	private void initGroupsTabelPanel(){
 		groupsTableScrollPane = new JScrollPane(this.groupsTable);
@@ -257,7 +244,7 @@ public class GroupsPanel extends ContentPanel {
 	}
 	
 	private void initAddGroupPanel(){
-		addGroupPanel = new AddGroupPanel();
+		addGroupPanel = new AddGroupDialog(groupsTable);
 	}
 	
 	private void initSearchButton(){
@@ -301,25 +288,13 @@ public class GroupsPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					if (userTable.getUpdateRecords().size() > 0) {
-						userService.saveOrUpdateUsers(userTable.getUpdateRecords());
-						userTable.clearUpdateRecords();
-						DialogUtil.showSaveOK(userTablePanel);
-					}else{
-						DialogUtil.showToast("sms.caster.message.toast.nodata.update");
-					}
-
-				} catch (Exception e1) {
-					LogUtil.error(e1);
-					DialogUtil.showSaveError(userTablePanel);
-				}
-				
+				//userTable.notifyUpdateRecords();
 			}
 		});
 		
 		addToolButton(saveButton);
 	}
+	
 	
 	private void initAddButton(){
 		addButton = new ImageButton("sms.caster.label.button.add");
@@ -328,11 +303,43 @@ public class GroupsPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				TableCellEditor cellEitor = groupsTable.getCellEditor();
+				if (cellEitor != null) {
+					cellEitor.stopCellEditing();
+				}
+				groupsTable.clearSelection();
+				editGroup = new TGroup();
+				editGroup.setReceive(0);
+				groupsTable.addNewRecord(editGroup);
+				addGroupPanel.setGroup(editGroup);
 				addGroupPanel.setVisible(true);
 			}
 		});
 		
 		addToolButton(addButton);
+	}
+	
+	private void initEditButton(){
+		editButton = new ImageButton("sms.caster.label.button.edit");
+		editButton.setImagePath("resource/image/editGroup.png");
+		editButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TableCellEditor cellEitor = groupsTable.getCellEditor();
+				if (cellEitor != null) {
+					cellEitor.stopCellEditing();
+				}
+				int rowIndex = groupsTable.getSelectedRow();
+				if (rowIndex > -1) {
+					editGroup = groupsTable.getRowData(rowIndex);
+					addGroupPanel.setGroup(editGroup);
+					addGroupPanel.setVisible(true);
+				}
+				groupsTable.clearSelection();
+			}
+		});
+		addToolButton(editButton);
 	}
 	
 	@Override
@@ -342,10 +349,20 @@ public class GroupsPanel extends ContentPanel {
 
 	@Override
 	public void afterDisplay() {
-		//updateGroupsTable();
+		updateGroupsTable();
 		loadDataToast.setVisible(false);
 	}
 	
 
-	
+	class GroupDataStorer extends UIDataStorer<TGroup>{
+		
+		public GroupDataStorer() {
+			super(DialogUtil.getMainFrame());
+		}
+		
+		@Override
+		protected void submitUpdatedData(List<TGroup> updatedData) throws Exception {
+			groupService.saveOrUpdateGroups(updatedData);
+		}
+	}
 }

@@ -24,7 +24,7 @@ public class HibernateDao<T> implements BaseDao<T> {
 	}
 
 	@Override
-	public void deleteById(final Integer id) throws Exception{
+	public void deleteById(final Integer id){
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {
@@ -35,7 +35,7 @@ public class HibernateDao<T> implements BaseDao<T> {
 	}
 
 	@Override
-	public void update(final T entity) throws Exception {
+	public void update(final T entity) {
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {
@@ -46,7 +46,7 @@ public class HibernateDao<T> implements BaseDao<T> {
 	}
 	
 	@Override
-	public void batchUpdate(final List<T> entitys) throws Exception {
+	public void batchUpdate(final List<T> entitys) {
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {
@@ -60,7 +60,7 @@ public class HibernateDao<T> implements BaseDao<T> {
 	}
 
 	@Override
-	public void insert(final T entity) throws Exception {
+	public void insert(final T entity) {
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {

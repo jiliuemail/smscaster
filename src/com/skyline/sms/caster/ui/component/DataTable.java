@@ -12,7 +12,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.skyline.sms.caster.core.MessageBundle;
+import com.skyline.sms.caster.ui.data.DataStorer;
 import com.skyline.sms.caster.util.ClassUtil;
+import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.FormatUtil;
 
 public class DataTable<T> extends JTable {
@@ -23,6 +25,7 @@ public class DataTable<T> extends JTable {
 	
 	private int lastEditRowIndex;
 	
+	private DataStorer<T> dataStorer;
 	
 	public DataTable(List<String> columnNames, List<String> fields){
 		this(null, columnNames, fields);
@@ -40,6 +43,9 @@ public class DataTable<T> extends JTable {
 	}
 	
 	public void setData(List<T> data){
+		if (data == null) {
+			data = new ArrayList<T>();
+		}
 		tabelMedel.setData(data);
 		updateUI();
 	}
@@ -60,28 +66,31 @@ public class DataTable<T> extends JTable {
 		tabelMedel.setColumnFields(fields);
 	}
 	
-	public List<T> getUpdateRecords() {
+	public void addDataStorer(DataStorer<T> dataStorer){
+		this.dataStorer = dataStorer;
+	}
+	
+	protected List<T> getUpdateRecords() {
 		return updateRecords;
 	}
 
-	public void clearUpdateRecords(){
+	protected void clearUpdateRecords(){
 		updateRecords.clear();
 	}
 	
 	public void notifyUpdateRecords(){
 		T updateRowData = tabelMedel.getData().get(lastEditRowIndex);
-		if (updateRecords.contains(updateRowData)) {
-			updateRecords.remove(updateRowData);
-		}
-		updateRecords.add(updateRowData);
+		CollectionUtil.putElement(updateRecords, updateRowData);
 		updateUI();
+		
+		if (dataStorer != null && dataStorer.updateData(updateRecords)) {
+			clearUpdateRecords();
+		}
+			
 	}
 	
 	public void addNewRecord(T rowData){
-		if (rowData == null) {
-			return ;
-		}
-		tabelMedel.getData().add(rowData);
+		tabelMedel.addRowData(rowData);
 		lastEditRowIndex = tabelMedel.getData().indexOf(rowData);
 		updateUI();
 	}
@@ -131,7 +140,15 @@ public class DataTable<T> extends JTable {
 			}
 		}
 		
-		
+		public void addRowData(T rowData){
+			if (rowData == null) {
+				return;
+			}
+			if (getRowCount() == 0) {
+				entityClass = rowData.getClass();
+			}
+			data.add(rowData);
+		}
 		
 		public List<T> getData() {
 			return data;

@@ -3,8 +3,10 @@ package com.skyline.sms.caster.ui.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultListModel;
+import javax.swing.AbstractListModel;
 import javax.swing.JList;
+
+import com.skyline.sms.caster.util.CollectionUtil;
 
 public class DataList<E> extends JList<E> {
 	
@@ -19,17 +21,44 @@ public class DataList<E> extends JList<E> {
 			data = new ArrayList<E>();
 		}
 		listModel = new DataListModel<E>();
-		setData(data);
 		setModel(listModel);
+		setData(data);
 	}
 	
 	public void setData(List<E> data){
 		listModel.setData(data);
+		updateUI();
 	}
 	
+	public List<E> getData(){
+		return listModel.getData();
+	}
 	
+	public void addItem(E item){
+		CollectionUtil.putElement(listModel.getData(), item);
+		updateUI();
+	}
+	
+	public void addItems(List<E> items){
+		CollectionUtil.putCollection(listModel.getData(), items);
+		updateUI();
+	}
+	
+	public void removeItem(E item){
+		listModel.getData().remove(item);
+		updateUI();
+	}
+	
+	public void removeAllItem(){
+		listModel.getData().clear();
+		updateUI();
+	}
 
-	class DataListModel<T> extends DefaultListModel<T>{
+	public boolean isEmpty(){
+		return listModel.getData().isEmpty();
+	}
+	
+	class DataListModel<T> extends AbstractListModel<T>{
 		
 		private List<T> data;
 		
@@ -37,14 +66,20 @@ public class DataList<E> extends JList<E> {
 			this.data = data;
 		}
 		
-		  public int getSize(){
-			  return data.size();
-		  }
+		public List<T> getData() {
+			return data;
+		}
 
-		  public T getElementAt(int index){
-			  return data.get(index);
-		  }
+		public int getSize(){
+			 return data.size();
+		}
 		
+		public T getElementAt(int index){
+			if (index < 0 || index >= getSize()) {
+				return null;
+			}
+			return data.get(index);
+		}
 	}
 
 }
