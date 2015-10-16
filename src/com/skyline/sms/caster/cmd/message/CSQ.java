@@ -1,19 +1,18 @@
 package com.skyline.sms.caster.cmd.message;
 
-public class CSQ extends ValueCommand {
+import com.skyline.sms.caster.cmd.atcmd.ATCommand;
+
+public class CSQ extends ATCommand {
+
+	@Override
+	protected String getCommandParam() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 	
-	public CSQ(String value) {
-		super(value);
-		// TODO Auto-generated constructor stub
-	}
 
-	/*@Override
-	public String formatResult(String str) {
-		// TODO Auto-generated method stub
-		return str.substring(str.indexOf("+CSQ:"),str.indexOf("\n"));
-		
-	}*/
+
 	
 }

@@ -1,42 +1,53 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 2015-9-30 11:50:53 by Hibernate Tools 4.0.0.Final -->
+<!-- Generated 2015-10-16 10:42:04 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
-    <class name="com.skyline.sms.caster.pojo.TMessage" table="t_message" catalog="smsdb">
+    <class name="com.skyline.sms.caster.pojo.TMessage" table="t_message" catalog="smsdb" optimistic-lock="version">
         <id name="id" type="java.lang.Integer">
             <column name="ID" />
             <generator class="identity" />
         </id>
         <property name="contactId" type="java.lang.Integer">
             <column name="CONTACT_ID">
-                <comment>&#211;&#195;&#187;&#167;ID&#187;&#242;&#213;&#223;&#200;&#186;&#215;&#233;ID</comment>
+                <comment>&#231;&#148;&#168;&#230;&#136;&#183;ID&#230;&#136;&#150;&#232;&#128;&#133;&#231;&#190;&#164;&#231;&#187;&#132;ID</comment>
             </column>
         </property>
         <property name="contactName" type="string">
             <column name="CONTACT_NAME" length="50">
-                <comment>&#211;&#195;&#187;&#167;&#187;&#242;&#213;&#223;&#200;&#186;&#215;&#233;&#195;&#251;&#179;&#198;</comment>
+                <comment>&#231;&#148;&#168;&#230;&#136;&#183;&#230;&#136;&#150;&#232;&#128;&#133;&#231;&#190;&#164;&#231;&#187;&#132;&#229;&#144;&#141;&#231;&#167;&#176;</comment>
             </column>
         </property>
         <property name="contactType" type="int">
             <column name="CONTACT_TYPE" not-null="true">
                 <comment>
-                &#181;&#165;&#183;&#162;&#187;&#242;&#213;&#223;&#200;&#186;&#183;&#162;,0&#163;&#186;&#181;&#165;&#183;&#162;&#163;&#172;1&#163;&#186;&#200;&#186;&#183;&#162;&#163;&#168;&#196;&#172;&#200;&#207;&#181;&#165;&#183;&#162;&#163;&#169;</comment>
+                &#229;&#141;&#149;&#229;&#143;&#145;&#230;&#136;&#150;&#232;&#128;&#133;&#231;&#190;&#164;&#229;&#143;&#145;,0&#239;&#188;&#154;&#229;&#141;&#149;&#229;&#143;&#145;&#239;&#188;&#140;1&#239;&#188;&#154;&#231;&#190;&#164;&#229;&#143;&#145;&#239;&#188;&#136;&#233;&#187;&#152;&#232;&#174;&#164;&#229;&#141;&#149;&#229;&#143;&#145;&#239;&#188;&#137;</comment>
             </column>
         </property>
         <property name="message" type="string">
             <column name="MESSAGE" length="30" not-null="true">
-                <comment>&#182;&#204;&#208;&#197;&#196;&#218;&#200;&#221;</comment>
+                <comment>&#231;&#159;&#173;&#228;&#191;&#161;&#229;&#134;&#133;&#229;&#174;&#185;</comment>
             </column>
         </property>
         <property name="portName" type="string">
             <column name="PORT_NAME" length="50">
-                <comment>&#182;&#203;&#191;&#218;&#195;&#251;&#179;&#198;</comment>
+                <comment>&#231;&#171;&#175;&#229;&#143;&#163;&#229;&#144;&#141;&#231;&#167;&#176;</comment>
             </column>
         </property>
         <property name="portNumber" type="string">
             <column name="PORT_NUMBER" length="30">
-                <comment>&#182;&#203;&#191;&#218;&#186;&#197;&#194;&#235;</comment>
+                <comment>&#231;&#171;&#175;&#229;&#143;&#163;&#229;&#143;&#183;&#231;&#160;&#129;</comment>
+            </column>
+        </property>
+        <property name="number" type="string">
+            <column name="NUMBER" length="50" not-null="true">
+                <comment>
+                &#229;&#141;&#149;&#228;&#184;&#170;&#230;&#137;&#139;&#230;&#156;&#186;&#229;&#143;&#183;&#231;&#160;&#129;,&#230;&#136;&#150;&#232;&#128;&#133;&#231;&#148;&#181;&#232;&#175;&#157;&#229;&#143;&#183;&#231;&#160;&#129;</comment>
+            </column>
+        </property>
+        <property name="subject" type="string">
+            <column name="SUBJECT" length="50">
+                <comment>&#231;&#159;&#173;&#228;&#191;&#161;&#231;&#154;&#132;&#228;&#184;&#187;&#233;&#162;&#152;</comment>
             </column>
         </property>
     </class>

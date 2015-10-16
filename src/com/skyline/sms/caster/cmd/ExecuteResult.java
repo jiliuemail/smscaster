@@ -1,6 +1,8 @@
 package com.skyline.sms.caster.cmd;
 
-public class ExecuteResult {
+
+public class ExecuteResult{
+
 	
 	private String result="";
 

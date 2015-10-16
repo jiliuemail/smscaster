@@ -1,12 +1,10 @@
 package com.skyline.sms.caster.cmd.atcmd;
 
-import java.util.List;
-
 import com.skyline.sms.caster.cmd.Command;
 
 public abstract class CommandDelegate implements Command {
 	
-	private Command command;
+	protected Command command;
 	
 
 	public CommandDelegate(Command command) {
@@ -14,13 +12,10 @@ public abstract class CommandDelegate implements Command {
 		this.command = command;
 	}
 
-	protected Command getCommand() {
+	public Command getCommand() {
 		return command;
 	}
 
-	protected void setCommand(Command command) {
-		this.command = command;
-	}
 
 	@Override
 	public String check() {
@@ -42,6 +37,11 @@ public abstract class CommandDelegate implements Command {
 		return command.stream();
 	}
 
+	@Override
+	public String origin() {
+		// TODO Auto-generated method stub
+		return command.origin();
+	}
 
 
 }

@@ -113,4 +113,6 @@ public class InputField<C extends JComponent> extends JPanel {
 	public int getHeight() {
 		return (int)Math.max(inputLabel.getPreferredSize().getHeight(), inputField.getPreferredSize().getHeight()) + insets.top + insets.bottom;
 	}
+		
+
 }

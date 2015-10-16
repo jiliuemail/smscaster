@@ -1,10 +1,15 @@
 package com.skyline.sms.caster.cmd.message;
 
-public class CSCA extends ValueCommand{
+import com.skyline.sms.caster.cmd.atcmd.ATCommand;
 
-	public CSCA(String value) {
-		super(value);
-		// TODO Auto-generated constructor stub
+public class CSCA extends ATCommand{
+
+	@Override
+	protected String getCommandParam() {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+
 
 }

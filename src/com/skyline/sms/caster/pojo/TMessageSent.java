@@ -1,5 +1,6 @@
 package com.skyline.sms.caster.pojo;
-// Generated 2015-9-30 11:50:52 by Hibernate Tools 4.0.0.Final
+
+// Generated 2015-10-16 10:42:03 by Hibernate Tools 4.3.1
 
 import java.util.Date;
 
@@ -19,12 +20,15 @@ public class TMessageSent implements java.io.Serializable {
 	private int status;
 	private Date createDate;
 	private Date updateDate;
+	private String number;
+	private String subject;
 
 	public TMessageSent() {
 	}
 
-	public TMessageSent(int contactId, String contactName, int contactType, String message, String portName,
-			Date sentDate, int status, Date createDate, Date updateDate) {
+	public TMessageSent(int contactId, String contactName, int contactType,
+			String message, String portName, Date sentDate, int status,
+			Date createDate, Date updateDate, String number) {
 		this.contactId = contactId;
 		this.contactName = contactName;
 		this.contactType = contactType;
@@ -34,10 +38,13 @@ public class TMessageSent implements java.io.Serializable {
 		this.status = status;
 		this.createDate = createDate;
 		this.updateDate = updateDate;
+		this.number = number;
 	}
 
-	public TMessageSent(int contactId, String contactName, int contactType, String message, String portName,
-			String portNumber, Date sentDate, int status, Date createDate, Date updateDate) {
+	public TMessageSent(int contactId, String contactName, int contactType,
+			String message, String portName, String portNumber, Date sentDate,
+			int status, Date createDate, Date updateDate, String number,
+			String subject) {
 		this.contactId = contactId;
 		this.contactName = contactName;
 		this.contactType = contactType;
@@ -48,6 +55,8 @@ public class TMessageSent implements java.io.Serializable {
 		this.status = status;
 		this.createDate = createDate;
 		this.updateDate = updateDate;
+		this.number = number;
+		this.subject = subject;
 	}
 
 	public Integer getId() {
@@ -136,6 +145,22 @@ public class TMessageSent implements java.io.Serializable {
 
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
+	}
+
+	public String getNumber() {
+		return this.number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+	public String getSubject() {
+		return this.subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 
 }

@@ -10,7 +10,8 @@ import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
 import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.Port;
-import com.skyline.sms.caster.executor.ExecutorFactory;
+import com.skyline.sms.caster.executor.ATCommandExecutor;
+
 
 public class CmdTask implements Runnable {
 	private Port port;
@@ -67,7 +68,7 @@ public class CmdTask implements Runnable {
 	//-----任务----
 	@Override
 	public void run() {
-		CommandExecutor executor = ExecutorFactory.getInstance(port);
+		CommandExecutor executor = ATCommandExecutor.getInstance(port);
 		Command cmd=null;
 		
 		while(!interrupted){
