@@ -9,4 +9,6 @@ public interface MessageService {
 	public void saveOrUpdate(List<TMessage> msgList) throws Exception;
 	
 	public List<TMessage> getByPage();
+	
+	public void delById(int id) throws Exception;
 }

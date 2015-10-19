@@ -40,7 +40,7 @@ import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.executor.ATCommandExecutor;
-import com.skyline.sms.caster.service.PortService;
+import com.skyline.sms.caster.service.impl.PortServiceImpl;
 import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
@@ -168,7 +168,7 @@ public class PhonesPanel extends ContentPanel {
 		String[] status=new String[rowCount];
 		for(int j=0;j<rowCount;j++){
 			try {
-				status[j]=PortService.getInstance(JsscPort.getInstance(portNames[j])).getPortStatus(); 
+				status[j]=PortServiceImpl.getInstance(JsscPort.getInstance(portNames[j])).getPortStatus(); 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				status[j]=e.getMessage();
@@ -209,7 +209,7 @@ public class PhonesPanel extends ContentPanel {
 	
 		for(int i :rows){
 			String portName=(String)phoneTable.getValueAt(i, 1);
-			String portStatus=PortService.getInstance(JsscPort.getInstance(portName)).getPortStatus();
+			String portStatus=PortServiceImpl.getInstance(JsscPort.getInstance(portName)).getPortStatus();
 			phoneTable.setValueAt(portStatus, i, 2);
 		}
 	}
@@ -261,9 +261,9 @@ public class PhonesPanel extends ContentPanel {
 			if(e.getClickCount()==1){
 				String portName=(String)phoneTable.getValueAt(clickRow, 1);
 				try {
-					
-					ExecuteResult csqValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(csqCmd);
-					ExecuteResult cscaValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(cscaCmd);
+
+					ExecuteResult csqValue=PortServiceImpl.getInstance(JsscPort.getInstance(portName)).execute(csqCmd);
+					ExecuteResult cscaValue=PortServiceImpl.getInstance(JsscPort.getInstance(portName)).execute(cscaCmd);
 					csq.getInputField().setText(ParserRegister.parserCommandResult(csqCmd, csqValue, String.class));
 					csca.getInputField().setText(ParserRegister.parserCommandResult(cscaCmd, cscaValue, String.class));
 				} catch (Exception e1) {

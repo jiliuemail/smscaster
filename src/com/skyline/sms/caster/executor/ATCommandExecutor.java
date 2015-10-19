@@ -125,8 +125,7 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 	@Override
 	public ExecuteResult call() throws Exception {
 		// TODO Auto-generated method stub
-		  ExecuteResult result=executeCmd(cmd); 
-		
+		ExecuteResult result=executeCmd(cmd); 
 		return result;
 	}
 

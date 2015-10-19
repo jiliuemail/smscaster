@@ -32,4 +32,11 @@ public class MessageServiceImpl implements MessageService {
 		return msgDao.findByPage(page);
 	}
 
+	@Override
+	public void delById(int id) throws Exception {
+		// TODO Auto-generated method stub
+		msgDao.deleteById(id);
+		
+	}
+
 }

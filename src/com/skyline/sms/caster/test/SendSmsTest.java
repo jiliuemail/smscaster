@@ -18,7 +18,6 @@ import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.executor.ATCommandExecutor;
-import com.skyline.sms.caster.service.PortService;
 import com.skyline.sms.caster.service.SendSmsTask;
 import com.skyline.sms.pojo.Contacter;
 import com.skyline.sms.pojo.Content;
