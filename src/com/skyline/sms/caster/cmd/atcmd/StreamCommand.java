@@ -5,7 +5,7 @@ import com.skyline.sms.caster.cmd.CommandType;
 
 public class StreamCommand extends CommandDelegate {
 
-	
+
 	public StreamCommand(Command command) {
 		super(command);
 	}

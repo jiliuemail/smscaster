@@ -16,6 +16,10 @@ Q:
 返回的命令不匹配:时间上,不同线程上.
 如何确保命令和返回结果的匹配呢?
 
+有写入就有返回,这个返回假如没有包含对这个输入的反应则如何?!!!!!!!!!,就是不知道readString 到底返回多少字符串.
+ctrl+z 不会触发端口的监听器吗?
+//和上个方法相比,只是有一行不同,怎么去掉代码的重复?
+private ExecuteResult stream(Command cmd) throws Exception 
 
 
 

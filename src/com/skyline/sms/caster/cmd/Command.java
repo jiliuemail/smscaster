@@ -35,6 +35,8 @@ public interface Command {
 	
 	byte[] stream();
 	
+	int getTimeout();
+	
 	public void setCommandType(CommandType commandType);
 	
 	public CommandType getCommandType();

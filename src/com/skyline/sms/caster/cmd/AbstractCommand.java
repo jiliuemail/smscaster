@@ -46,4 +46,9 @@ public abstract class AbstractCommand implements Command {
 		return commandType;
 	}
 
+	@Override
+	public int getTimeout() {
+		// TODO Auto-generated method stub
+		return 300;
+	}
 }

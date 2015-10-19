@@ -19,7 +19,11 @@ public class CtrlZCommand extends AbstractCommand implements Command{
 	}
 
 	
-	
+	@Override
+	public int getTimeout() {
+		// TODO Auto-generated method stub
+		return super.getTimeout();
+	}
 	
 
 }

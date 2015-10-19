@@ -80,31 +80,31 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 
 
 
-	public ExecuteResult check(Command cmd) throws Exception {
+	private ExecuteResult check(Command cmd) throws Exception {
 		return execute(cmd.check());
 	}
 
-	public ExecuteResult get(Command cmd) throws Exception {
+	private ExecuteResult get(Command cmd) throws Exception {
 		return execute(cmd.get());
 	}
 
-	public ExecuteResult set(Command cmd) throws Exception {
+	private ExecuteResult set(Command cmd) throws Exception {
 		return execute(cmd.set());
 	}
 
 
-	public ExecuteResult origin(Command cmd) throws Exception{
+	private ExecuteResult origin(Command cmd) throws Exception{
 		return execute(cmd.origin());
 	}
 	
-	protected ExecuteResult execute(String cmdContent) throws Exception {
+	private  ExecuteResult execute(String cmdContent) throws Exception {
 
 		synchronized(port.getObj()) {
 
 			ExecuteResult result=new ExecuteResult();
 		
 			port.writeString(cmdContent);
-			port.getObj().wait(300);  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
+			port.getObj().wait(cmd.getTimeout());  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
 
 			result.setResult(port.getResponse());
 			return result;
@@ -112,11 +112,19 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 
 	}
 
-	public ExecuteResult stream(Command cmd) throws Exception {
+	//和上个方法相比,只是有一行不同,怎么去掉代码的重复?
+	private ExecuteResult stream(Command cmd) throws Exception {
+		
+		synchronized(port.getObj()) {
 
-		port.writeBytes(cmd.stream());
+			ExecuteResult result=new ExecuteResult();
+		
+			port.writeBytes(cmd.stream());
+			port.getObj().wait(cmd.getTimeout());  //jsscport 中的监听器来激活这个线程.或者超过命令默认的超时时间就激活.
+			result.setResult(port.getResponse());
+			return result;
+		}
 
-		return null;
 	}
 
 	
