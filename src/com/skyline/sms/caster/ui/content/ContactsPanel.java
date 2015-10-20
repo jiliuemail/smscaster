@@ -25,11 +25,12 @@ import com.skyline.sms.caster.pojo.TUser;
 import com.skyline.sms.caster.service.UserService;
 import com.skyline.sms.caster.service.impl.UserServiceImpl;
 import com.skyline.sms.caster.ui.UIConstants;
+import com.skyline.sms.caster.ui.component.CheckBoxsPanel;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.DataTable;
 import com.skyline.sms.caster.ui.component.ImageButton;
 import com.skyline.sms.caster.ui.component.ImagePanel;
-import com.skyline.sms.caster.ui.component.InputComboBox;
+import com.skyline.sms.caster.ui.component.InputCheckBoxs;
 import com.skyline.sms.caster.ui.component.InputPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.ui.component.Toast;
@@ -63,7 +64,7 @@ public class ContactsPanel extends ContentPanel {
 	private InputTextField nameInput;
 	private InputTextField numberInput;
 	private InputTextField createDateInput;
-	private InputComboBox<TGroup> groupList;
+	private InputCheckBoxs groupList;
 	
 	private ImageButton searchButton;
 	private ImageButton addButton;
@@ -74,6 +75,7 @@ public class ContactsPanel extends ContentPanel {
 	private UserService userService = new UserServiceImpl();
 	
 	private TUser editUser;
+	private CheckBoxsPanel<TGroup> checkBoxs;
 
 	public ContactsPanel(String title) {
 		super(title);
@@ -92,36 +94,37 @@ public class ContactsPanel extends ContentPanel {
 		columnNames.add(TABLE_HEADER_USER_NAME);
 		columnNames.add(TABLE_HEADER_USER_NUMBER);
 		columnNames.add(TABLE_HEADER_USER_CREATE_DATE);
-		columnNames.add(TABLE_HEADER_USER_GROUP);
+		//columnNames.add(TABLE_HEADER_USER_GROUP);
 		
 		List<String> columnFields = new ArrayList<String>();
 		columnFields.add("userName");
 		columnFields.add("number");
 		columnFields.add("createDate");
-		columnFields.add("TGroups");
+		//columnFields.add("TGroups");
 		
 		usersTable = new DataTable<TUser>(columnNames, columnFields);
 		usersTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 1){
-					syncSelectedRowData(usersTable.getSelectedRow());
+					syncSelectedRowData(usersTable.getSelectedRowData());
 				}
 			}
 			
 		 });
 		
-		usersTable.addDataStorer(new UserDataStorer());
+		usersTable.setDataStorer(new UserDataStorer());
 		
 		
 		
 	}
 	
-	private void syncSelectedRowData(int row){
-		if (row < 0) {
-			editUser = null;
-		}else{
-			editUser = usersTable.getRowData(row);
+	private void syncSelectedRowData(TUser user){
+		try {
+			editUser = userService.findUsersById(user);
+		} catch (Exception e) {
+			DialogUtil.showSearchError(DialogUtil.getMainFrame());
+			editUser = user;
 		}
 		fireInsertInput();
 	}
@@ -138,7 +141,7 @@ public class ContactsPanel extends ContentPanel {
 						TableCellEditor cellEitor = usersTable.getCellEditor();
 						if (cellEitor != null) {
 							cellEitor.stopCellEditing();
-							syncSelectedRowData(usersTable.getLastEditRowIndex());
+							syncSelectedRowData(usersTable.getSelectedRowData());
 						}
 						usersTable.clearSelection();
 				}
@@ -170,7 +173,8 @@ public class ContactsPanel extends ContentPanel {
 		numberInput = new InputTextField(TABLE_HEADER_USER_NUMBER, 30);
 		createDateInput = new InputTextField(TABLE_HEADER_USER_CREATE_DATE, 30);
 		createDateInput.setEnabled(false);
-		groupList = new InputComboBox<TGroup>(TABLE_HEADER_USER_GROUP);
+		checkBoxs = new CheckBoxsPanel<TGroup>();
+		groupList = new InputCheckBoxs(TABLE_HEADER_USER_GROUP, checkBoxs);
 		groupList.setFieldWidth(UIConstants.COMPONENT_WIDTH_UNIT * 50);
 		insertInputPanel.addInputField(nameInput);
 		insertInputPanel.addInputField(numberInput);
@@ -189,8 +193,10 @@ public class ContactsPanel extends ContentPanel {
 			createDateInput.getInputField().setText(FormatUtil.formatToString(editUser.getCreateDate()));
 			Set<TGroup> groups = editUser.getTGroups();
 			if (CollectionUtil.hasElements(groups)) {
+				groupList.getInputField().removeAll();
 				for (TGroup group : groups) {
-					groupList.getInputField().addItem(group);
+					//groupList.getInputField().addItem(group);
+					checkBoxs.addCheckItem(group);
 				}
 			}
 		}
@@ -226,7 +232,7 @@ public class ContactsPanel extends ContentPanel {
 				if (editUser != null) {
 					editUser.setUserName(nameInput.getInputField().getText());
 					editUser.setNumber(numberInput.getInputField().getText());
-					usersTable.notifyUpdateRecords();
+					usersTable.notifyUpdateRowData(editUser);
 				}
 			}
 		});
@@ -238,7 +244,7 @@ public class ContactsPanel extends ContentPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (editUser != null && editUser.getId() == null) {
-					usersTable.cancelNewRecord(editUser);
+					usersTable.notifyCancelRowData(editUser);
 					editUser = null;
 					disEnableInsertInput();
 				}else {
@@ -296,7 +302,7 @@ public class ContactsPanel extends ContentPanel {
 				editUser = new TUser();
 				editUser.setCreateDate(new Date());
 				editUser.setReceive(0);
-				usersTable.addNewRecord(editUser);
+				usersTable.notifyAddRowData(editUser);
 				fireInsertInput();
 			}
 		});
@@ -320,7 +326,7 @@ public class ContactsPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				usersTable.notifyUpdateRecords();
+				usersTable.notifyUpdateRowDatas();
 			}
 		});
 		
