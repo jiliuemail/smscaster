@@ -3,11 +3,13 @@ package com.skyline.sms.caster.ui.content;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +18,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.dao.Page;
@@ -31,10 +36,19 @@ import com.skyline.sms.caster.ui.component.InputPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.ui.component.MessageButton;
 import com.skyline.sms.caster.ui.component.MessageLabel;
+import com.skyline.sms.caster.ui.data.DocumentAdapter;
+import com.skyline.sms.caster.util.BeanUtil;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.LogUtil;
 
+/**
+ * 添加和修改群组的对话框，也可以用于添加群组的成员
+ * 
+ * @author linyn
+ *
+ * @since 2015年10月14日
+ */
 public class AddGroupDialog extends JDialog {
 	
 	private static final int DIALOG_WIDTH = UIConstants.COMPONENT_WIDTH_UNIT * 62;
@@ -71,6 +85,7 @@ public class AddGroupDialog extends JDialog {
 	private UserService userService = new UserServiceImpl();
 	private TGroup editGroup;
 	private DataTable<TGroup> groupTable;
+	private boolean modified = false;
 
 	private Dimension dialogSize = new Dimension(DIALOG_WIDTH, UIConstants.COMPONENT_HEIGHT_UNIT * 25);
 
@@ -138,9 +153,19 @@ public class AddGroupDialog extends JDialog {
 		topPanel.add(groupInputPanel);
 	}
 	
+	// 联系人名或号码输入框，用于查询联系人
 	private void initUserNamePanel(){
 		userNamePanel = new JPanel();
-		userNameField = new JTextField(34);
+		userNamePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		userNameField = new JTextField(35);
+		userNameField.getDocument().addDocumentListener(new DocumentAdapter(){
+			public void insertUpdate(DocumentEvent e) {
+				fireUsersListData();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				fireUsersListData();
+			}
+		});
 		userNamePanel.add(userNameField);
 	}
 	
@@ -148,6 +173,7 @@ public class AddGroupDialog extends JDialog {
 		groupMemberLabel = new MessageLabel("sms.caster.label.message.addgroup.groupMembers");
 	}
 	
+	// 查询出来的联系人列表，可以添加到群组成员列表中
 	private void initUsersPanel(){
 		usersPanel = new JPanel();
 		usersPanel.setLayout(new BorderLayout());
@@ -157,13 +183,16 @@ public class AddGroupDialog extends JDialog {
 		usersPanel.add(usersList);
 	}
 	
+	// 更新联系人列表的数据
 	private void fireUsersListData(){
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override
 			public void run() {
 				try {
-					usersList.setData(userService.findUsers(new TUser(), new Page()));
+					TUser user = new TUser();
+					user.setUserName(userNameField.getText());
+					usersList.setData(userService.findUsersByName(user, new Page()));
 					fireToRightButton();
 				} catch (Exception e) {
 					LogUtil.error(e);
@@ -181,6 +210,7 @@ public class AddGroupDialog extends JDialog {
 		
 	}
 	
+	// 初始化四个交换按钮
 	private void initSwitchButtonPanel(){
 		switchButtonPanel = new JPanel();
 		switchButtonPanel.setLayout(new GridLayout(4, 1, 10, UIConstants.COMPONENT_HEIGHT_UNIT));
@@ -231,6 +261,7 @@ public class AddGroupDialog extends JDialog {
 		toRightAllButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 					groupMembersList.addItems(usersList.getData());
+					editGroup.getTUsers().addAll(usersList.getData());
 					usersList.removeAllItem();
 					fireToLeftButton();
 					fireToRightButton();
@@ -240,6 +271,7 @@ public class AddGroupDialog extends JDialog {
 		toLeftAllButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 					usersList.addItems(groupMembersList.getData());
+					editGroup.getTUsers().clear();
 					groupMembersList.removeAllItem();
 					fireToLeftButton();
 					fireToRightButton();
@@ -267,11 +299,25 @@ public class AddGroupDialog extends JDialog {
 		}
 	}
 	
+	// 群组成员列表
 	private void initGroupsPanel(){
 		groupsPanel = new JPanel();
 		groupsPanel.setLayout(new BorderLayout());
 		groupMembersList = new DataList<TUser>();
 		groupMembersList.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+		groupMembersList.addListDataListener(new ListDataListener() {
+			public void intervalRemoved(ListDataEvent e) {
+				modified = true;
+			}
+			
+			public void intervalAdded(ListDataEvent e) {
+				modified = true;
+			}
+			
+			public void contentsChanged(ListDataEvent e) {
+			}
+		});
+		
 		groupsPanel.add(groupMembersList);
 	}
 	
@@ -279,7 +325,7 @@ public class AddGroupDialog extends JDialog {
 		switchPanel = new JPanel();
 		switchPanel.setLayout(null);
 		userNamePanel.setBounds(UIConstants.COMPONENT_WIDTH_UNIT*2, UIConstants.COMPONENT_HEIGHT_UNIT
-				, UIConstants.COMPONENT_WIDTH_UNIT * 22, UIConstants.COMPONENT_HEIGHT_UNIT*2);
+				, UIConstants.COMPONENT_WIDTH_UNIT * 23, UIConstants.COMPONENT_HEIGHT_UNIT*2);
 		
 		groupMemberLabel.setBounds(UIConstants.COMPONENT_WIDTH_UNIT*36, UIConstants.COMPONENT_HEIGHT_UNIT
 				, UIConstants.COMPONENT_WIDTH_UNIT * 22, UIConstants.COMPONENT_HEIGHT_UNIT*2);
@@ -303,6 +349,7 @@ public class AddGroupDialog extends JDialog {
 		switchPanel.add(usersPanel);
 	}
 	
+	// 对话框底部的确认和取消按钮
 	private void initButtonPanel(){
 		tipLabel = new MessageLabel("sms.caster.label.message.addgroup.tip");
 		initSubmitButton();
@@ -320,13 +367,24 @@ public class AddGroupDialog extends JDialog {
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (editGroup != null) {
-					editGroup.setGroupName(groupNameInput.getInputField().getText());
-					List<TUser> members = groupMembersList.getData();
-					if (CollectionUtil.hasElements(members)) {
-						editGroup.getTUsers().addAll(members);
+					
+					String oldGroupName = editGroup.getGroupName();
+					String newGroupName = groupNameInput.getInputField().getText();
+					if( !BeanUtil.equals(oldGroupName, newGroupName)){
+						editGroup.setGroupName(newGroupName);
+						modified = true;
 					}
-					setVisible(false);
-					groupTable.notifyUpdateRecords();
+					if (editGroup.getCreateDate() == null) {
+						editGroup.setCreateDate(new Date());
+						modified = true;
+					}
+					if (modified) {
+						setVisible(false);
+						groupTable.notifyUpdateRowData(editGroup);
+						modified = false;
+					}else {
+						DialogUtil.showToast(AddGroupDialog.this, "sms.caster.message.toast.nodata.update");
+					}
 				}
 			}
 		});
@@ -341,10 +399,11 @@ public class AddGroupDialog extends JDialog {
 		});
 	}
 	
+	// 取消添加或修改群组
 	private void cancelAddGroup(){
 		groupMembersList.removeAll();
 		if (editGroup != null && editGroup.getId() == null) {
-			groupTable.cancelNewRecord(editGroup);
+			groupTable.notifyCancelRowData(editGroup);
 		}
 		setVisible(false);
 	}
@@ -359,11 +418,10 @@ public class AddGroupDialog extends JDialog {
 		outPanel.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
+	// 修改当前编辑的群组后需要重新显示各个组件
 	public void setGroup(TGroup group){
+		if (group == null) {return;}
 		editGroup = group;
-		if (editGroup == null) {
-			editGroup = new TGroup();
-		}
 		fireGroupNameInput();
 		fireGroupMemberInput();
 		fireUsersListData();
@@ -380,7 +438,6 @@ public class AddGroupDialog extends JDialog {
 		List<TUser> users = CollectionUtil.setToList(editGroup.getTUsers());
 		if (CollectionUtil.hasElements(users)) {
 			groupMembersList.setData(users);
-			groupMembersList.updateUI();
 		}else{
 			groupMembersList.removeAllItem();
 		}

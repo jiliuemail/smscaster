@@ -13,7 +13,13 @@ public class DialogUtil {
 	
 	private static JFrame mainFrame;
 	
+	private static Toast loadDataToast;
+	
 	private DialogUtil(){}
+	
+	private static void initToast(){
+		loadDataToast = new Toast(DialogUtil.getMainFrame(), "sms.caster.message.toast.data.load");
+	}
 	
 	public static void registryMainFrame(JFrame frame){
 		mainFrame = frame;
@@ -54,6 +60,20 @@ public class DialogUtil {
 		parentWindow = (parentWindow == null ? mainFrame : parentWindow);
 		Toast toast = new Toast(parentWindow, MessageBundle.getMessage(message), 2000, Toast.MESSAGE_STYLE);
 		toast.start();
+	}
+	
+	public static void showLoadDataToast(){
+		if (loadDataToast == null) {
+			initToast();
+		}
+		loadDataToast.setVisible(true);
+	}
+	
+	public static void hiddenLoadDataToast(){
+		if (loadDataToast == null) {
+			initToast();
+		}
+		loadDataToast.setVisible(false);
 	}
 
 }

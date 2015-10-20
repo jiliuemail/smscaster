@@ -9,6 +9,8 @@ public interface GroupService {
 	
 	public List<TGroup> findGroups(TGroup group, Page page);
 	
+	public TGroup findGroupById(TGroup group);
+	
 	public void saveOrUpdateGroups(List<TGroup> groups);
 
 }

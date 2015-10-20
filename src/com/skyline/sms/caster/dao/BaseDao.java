@@ -8,6 +8,8 @@ public interface BaseDao<T> {
 	
 	T findById(Integer id);
 	
+	T findById(final Integer id, final String initialPropertyName);
+	
     void deleteById(Integer id);
  
     void update(T entity);

@@ -4,12 +4,13 @@ package com.skyline.sms.caster.ui.component;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.EventObject;
 import java.util.List;
 
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.ui.data.DataStorer;
@@ -17,31 +18,34 @@ import com.skyline.sms.caster.util.ClassUtil;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.FormatUtil;
 
+/**
+ * 支持存放List数据的JTable
+ * 
+ * @author linyn
+ *
+ * @since 2015年9月28日
+ */
 public class DataTable<T> extends JTable {
 	
-	private List<T> updateRecords;
 	
 	private DataTabelMedel tabelMedel;
 	
-	private int lastEditRowIndex;
-	
-	private DataStorer<T> dataStorer;
 	
 	public DataTable(List<String> columnNames, List<String> fields){
 		this(null, columnNames, fields);
 	}
 	
 	public DataTable(List<T> data, List<String> columnNames, List<String> fields){
-		updateRecords = new ArrayList<T>();
-		tabelMedel = new DataTabelMedel();
+		tabelMedel = new DataTabelMedel(data, columnNames, fields);
 		setDefaultRenderer(Date.class, new DateTableCellRenderer());
 		setDefaultRenderer(Timestamp.class, new DateTableCellRenderer());
-		setData(data);
-		selectColumns(columnNames);
-		setColumnFields(fields);
 		setModel(tabelMedel);
 	}
 	
+	/**
+	 * 设置表格中的数据
+	 * @param data
+	 */
 	public void setData(List<T> data){
 		if (data == null) {
 			data = new ArrayList<T>();
@@ -51,11 +55,15 @@ public class DataTable<T> extends JTable {
 	}
 	
 	public T getRowData(int row){
+		if (row < 0) {
+			return null;
+		}
 		return tabelMedel.getData().get(row);
 	}
 	
 	public void selectColumns(List<String> columnNames){
-		tabelMedel.selectColumns(columnNames);
+		tabelMedel.setColumnNames(columnNames);
+		updateUI();
 	}
 
 	public List<String> getColumnNames(){
@@ -64,55 +72,71 @@ public class DataTable<T> extends JTable {
 	
 	public void setColumnFields(List<String> fields){
 		tabelMedel.setColumnFields(fields);
-	}
-	
-	public void addDataStorer(DataStorer<T> dataStorer){
-		this.dataStorer = dataStorer;
-	}
-	
-	protected List<T> getUpdateRecords() {
-		return updateRecords;
-	}
-
-	protected void clearUpdateRecords(){
-		updateRecords.clear();
-	}
-	
-	public void notifyUpdateRecords(){
-		T updateRowData = tabelMedel.getData().get(lastEditRowIndex);
-		CollectionUtil.putElement(updateRecords, updateRowData);
 		updateUI();
-		
-		if (dataStorer != null && dataStorer.updateData(updateRecords)) {
-			clearUpdateRecords();
-		}
-			
 	}
 	
-	public void addNewRecord(T rowData){
+	public void setDataStorer(DataStorer<T> dataStorer){
+		tabelMedel.setDataStorer(dataStorer);
+	}
+	
+	/**
+	 * 返回当前选择行数据
+	 * @return 当前选择行数据，如果没有选择行则返回NULL
+	 */
+	public T getSelectedRowData(){
+		return getRowData(getSelectedRow());
+	}
+	
+	/**
+	 * 通知更新此行数据
+	 * @param rowData
+	 */
+	public void notifyUpdateRowData(T rowData){
+		tabelMedel.updateRowData(rowData);
+		updateUI();
+	}
+	
+	/**
+	 * 通知更新所有已经修改的数据
+	 * @param rowData
+	 */
+	public void notifyUpdateRowDatas(){
+		tabelMedel.notifyUpdateData();
+		updateUI();
+	}
+	
+	/**
+	 * 通知添加此行数据（新数据）
+	 * @param rowData
+	 */
+	public void notifyAddRowData(T rowData){
 		tabelMedel.addRowData(rowData);
-		lastEditRowIndex = tabelMedel.getData().indexOf(rowData);
 		updateUI();
 	}
 	
-	public void cancelNewRecord(T rowData){
-		if (rowData == null) {
-			return ;
-		}
-		tabelMedel.getData().remove(rowData);
-		lastEditRowIndex = -1;
+	/**
+	 * 通知取消此行数据（新数据），取消添加新数据
+	 * @param rowData
+	 */
+	public void notifyCancelRowData(T rowData){
+		tabelMedel.removeRowData(rowData);
 		updateUI();
 	}
-	
-	public boolean editCellAt(int row, int column, EventObject e) {
-		lastEditRowIndex = row;
-		return super.editCellAt(row, column, e);
+
+	public boolean isEditable() {
+		return tabelMedel.isEditable();
 	}
 
+	/**
+	 * 设置当前表格是否可以被编辑
+	 * @param editable <code>true<code>:可编辑，默认值，<code>false<code>:不可以编辑（只读）
+	 */
+	public void setEditable(boolean editable) {
+		tabelMedel.setEditable(editable);
+	}
 	
-
-	public int getLastEditRowIndex() {
-		return lastEditRowIndex;
+	public void addTableModelListener(TableModelListener l) {
+		tabelMedel.addTableModelListener(l);
 	}
 
 	
@@ -123,13 +147,24 @@ public class DataTable<T> extends JTable {
 	}
 
 
-	class DataTabelMedel extends DefaultTableModel{ // AbstractTableModel{
+	class DataTabelMedel extends AbstractTableModel{
 
 		private List<T> data;
+		private List<T> updateRecords;
 		private List<String> columnMetas;
 		private List<String> columnFields;
 		
 		private Class<?> entityClass;
+		private DataStorer<T> dataStorer;
+		
+		private boolean editable = true;
+		
+		public DataTabelMedel(List<T> data, List<String> columnNames, List<String> fields) {
+			updateRecords = new ArrayList<T>();
+			setColumnNames(columnNames);
+			setColumnFields(fields);
+			setData(data);
+		}
 		
 		public void setData(List<T> data){
 			this.data = data;
@@ -138,24 +173,70 @@ public class DataTable<T> extends JTable {
 			}else{
 				entityClass = Object.class;
 			}
+			fireTableDataChanged();
 		}
 		
 		public void addRowData(T rowData){
+			int rowIndex = putRowData(rowData);
+			fireTableRowsInserted(rowIndex, rowIndex);
+		}
+		
+		public void removeRowData(T rowData){
 			if (rowData == null) {
-				return;
+				return ;
+			}
+			data.remove(rowData);
+			updateRecords.remove(rowData);
+			int rowIndex = data.indexOf(rowData);
+			fireTableRowsDeleted(rowIndex, rowIndex);
+		}
+		
+		public void updateRowData(T rowData){
+			int rowIndex = putRowData(rowData);
+			notifyUpdateData();
+			fireTableRowsUpdated(rowIndex, rowIndex);
+		}
+		
+		protected int putRowData(T rowData){
+			if (rowData == null) {
+				return -1;
 			}
 			if (getRowCount() == 0) {
 				entityClass = rowData.getClass();
 			}
-			data.add(rowData);
+			CollectionUtil.putElement(updateRecords, rowData);
+			CollectionUtil.putElement(data, rowData);
+			return data.indexOf(rowData);
+		}
+		
+		public void notifyUpdateData(){
+			if (dataStorer != null && dataStorer.updateData(updateRecords)) {
+				updateRecords.clear();
+			}
 		}
 		
 		public List<T> getData() {
 			return data;
 		}
+
+		public DataStorer<T> getDataStorer() {
+			return dataStorer;
+		}
+
+		public void setDataStorer(DataStorer<T> dataStorer) {
+			this.dataStorer = dataStorer;
+		}
+
+		public boolean isEditable() {
+			return editable;
+		}
+
+		public void setEditable(boolean editable) {
+			this.editable = editable;
+		}
 		
 
-		public void selectColumns(List<String> columnNames){
+		public void setColumnNames(List<String> columnNames){
 			columnMetas = columnNames;
 		}
 
@@ -183,6 +264,12 @@ public class DataTable<T> extends JTable {
 			return columnMetas.size();
 		}
 		
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			return editable;
+		}
+		
+		
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> columnClass = ClassUtil.getPropertyType(entityClass, columnFields.get(columnIndex));
 			return (columnClass == null ? Object.class : columnClass);
@@ -208,6 +295,10 @@ public class DataTable<T> extends JTable {
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Object value = ClassUtil.getPropertyValue(data.get(rowIndex), columnFields.get(columnIndex));
 			return (value == null ? "" : value);
+		}
+		
+		public void fireTableDataChanged(){
+			fireTableChanged(new TableModelEvent(this, 0,  getRowCount() - 1, columnFields.size()));
 		}
 		
 	}
