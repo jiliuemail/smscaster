@@ -24,7 +24,11 @@
                 &#202;&#199;&#183;&#241;&#189;&#211;&#202;&#213;&#182;&#204;&#208;&#197;&#163;&#172;0&#163;&#186;&#178;&#187;&#189;&#211;&#202;&#213;&#163;&#172;1&#163;&#186;&#189;&#211;&#202;&#213;</comment>
             </column>
         </property>
-        <set name="TUsers" table="t_user_group" inverse="false" lazy="true" fetch="select">
+        <property name="createDate" type="timestamp">
+            <column name="CREATE_DATE" not-null="true">
+            </column>
+        </property>
+        <set name="TUsers" table="t_user_group" inverse="false" cascade="all" lazy="true" fetch="select">
             <key>
                 <column name="T_GROUP_ID" not-null="true" />
             </key>

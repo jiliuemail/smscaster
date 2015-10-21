@@ -1,7 +1,6 @@
 package com.skyline.sms.caster.ui.content;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -9,30 +8,25 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
 
 import com.skyline.sms.caster.dao.Page;
 import com.skyline.sms.caster.pojo.TGroup;
 import com.skyline.sms.caster.pojo.TUser;
 import com.skyline.sms.caster.service.GroupService;
-import com.skyline.sms.caster.service.UserService;
 import com.skyline.sms.caster.service.impl.GroupServiceImpl;
-import com.skyline.sms.caster.service.impl.UserServiceImpl;
-import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.DataTable;
 import com.skyline.sms.caster.ui.component.ImageButton;
-import com.skyline.sms.caster.ui.component.ImagePanel;
-import com.skyline.sms.caster.ui.component.InputComboBox;
-import com.skyline.sms.caster.ui.component.InputPanel;
-import com.skyline.sms.caster.ui.component.InputTextField;
-import com.skyline.sms.caster.ui.component.Toast;
+import com.skyline.sms.caster.ui.data.storer.GroupDataStorer;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.LogUtil;
@@ -40,11 +34,12 @@ import com.skyline.sms.caster.util.LogUtil;
 public class GroupsPanel extends ContentPanel {
 	
 	private static final String TABLE_HEADER_GROUP_NAME = "sms.caster.label.table.header.group.name";
+	private static final String TABLE_HEADER_GROUP_CREATE_DATE = "sms.caster.label.table.header.group.createDate";
 
 	private static final String TABLE_HEADER_USER_NUMBER = "sms.caster.label.table.header.user.number";
 	private static final String TABLE_HEADER_USER_NAME = "sms.caster.label.table.header.user.name";
 	private static final String TABLE_HEADER_USER_CREATE_DATE = "sms.caster.label.table.header.user.createDate";
-	private static final String TABLE_HEADER_USER_GROUP = "sms.caster.label.table.header.user.group";
+	
 	private JPanel outerPanel;
 	private JSplitPane layoutPanel;
 	
@@ -56,26 +51,17 @@ public class GroupsPanel extends ContentPanel {
 	private JScrollPane userTableScrollPane;
 	private DataTable<TUser> userTable;
 	
-	private JPanel insertPanel;
-	private ImagePanel personPanel;
-	private InputPanel insertInputPanel;
-	private JPanel submitPanel;
-	
-	private InputTextField nameInput;
-	private InputTextField numberInput;
-	private InputComboBox<TGroup> groupList;
-	
 	private ImageButton searchButton;
 	private ImageButton saveButton;
 	private ImageButton addButton;
+	private ImageButton editButton;
 	
-	private Toast loadDataToast;
-	private AddGroupPanel addGroupPanel;
 	
-	private UserService userService = new UserServiceImpl();
+	private AddGroupDialog addGroupPanel;
+	
 	private GroupService groupService = new GroupServiceImpl();
 	
-	private TUser editUser;
+	private TGroup editGroup;
 
 	public GroupsPanel(String title) {
 		super(title);
@@ -83,27 +69,22 @@ public class GroupsPanel extends ContentPanel {
 		initGroupsTabelPanel();
 		initUserTable();
 		initUserTabelPanel();
-		initInsertPanel();
 		initOuterPanel();
-		initToast();
-		initAddGroupPanel();
+		initAddGroupDialog();
 		initSearchButton();
 		initAddButton();
+		initEditButton();
 		initSaveButton();
 	}
 	
 	private void initGroupsTable(){
 		List<String> columnNames = new ArrayList<String>();
 		columnNames.add(TABLE_HEADER_GROUP_NAME);
-//		columnNames.add(TABLE_HEADER_USER_NUMBER);
-//		columnNames.add(TABLE_HEADER_USER_CREATE_DATE);
-//		columnNames.add(TABLE_HEADER_USER_GROUP);
+		columnNames.add(TABLE_HEADER_GROUP_CREATE_DATE);
 		
 		List<String> columnFields = new ArrayList<String>();
 		columnFields.add("groupName");
-//		columnFields.add("number");
-//		columnFields.add("createDate");
-//		columnFields.add("TGroups");
+		columnFields.add("createDate");
 		
 		groupsTable = new DataTable<TGroup>(columnNames, columnFields);
 		
@@ -112,13 +93,25 @@ public class GroupsPanel extends ContentPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 1){
-					syncSelectedRowData(groupsTable.getSelectedRow());
+					syncSelectedRowData(groupsTable.getSelectedRowData());
 				}
 			}
-			
 		});
 		
+		groupsTable.addTableModelListener(new TableModelListener() {
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				if (TableModelEvent.UPDATE == e.getType()) {
+					TGroup updatedRowData = groupsTable.getSelectedRowData();
+					if (updatedRowData == null) {
+						updatedRowData = groupsTable.getRowData(e.getFirstRow());
+					}
+					syncSelectedRowData(updatedRowData);
+				}
+			}
+		});
 		
+		groupsTable.setDataStorer(new GroupDataStorer());
 	}
 	
 	
@@ -127,44 +120,22 @@ public class GroupsPanel extends ContentPanel {
 		columnNames.add(TABLE_HEADER_USER_NAME);
 		columnNames.add(TABLE_HEADER_USER_NUMBER);
 		columnNames.add(TABLE_HEADER_USER_CREATE_DATE);
-		columnNames.add(TABLE_HEADER_USER_GROUP);
 		
 		List<String> columnFields = new ArrayList<String>();
 		columnFields.add("userName");
 		columnFields.add("number");
 		columnFields.add("createDate");
-		columnFields.add("TGroups");
 		
 		userTable = new DataTable<TUser>(columnNames, columnFields);
-		
-		userTable.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(e.getClickCount() == 1){
-					syncSelectedRowData(userTable.getSelectedRow());
-				}
-			}
-			
-		});
-		
-		
+		userTable.setEditable(false);
 	}
 	
-	private void syncSelectedRowData(int row){
-		if (row < 0) {
-			return;
-		}
-		editUser = userTable.getRowData(row);
-		nameInput.getInputField().setText(editUser.getUserName());
-		numberInput.getInputField().setText(editUser.getNumber());
-		Set<TGroup> groups = editUser.getTGroups();
-		if (CollectionUtil.hasElements(groups)) {
-			for (TGroup group : groups) {
-				groupList.getInputField().addItem(group);
-			}
-		}
+	private void syncSelectedRowData(TGroup group){
+		if (group == null) {return ;}
+		editGroup = group;
+		userTable.setData(CollectionUtil.setToList(groupService.findGroupById(editGroup).getTUsers()));
 	}
+	
 	
 	private void initGroupsTabelPanel(){
 		groupsTableScrollPane = new JScrollPane(this.groupsTable);
@@ -178,7 +149,7 @@ public class GroupsPanel extends ContentPanel {
 						TableCellEditor cellEitor = groupsTable.getCellEditor();
 						if (cellEitor != null) {
 							cellEitor.stopCellEditing();
-							syncSelectedRowData(groupsTable.getLastEditRowIndex());
+							syncSelectedRowData(groupsTable.getSelectedRowData());
 						}
 						groupsTable.clearSelection();
 				}
@@ -198,7 +169,6 @@ public class GroupsPanel extends ContentPanel {
 						TableCellEditor cellEitor = userTable.getCellEditor();
 						if (cellEitor != null) {
 							cellEitor.stopCellEditing();
-							syncSelectedRowData(userTable.getLastEditRowIndex());
 						}
 						userTable.clearSelection();
 				}
@@ -206,33 +176,6 @@ public class GroupsPanel extends ContentPanel {
 		});
 	}
 	
-	
-	private void initInsertPanel(){
-		insertPanel = new JPanel();
-		insertPanel.setLayout(new BorderLayout());
-		JPanel leftPanel = new JPanel();
-		leftPanel.setPreferredSize(new Dimension(100, 100));
-		
-		personPanel = new ImagePanel("resource/image/contacts_big.png");
-		personPanel.setPreferredSize(new Dimension(100, 100));
-		leftPanel.add(personPanel);
-		submitPanel = new JPanel();
-		insertPanel.add(leftPanel, BorderLayout.WEST);
-		initInsertInputPanel();
-		insertPanel.add(insertInputPanel, BorderLayout.CENTER);
-		insertPanel.add(submitPanel, BorderLayout.EAST);
-	}
-	
-	private void initInsertInputPanel(){
-		insertInputPanel = new InputPanel();
-		nameInput = new InputTextField(TABLE_HEADER_USER_NAME, 30);
-		numberInput = new InputTextField(TABLE_HEADER_USER_NUMBER, 30);
-		groupList = new InputComboBox<TGroup>(TABLE_HEADER_USER_GROUP);
-		groupList.setFieldWidth(UIConstants.COMPONENT_WIDTH_UNIT * 50);
-		insertInputPanel.addInputField(nameInput);
-		insertInputPanel.addInputField(numberInput);
-		insertInputPanel.addInputField(groupList);
-	}	
 	
 	private void initOuterPanel(){
 		layoutPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -249,15 +192,10 @@ public class GroupsPanel extends ContentPanel {
 		outerPanel.setLayout(new BorderLayout());
 		outerPanel.add(layoutPanel);
 		setContent(outerPanel);
-		
 	}
 	
-	private void initToast(){
-		loadDataToast = new Toast(DialogUtil.getMainFrame(), "sms.caster.message.toast.data.load");
-	}
-	
-	private void initAddGroupPanel(){
-		addGroupPanel = new AddGroupPanel();
+	private void initAddGroupDialog(){
+		addGroupPanel = new AddGroupDialog(groupsTable);
 	}
 	
 	private void initSearchButton(){
@@ -267,7 +205,7 @@ public class GroupsPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateUserTable();
+				updateGroupsTable();
 			}
 		});
 		
@@ -275,51 +213,28 @@ public class GroupsPanel extends ContentPanel {
 	}
 	
 	private void updateGroupsTable(){
+		groupsTable.clearSelection();
 		try {
 			groupsTable.setData(groupService.findGroups(new TGroup(), new Page()));
-			groupsTable.updateUI();
 		} catch (Exception e1) {
 			LogUtil.error(e1);
 			DialogUtil.showSearchError(userTablePanel);
 		}
 	}
 	
-	private void updateUserTable(){
-		try {
-			userTable.setData(userService.findUsers(new TUser(), new Page()));
-			userTable.updateUI();
-		} catch (Exception e1) {
-			LogUtil.error(e1);
-			DialogUtil.showSearchError(userTablePanel);
-		}
-	}
 	
 	private void initSaveButton(){
 		saveButton = new ImageButton("sms.caster.label.button.save");
 		saveButton.setImagePath("resource/image/save.png");
 		saveButton.addActionListener(new ActionListener() {
-			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					if (userTable.getUpdateRecords().size() > 0) {
-						userService.saveOrUpdateUsers(userTable.getUpdateRecords());
-						userTable.clearUpdateRecords();
-						DialogUtil.showSaveOK(userTablePanel);
-					}else{
-						DialogUtil.showToast("sms.caster.message.toast.nodata.update");
-					}
-
-				} catch (Exception e1) {
-					LogUtil.error(e1);
-					DialogUtil.showSaveError(userTablePanel);
-				}
-				
+				groupsTable.notifyUpdateRowDatas();
 			}
 		});
 		
 		addToolButton(saveButton);
 	}
+	
 	
 	private void initAddButton(){
 		addButton = new ImageButton("sms.caster.label.button.add");
@@ -328,6 +243,16 @@ public class GroupsPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				TableCellEditor cellEitor = groupsTable.getCellEditor();
+				if (cellEitor != null) {
+					cellEitor.stopCellEditing();
+				}
+				groupsTable.clearSelection();
+				editGroup = new TGroup();
+				editGroup.setReceive(0);
+				editGroup.setCreateDate(new Date());
+				groupsTable.notifyAddRowData(editGroup);
+				addGroupPanel.setGroup(editGroup);
 				addGroupPanel.setVisible(true);
 			}
 		});
@@ -335,17 +260,39 @@ public class GroupsPanel extends ContentPanel {
 		addToolButton(addButton);
 	}
 	
+	private void initEditButton(){
+		editButton = new ImageButton("sms.caster.label.button.edit");
+		editButton.setImagePath("resource/image/editGroup.png");
+		editButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TableCellEditor cellEitor = groupsTable.getCellEditor();
+				if (cellEitor != null) {
+					cellEitor.stopCellEditing();
+				}
+				int rowIndex = groupsTable.getSelectedRow();
+				if (rowIndex > -1) {
+					editGroup = groupsTable.getRowData(rowIndex);
+					addGroupPanel.setGroup(groupService.findGroupById(editGroup));
+					addGroupPanel.setVisible(true);
+				}else {
+					DialogUtil.showToast("sms.caster.message.toast.nodata.selected");
+				}
+			}
+		});
+		addToolButton(editButton);
+	}
+	
 	@Override
 	public void beforeDisplay() {
-		loadDataToast.setVisible(true);
+		DialogUtil.showLoadDataToast();
 	}
 
 	@Override
 	public void afterDisplay() {
-		//updateGroupsTable();
-		loadDataToast.setVisible(false);
+		updateGroupsTable();
+		DialogUtil.hiddenLoadDataToast();
 	}
-	
-
 	
 }

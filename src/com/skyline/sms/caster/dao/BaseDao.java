@@ -8,13 +8,15 @@ public interface BaseDao<T> {
 	
 	T findById(Integer id);
 	
-    void deleteById(Integer id) throws Exception;
+	T findById(final Integer id, final String initialPropertyName);
+	
+    void deleteById(Integer id);
  
-    void update(T entity)throws Exception;
+    void update(T entity);
     
-    void batchUpdate(final List<T> entitys) throws Exception;
+    void batchUpdate(final List<T> entitys);
     
-    void insert(T entity)throws Exception;
+    void insert(T entity);
      
     List<T> findAll();
     

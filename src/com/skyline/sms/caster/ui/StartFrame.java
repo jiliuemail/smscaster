@@ -11,6 +11,7 @@ import java.util.Locale;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -87,6 +88,7 @@ public class StartFrame extends BaseFrame{
 						localeItem = (LocaleSelectItem)localeComboBox.getSelectedItem();
 						try {
 							MessageBundle.buildMessageBundle(localeItem.getLocale());
+							JComponent.setDefaultLocale(localeItem.getLocale());
 							finishBuildMessageBundle = true;
 						} catch (FileNotFoundException ex) {
 							JOptionPane.showMessageDialog(StartFrame.this, ex.getMessage(), "ERROR",

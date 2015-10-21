@@ -9,6 +9,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 
 import com.skyline.sms.caster.db.HibernateCallBack;
 import com.skyline.sms.caster.db.HibernateSessionFactory;
@@ -22,20 +24,32 @@ public class HibernateDao<T> implements BaseDao<T> {
 	public T findById(Integer id) {
 		return (T)HibernateSessionFactory.getSession().get(getEntityClass(), id);
 	}
+	
+	public T findById(final Integer id, final String initialPropertyName){
+		return doHibernateTemplate(new HibernateCallBack<T>() {
+			@SuppressWarnings("unchecked")
+			public T doSession(Session session) {
+				return (T)session.createCriteria(getEntityClass())
+						.add(Restrictions.idEq(id))
+						.createCriteria(initialPropertyName, JoinType.LEFT_OUTER_JOIN)
+						.uniqueResult();
+			}
+		});
+	}
 
 	@Override
-	public void deleteById(final Integer id) throws Exception{
+	public void deleteById(final Integer id){
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {
-				session.delete(findById(id));
+				session.delete(session.get(getEntityClass(), id));
 				return true;
 			}
 		});
 	}
 
 	@Override
-	public void update(final T entity) throws Exception {
+	public void update(final T entity) {
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {
@@ -46,7 +60,7 @@ public class HibernateDao<T> implements BaseDao<T> {
 	}
 	
 	@Override
-	public void batchUpdate(final List<T> entitys) throws Exception {
+	public void batchUpdate(final List<T> entitys) {
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {
@@ -60,7 +74,7 @@ public class HibernateDao<T> implements BaseDao<T> {
 	}
 
 	@Override
-	public void insert(final T entity) throws Exception {
+	public void insert(final T entity) {
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {

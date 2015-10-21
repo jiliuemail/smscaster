@@ -2,6 +2,7 @@ package com.skyline.sms.caster.util;
 
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,5 +29,7 @@ public class FormatUtil {
 		}
 	}
 
-	
+	public static Date formatToDate(String target) throws ParseException{
+		return DATE_FORMAT.parse(target);
+	}
 }

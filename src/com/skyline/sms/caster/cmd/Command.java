@@ -31,16 +31,36 @@ public interface Command {
 	 */
 	String set();
 
+	/**
+	 * 获取原始命令，不带参数
+	 * @return
+	 */
 	String origin();
 	
+	/**
+	 * 获取字节命令
+	 * @return
+	 */
 	byte[] stream();
 	
+
 	int getTimeout();
 	
 	String getName();
 	
+
+	/**
+	 * 设置命令的类型
+	 * @param commandType 命令的类型
+	 * @see CommandType
+	 */
 	public void setCommandType(CommandType commandType);
 	
+	/**
+	 * 获取命令的类型
+	 * @return 命令的类型
+	 * @see CommandType
+	 */
 	public CommandType getCommandType();
 
 }
