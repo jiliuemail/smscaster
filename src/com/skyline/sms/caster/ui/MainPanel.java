@@ -183,7 +183,7 @@ public class MainPanel extends JPanel {
 	}
 	
 	private void initPhonesPanel(){
-		phonesPanel=new PhonesPanel("sms.caster.label.panel.phones");
+		phonesPanel=PhonesPanel.getInstance();
 		registryContentPanel(UIConstants.PHONES_PANEL_KEY, phoneButton,phonesPanel);
 	}
 	

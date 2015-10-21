@@ -38,5 +38,10 @@ public class MessageServiceImpl implements MessageService {
 		msgDao.deleteById(id);
 		
 	}
+	
+	@Override
+	public List<TMessage> getAll(){
+		return msgDao.findAll();
+	}
 
 }

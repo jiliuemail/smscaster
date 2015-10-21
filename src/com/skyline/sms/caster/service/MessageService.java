@@ -11,4 +11,6 @@ public interface MessageService {
 	public List<TMessage> getByPage();
 	
 	public void delById(int id) throws Exception;
+
+	List<TMessage> getAll();
 }

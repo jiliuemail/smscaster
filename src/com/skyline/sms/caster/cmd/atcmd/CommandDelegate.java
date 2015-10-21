@@ -46,7 +46,12 @@ public abstract class CommandDelegate implements Command {
 @Override
 public int getTimeout() {
 	// TODO Auto-generated method stub
-	return 300;
+	return command.getTimeout();
 }
 
+@Override
+public String getName() {
+	// TODO Auto-generated method stub
+	return command.getName();
+	}
 }

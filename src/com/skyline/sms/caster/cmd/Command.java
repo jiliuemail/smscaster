@@ -37,6 +37,8 @@ public interface Command {
 	
 	int getTimeout();
 	
+	String getName();
+	
 	public void setCommandType(CommandType commandType);
 	
 	public CommandType getCommandType();

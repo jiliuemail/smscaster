@@ -112,14 +112,19 @@ public class PortServiceImpl implements PortService {
 		Command SMSContentCommand = CommandFactory.forStream(new SMSContentCommand(content));
 		Command ctrlZCommand =CommandFactory.forStream(new CtrlZCommand());
 		Command escCommand = CommandFactory.forStream(new EscCommand());
-		 ExecuteResult result=null;
+	 	ExecuteResult result=null;
 		 try{
-			 result=executor.execute(CMGS);
+
+
+		 result=executor.execute(CMGS);
 				if(result.getResult().contains(">")){   //会被接收短信的提示所打断吗,或者用for 循环执行多次...
-					executor.execute(SMSContentCommand);
+					 result=executor.execute(SMSContentCommand);
 					result=executor.execute(ctrlZCommand);
+					LogUtil.info("ctrlz "+result.getResult());
+					
 				}else{
 					executor.execute(escCommand);
+					
 				}
 		 }catch (Exception e){
 			executor.execute(escCommand);

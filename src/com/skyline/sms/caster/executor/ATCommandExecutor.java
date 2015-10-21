@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
+import com.skyline.sms.caster.cmd.CommandType;
 import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.util.LogUtil;
@@ -52,9 +53,11 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 	@Override
 	public ExecuteResult execute(Command cmd)  throws Exception{
 		this.cmd=cmd;
-
+		long start=System.currentTimeMillis();
 		Future<ExecuteResult> cmdResult =executorService.submit((Callable<ExecuteResult>) getInstance(port));
-		return cmdResult.get();
+		ExecuteResult result =cmdResult.get();
+		LogUtil.info( cmd.getName()+" cost " +(System.currentTimeMillis()-start)+" ms");
+		return result;
 	}
 	
 	
@@ -81,51 +84,47 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 
 
 	private ExecuteResult check(Command cmd) throws Exception {
-		return execute(cmd.check());
+		return execute(cmd.check().getBytes());
 	}
 
 	private ExecuteResult get(Command cmd) throws Exception {
-		return execute(cmd.get());
+		return execute(cmd.get().getBytes());
 	}
 
 	private ExecuteResult set(Command cmd) throws Exception {
-		return execute(cmd.set());
+		return execute(cmd.set().getBytes());
 	}
 
 
 	private ExecuteResult origin(Command cmd) throws Exception{
-		return execute(cmd.origin());
+		return execute(cmd.origin().getBytes());
 	}
 	
-	private  ExecuteResult execute(String cmdContent) throws Exception {
-
-		synchronized(port.getObj()) {
-
-			ExecuteResult result=new ExecuteResult();
-		
-			port.writeString(cmdContent);
-			port.getObj().wait(cmd.getTimeout());  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
-
-			result.setResult(port.getResponse());
-			return result;
-		}
-
-	}
-
-	//和上个方法相比,只是有一行不同,怎么去掉代码的重复?
+	
 	private ExecuteResult stream(Command cmd) throws Exception {
 		
+		return execute(cmd.stream());
+	}
+
+
+	
+	private  ExecuteResult execute(byte[] cmdContent) throws Exception {
+
 		synchronized(port.getObj()) {
 
 			ExecuteResult result=new ExecuteResult();
-		
-			port.writeBytes(cmd.stream());
-			port.getObj().wait(cmd.getTimeout());  //jsscport 中的监听器来激活这个线程.或者超过命令默认的超时时间就激活.
+			port.setResponse("");  //设置返回为空字符串.因为port 是一直存在的,假如没有更新response ,response 也会一直存在.
+			
+//			port.writeString(cmdContent);
+			boolean exeResult=port.writeBytes(cmdContent);
+			LogUtil.info(cmd.getName()+" execute status is "+exeResult);
+			port.getObj().wait((long)cmd.getTimeout());  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
 			result.setResult(port.getResponse());
 			return result;
 		}
 
 	}
+
 
 	
 

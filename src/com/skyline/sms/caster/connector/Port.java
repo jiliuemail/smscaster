@@ -26,9 +26,10 @@ public interface  Port  {
 	public String getPortName();
 
 	String getResponse();
-
-
+	void setResponse(String response);
+	
 	Object getObj();
+
 
 
 	

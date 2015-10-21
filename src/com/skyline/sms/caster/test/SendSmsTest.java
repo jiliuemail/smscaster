@@ -15,13 +15,13 @@ import com.skyline.sms.caster.cmd.message.CMGF;
 import com.skyline.sms.caster.cmd.message.CSCS;
 import com.skyline.sms.caster.cmd.message.CSMP;
 import com.skyline.sms.caster.cmd.message.CSQ;
+import com.skyline.sms.caster.cmd.message.CtrlZCommand;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.executor.ATCommandExecutor;
 import com.skyline.sms.caster.pojo.TMessage;
 import com.skyline.sms.caster.service.PortService;
-import com.skyline.sms.caster.service.SendSmsTask;
 import com.skyline.sms.caster.service.impl.PortServiceImpl;
 import com.skyline.sms.caster.util.LogUtil;
 import com.skyline.sms.pojo.Contacter;
@@ -40,14 +40,13 @@ public class SendSmsTest {
 		TMessage sms = new TMessage(0, "我是Predisw", "18589040855");
 		
 		portService.init();
-		ExecuteResult result =	portService.sendSms(sms);
+	//	ExecuteResult result =	portService.sendSms(sms);
 
-		LogUtil.info(result.getResult());
+//		LogUtil.info(result.getResult());
 
+	portService.execute(CommandFactory.forStream(new CtrlZCommand()));	
 		
-		
-		//	SendSmsTask sendSmsTask = new SendSmsTask(smsList, ports);
-	//	sendSmsTask.start();
+
 		
 		
 

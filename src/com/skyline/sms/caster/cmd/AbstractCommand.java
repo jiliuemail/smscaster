@@ -51,4 +51,10 @@ public abstract class AbstractCommand implements Command {
 		// TODO Auto-generated method stub
 		return 300;
 	}
+	
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return getClass().getSimpleName();
+	}
 }
