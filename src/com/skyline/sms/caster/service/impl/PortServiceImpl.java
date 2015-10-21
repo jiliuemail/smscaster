@@ -71,11 +71,11 @@ public class PortServiceImpl implements PortService {
 			if(result.getResult().contains(",1")){
 				message="Ready";
 			}else{
-				message="has not register to the operator";
+				message="Simcard Offline";
 			}
 
 		}else if(result.isError()){
-			message="Please Insert the simcard";
+			message="Simcard Not Detected";
 		}
 	
 		return message;

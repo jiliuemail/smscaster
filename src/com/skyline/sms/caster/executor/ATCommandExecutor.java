@@ -56,7 +56,11 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 		long start=System.currentTimeMillis();
 		Future<ExecuteResult> cmdResult =executorService.submit((Callable<ExecuteResult>) getInstance(port));
 		ExecuteResult result =cmdResult.get();
-		LogUtil.info( cmd.getName()+" cost " +(System.currentTimeMillis()-start)+" ms");
+		long costTime=System.currentTimeMillis()-start;
+		LogUtil.info( cmd.getName()+" cost " +costTime+" ms");
+		if(costTime>=cmd.getTimeout()){
+			result.setResult("TimeOut");
+		}
 		return result;
 	}
 	

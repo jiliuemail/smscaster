@@ -101,9 +101,9 @@ public class MainToolBar extends JToolBar {
 			for(TMessage sms:smsList){
 				LogUtil.info("sms number is "+sms.getNumber());
 				try {
-					
-					ExecuteResult result =portService.sendSms(sms);//出错提示和成功移动到已发送短信
 
+					ExecuteResult result =portService.sendSms(sms);//出错提示和成功移动到已发送短信
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
