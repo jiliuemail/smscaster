@@ -98,6 +98,7 @@ public class DataTable<T> extends JTable {
 	
 	/**
 	 * 通知更新所有已经修改的数据
+	 * 如果设置了 DataStorer，数据库的数据会被同时更新
 	 * @param rowData
 	 */
 	public void notifyUpdateRowDatas(){
@@ -119,6 +120,16 @@ public class DataTable<T> extends JTable {
 	 * @param rowData
 	 */
 	public void notifyCancelRowData(T rowData){
+		tabelMedel.cancelRowData(rowData);
+		updateUI();
+	}
+	
+	/**
+	 * 通知删除此行数据
+	 * 如果设置了 DataStorer，数据库的数据会被删除
+	 * @param rowData
+	 */
+	public void notifyDeleteRowData(T rowData){
 		tabelMedel.removeRowData(rowData);
 		updateUI();
 	}
@@ -145,7 +156,7 @@ public class DataTable<T> extends JTable {
 			setText(FormatUtil.formatToString(value));
 		}
 	}
-
+	
 
 	class DataTabelMedel extends AbstractTableModel{
 
@@ -185,9 +196,20 @@ public class DataTable<T> extends JTable {
 			if (rowData == null) {
 				return ;
 			}
+			int rowIndex = data.indexOf(rowData);
 			data.remove(rowData);
 			updateRecords.remove(rowData);
+			notifyDeleteData(rowData);
+			fireTableRowsDeleted(rowIndex, rowIndex);
+		}
+		
+		public void cancelRowData(T rowData){
+			if (rowData == null) {
+				return ;
+			}
 			int rowIndex = data.indexOf(rowData);
+			data.remove(rowData);
+			updateRecords.remove(rowData);
 			fireTableRowsDeleted(rowIndex, rowIndex);
 		}
 		
@@ -212,6 +234,12 @@ public class DataTable<T> extends JTable {
 		public void notifyUpdateData(){
 			if (dataStorer != null && dataStorer.updateData(updateRecords)) {
 				updateRecords.clear();
+			}
+		}
+		
+		private void notifyDeleteData(T rowData){
+			if (dataStorer != null) {
+				dataStorer.deleteData(rowData);
 			}
 		}
 		
@@ -266,6 +294,10 @@ public class DataTable<T> extends JTable {
 		
 		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			// 暂时不支持修改日期，因为注册日期或创建日期都是不可以修改的
+			if (Date.class.isAssignableFrom(getColumnClass(columnIndex))) {
+				return false;
+			}
 			return editable;
 		}
 		

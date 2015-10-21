@@ -13,4 +13,5 @@ public interface GroupService {
 	
 	public void saveOrUpdateGroups(List<TGroup> groups);
 
+	public void deleteGroup(TGroup group);
 }

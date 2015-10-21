@@ -7,6 +7,13 @@ import javax.swing.JFrame;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.LogUtil;
 
+/**
+ * 提供默认实现的数据存储接口，更新或删除数据时会有提示
+ * 
+ * @author linyn
+ *
+ * @since 2015年10月19日
+ */
 public abstract class UIDataStorer<T> implements DataStorer<T> {
 	
 	private JFrame owner;
@@ -34,4 +41,19 @@ public abstract class UIDataStorer<T> implements DataStorer<T> {
 	}
 	
 	protected abstract void submitUpdatedData(List<T> updatedData) throws Exception;
+	
+	@Override
+	public boolean deleteData(T deletedData) {
+		try {
+			submitDeletedData(deletedData);
+			DialogUtil.showDeleteOK();
+			return true;
+		} catch (Exception e) {
+			LogUtil.error(e);
+			DialogUtil.showDeleteError();
+			return false;
+		}
+	}
+	
+	protected abstract void submitDeletedData(T deletedData) throws Exception;
 }

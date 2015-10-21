@@ -14,5 +14,7 @@ public interface UserService {
 	TUser findUsersById(TUser user) throws Exception;
 	
 	void saveOrUpdateUsers(List<TUser> users) throws Exception;
+	
+	void deleteUser(TUser user) throws Exception;
 
 }

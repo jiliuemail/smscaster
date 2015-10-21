@@ -20,4 +20,9 @@ public class GroupDataStorer extends UIDataStorer<TGroup>{
 	protected void submitUpdatedData(List<TGroup> updatedData) throws Exception {
 		groupService.saveOrUpdateGroups(updatedData);
 	}
+	
+	@Override
+	protected void submitDeletedData(TGroup deletedData) throws Exception {
+		groupService.deleteGroup(deletedData);
+	}
 }

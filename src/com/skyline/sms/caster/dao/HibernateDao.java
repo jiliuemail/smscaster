@@ -42,7 +42,7 @@ public class HibernateDao<T> implements BaseDao<T> {
 		doHibernateTemplate(new HibernateCallBack<Boolean>() {
 			@Override
 			public Boolean doSession(Session session) {
-				session.delete(findById(id));
+				session.delete(session.get(getEntityClass(), id));
 				return true;
 			}
 		});

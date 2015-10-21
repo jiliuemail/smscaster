@@ -55,6 +55,12 @@ public class UserServiceImpl implements UserService {
 		
 	}
 	
-	
+	@Override
+	public void deleteUser(TUser user) throws Exception {
+		if (user == null || user.getId() == null) {
+			return;
+		}
+		userDao.deleteById(user.getId());
+	}
 
 }

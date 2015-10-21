@@ -38,4 +38,12 @@ public class GroupServiceImpl implements GroupService {
 	public void saveOrUpdateGroups(List<TGroup> groups) {
 		groupDao.batchUpdate(groups);
 	}
+	
+	@Override
+	public void deleteGroup(TGroup group) {
+		if (group == null || group.getId() == null) {
+			return;
+		}
+		groupDao.deleteById(group.getId());;
+	}
 }

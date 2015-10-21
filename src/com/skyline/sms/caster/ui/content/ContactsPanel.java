@@ -17,6 +17,8 @@ import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
 
 import com.skyline.sms.caster.dao.Page;
@@ -33,8 +35,8 @@ import com.skyline.sms.caster.ui.component.ImagePanel;
 import com.skyline.sms.caster.ui.component.InputCheckBoxs;
 import com.skyline.sms.caster.ui.component.InputPanel;
 import com.skyline.sms.caster.ui.component.InputTextField;
-import com.skyline.sms.caster.ui.component.Toast;
-import com.skyline.sms.caster.ui.data.UIDataStorer;
+import com.skyline.sms.caster.ui.data.storer.UserDataStorer;
+import com.skyline.sms.caster.util.BeanUtil;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.FormatUtil;
@@ -69,12 +71,12 @@ public class ContactsPanel extends ContentPanel {
 	private ImageButton searchButton;
 	private ImageButton addButton;
 	private ImageButton saveButton;
-	
-	private Toast loadDataToast;
+	private ImageButton delButton;
 	
 	private UserService userService = new UserServiceImpl();
 	
 	private TUser editUser;
+	private boolean modified = false;
 	private CheckBoxsPanel<TGroup> checkBoxs;
 
 	public ContactsPanel(String title) {
@@ -83,10 +85,10 @@ public class ContactsPanel extends ContentPanel {
 		initTabelPanel();
 		initInsertPanel();
 		initOuterPanel();
-		initToast();
 		initSearchButton();
 		initAddButton();
 		initSaveButton();
+		initDelButton();
 	}
 	
 	private void initTable(){
@@ -110,13 +112,20 @@ public class ContactsPanel extends ContentPanel {
 					syncSelectedRowData(usersTable.getSelectedRowData());
 				}
 			}
-			
 		 });
 		
+		usersTable.addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				if (TableModelEvent.UPDATE == e.getType()) {
+					syncSelectedRowData(usersTable.getSelectedRowData());
+				}
+				
+			}
+		});
+		
 		usersTable.setDataStorer(new UserDataStorer());
-		
-		
-		
 	}
 	
 	private void syncSelectedRowData(TUser user){
@@ -144,6 +153,7 @@ public class ContactsPanel extends ContentPanel {
 							syncSelectedRowData(usersTable.getSelectedRowData());
 						}
 						usersTable.clearSelection();
+						disEnableInsertInput();
 				}
 			}
 		});
@@ -165,6 +175,7 @@ public class ContactsPanel extends ContentPanel {
 		insertPanel.add(insertInputPanel, BorderLayout.CENTER);
 		initSubmitPanel();
 		insertPanel.add(submitPanel, BorderLayout.SOUTH);
+		disEnableInsertInput();
 	}
 	
 	private void initInsertInputPanel(){
@@ -174,13 +185,17 @@ public class ContactsPanel extends ContentPanel {
 		createDateInput = new InputTextField(TABLE_HEADER_USER_CREATE_DATE, 30);
 		createDateInput.setEnabled(false);
 		checkBoxs = new CheckBoxsPanel<TGroup>();
+		checkBoxs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modified = true;
+			}
+		});
 		groupList = new InputCheckBoxs(TABLE_HEADER_USER_GROUP, checkBoxs);
 		groupList.setFieldWidth(UIConstants.COMPONENT_WIDTH_UNIT * 50);
 		insertInputPanel.addInputField(nameInput);
 		insertInputPanel.addInputField(numberInput);
 		insertInputPanel.addInputField(createDateInput);
 		insertInputPanel.addInputField(groupList);
-		disEnableInsertInput();
 	}
 	
 	private void fireInsertInput(){
@@ -193,11 +208,8 @@ public class ContactsPanel extends ContentPanel {
 			createDateInput.getInputField().setText(FormatUtil.formatToString(editUser.getCreateDate()));
 			Set<TGroup> groups = editUser.getTGroups();
 			if (CollectionUtil.hasElements(groups)) {
-				groupList.getInputField().removeAll();
-				for (TGroup group : groups) {
-					//groupList.getInputField().addItem(group);
-					checkBoxs.addCheckItem(group);
-				}
+				checkBoxs.removeAllItem();
+				checkBoxs.addCheckItems(groups);
 			}
 		}
 	}
@@ -206,12 +218,18 @@ public class ContactsPanel extends ContentPanel {
 		nameInput.setEnabled(false);
 		numberInput.setEnabled(false);
 		groupList.setEnabled(false);
+		checkBoxs.setEnabled(false);
+		submitButton.setEnabled(false);
+		cancelButton.setEnabled(false);
 	}
 	
 	private void enableInsertInput(){
 		nameInput.setEnabled(true);
 		numberInput.setEnabled(true);
 		groupList.setEnabled(true);
+		checkBoxs.setEnabled(true);
+		submitButton.setEnabled(true);
+		cancelButton.setEnabled(true);
 	}
 	
 	private void initSubmitPanel(){
@@ -230,9 +248,25 @@ public class ContactsPanel extends ContentPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (editUser != null) {
-					editUser.setUserName(nameInput.getInputField().getText());
-					editUser.setNumber(numberInput.getInputField().getText());
-					usersTable.notifyUpdateRowData(editUser);
+					String oldUserName = editUser.getUserName();
+					String newUserName = nameInput.getInputField().getText();
+					if (!BeanUtil.equals(oldUserName, newUserName)) {
+						modified = true;
+						editUser.setUserName(newUserName);
+					}
+					String oldNumber = editUser.getNumber();
+					String newNumber = numberInput.getInputField().getText();
+					if (!BeanUtil.equals(oldNumber, newNumber)) {
+						modified = true;
+						editUser.setNumber(newNumber);
+					}
+					editUser.setTGroups(checkBoxs.getSelectedItems());
+					if (modified) {
+						usersTable.notifyUpdateRowData(editUser);
+						modified = false;
+					}else {
+						DialogUtil.showToast("sms.caster.message.toast.nodata.update");
+					}
 				}
 			}
 		});
@@ -270,10 +304,6 @@ public class ContactsPanel extends ContentPanel {
 		outerPanel.add(layoutPanel);
 		setContent(outerPanel);
 		
-	}
-	
-	private void initToast(){
-		loadDataToast = new Toast(DialogUtil.getMainFrame(), "sms.caster.message.toast.data.load");
 	}
 	
 	private void initSearchButton(){
@@ -333,28 +363,35 @@ public class ContactsPanel extends ContentPanel {
 		addToolButton(saveButton);
 	}
 	
+	private void initDelButton(){
+		delButton = new ImageButton("sms.caster.label.button.delete");
+		delButton.setImagePath("resource/image/delContacts.png");
+		delButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (usersTable.getSelectedRowData() == null) {
+					DialogUtil.showToast("sms.caster.message.toast.nodata.selected");
+				}else{
+					if (DialogUtil.showConfirmDialog("sms.caster.message.dialog.constacts.delete.confirm")) {
+						usersTable.notifyDeleteRowData(editUser);
+					}
+				}
+			}
+		});
+		
+		addToolButton(delButton);
+	}
+	
 	@Override
 	public void beforeDisplay() {
-		loadDataToast.setVisible(true);
+		DialogUtil.showLoadDataToast();
 	}
 
 	@Override
 	public void afterDisplay() {
 		updateTable();
-		loadDataToast.setVisible(false);
-	}
-	
-	
-	class UserDataStorer extends UIDataStorer<TUser>{
-		
-		public UserDataStorer() {
-			super(DialogUtil.getMainFrame());
-		}
-		
-		@Override
-		protected void submitUpdatedData(List<TUser> updatedData) throws Exception {
-			userService.saveOrUpdateUsers(updatedData);
-		}
+		DialogUtil.hiddenLoadDataToast();
 	}
 	
 }

@@ -1,7 +1,6 @@
 package com.skyline.sms.caster.ui.content;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -24,14 +23,9 @@ import com.skyline.sms.caster.pojo.TGroup;
 import com.skyline.sms.caster.pojo.TUser;
 import com.skyline.sms.caster.service.GroupService;
 import com.skyline.sms.caster.service.impl.GroupServiceImpl;
-import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.DataTable;
 import com.skyline.sms.caster.ui.component.ImageButton;
-import com.skyline.sms.caster.ui.component.ImagePanel;
-import com.skyline.sms.caster.ui.component.InputComboBox;
-import com.skyline.sms.caster.ui.component.InputPanel;
-import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.ui.data.storer.GroupDataStorer;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
@@ -45,7 +39,6 @@ public class GroupsPanel extends ContentPanel {
 	private static final String TABLE_HEADER_USER_NUMBER = "sms.caster.label.table.header.user.number";
 	private static final String TABLE_HEADER_USER_NAME = "sms.caster.label.table.header.user.name";
 	private static final String TABLE_HEADER_USER_CREATE_DATE = "sms.caster.label.table.header.user.createDate";
-	private static final String TABLE_HEADER_USER_GROUP = "sms.caster.label.table.header.user.group";
 	
 	private JPanel outerPanel;
 	private JSplitPane layoutPanel;
@@ -57,15 +50,6 @@ public class GroupsPanel extends ContentPanel {
 	private JPanel userTablePanel;
 	private JScrollPane userTableScrollPane;
 	private DataTable<TUser> userTable;
-	
-	private JPanel insertPanel;
-	private ImagePanel personPanel;
-	private InputPanel insertInputPanel;
-	private JPanel submitPanel;
-	
-	private InputTextField nameInput;
-	private InputTextField numberInput;
-	private InputComboBox<TGroup> groupList;
 	
 	private ImageButton searchButton;
 	private ImageButton saveButton;
@@ -85,7 +69,6 @@ public class GroupsPanel extends ContentPanel {
 		initGroupsTabelPanel();
 		initUserTable();
 		initUserTabelPanel();
-		initInsertPanel();
 		initOuterPanel();
 		initAddGroupDialog();
 		initSearchButton();
@@ -148,12 +131,9 @@ public class GroupsPanel extends ContentPanel {
 	}
 	
 	private void syncSelectedRowData(TGroup group){
+		if (group == null) {return ;}
 		editGroup = group;
-		if (group == null) {
-			return ;
-		}
-		List<TUser> users = CollectionUtil.setToList(groupService.findGroupById(editGroup).getTUsers());
-		userTable.setData(users);
+		userTable.setData(CollectionUtil.setToList(groupService.findGroupById(editGroup).getTUsers()));
 	}
 	
 	
@@ -197,33 +177,6 @@ public class GroupsPanel extends ContentPanel {
 	}
 	
 	
-	private void initInsertPanel(){
-		insertPanel = new JPanel();
-		insertPanel.setLayout(new BorderLayout());
-		JPanel leftPanel = new JPanel();
-		leftPanel.setPreferredSize(new Dimension(100, 100));
-		
-		personPanel = new ImagePanel("resource/image/contacts_big.png");
-		personPanel.setPreferredSize(new Dimension(100, 100));
-		leftPanel.add(personPanel);
-		submitPanel = new JPanel();
-		insertPanel.add(leftPanel, BorderLayout.WEST);
-		initInsertInputPanel();
-		insertPanel.add(insertInputPanel, BorderLayout.CENTER);
-		insertPanel.add(submitPanel, BorderLayout.EAST);
-	}
-	
-	private void initInsertInputPanel(){
-		insertInputPanel = new InputPanel();
-		nameInput = new InputTextField(TABLE_HEADER_USER_NAME, 30);
-		numberInput = new InputTextField(TABLE_HEADER_USER_NUMBER, 30);
-		groupList = new InputComboBox<TGroup>(TABLE_HEADER_USER_GROUP);
-		groupList.setFieldWidth(UIConstants.COMPONENT_WIDTH_UNIT * 50);
-		insertInputPanel.addInputField(nameInput);
-		insertInputPanel.addInputField(numberInput);
-		insertInputPanel.addInputField(groupList);
-	}	
-	
 	private void initOuterPanel(){
 		layoutPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		layoutPanel.addComponentListener(new ComponentAdapter(){
@@ -239,7 +192,6 @@ public class GroupsPanel extends ContentPanel {
 		outerPanel.setLayout(new BorderLayout());
 		outerPanel.add(layoutPanel);
 		setContent(outerPanel);
-		
 	}
 	
 	private void initAddGroupDialog(){
