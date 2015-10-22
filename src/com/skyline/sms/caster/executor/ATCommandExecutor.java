@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandExecutor;
+import com.skyline.sms.caster.cmd.CommandType;
 import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.util.LogUtil;
@@ -52,9 +53,15 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 	@Override
 	public ExecuteResult execute(Command cmd)  throws Exception{
 		this.cmd=cmd;
-
+		long start=System.currentTimeMillis();
 		Future<ExecuteResult> cmdResult =executorService.submit((Callable<ExecuteResult>) getInstance(port));
-		return cmdResult.get();
+		ExecuteResult result =cmdResult.get();
+		long costTime=System.currentTimeMillis()-start;
+		LogUtil.info( cmd.getName()+" cost " +costTime+" ms");
+		if(costTime>=cmd.getTimeout()){
+			result.setResult("TimeOut");
+		}
+		return result;
 	}
 	
 	
@@ -80,44 +87,48 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 
 
 
-	public ExecuteResult check(Command cmd) throws Exception {
-		return execute(cmd.check());
+	private ExecuteResult check(Command cmd) throws Exception {
+		return execute(cmd.check().getBytes());
 	}
 
-	public ExecuteResult get(Command cmd) throws Exception {
-		return execute(cmd.get());
+	private ExecuteResult get(Command cmd) throws Exception {
+		return execute(cmd.get().getBytes());
 	}
 
-	public ExecuteResult set(Command cmd) throws Exception {
-		return execute(cmd.set());
+	private ExecuteResult set(Command cmd) throws Exception {
+		return execute(cmd.set().getBytes());
 	}
 
 
-	public ExecuteResult origin(Command cmd) throws Exception{
-		return execute(cmd.origin());
+	private ExecuteResult origin(Command cmd) throws Exception{
+		return execute(cmd.origin().getBytes());
 	}
 	
-	protected ExecuteResult execute(String cmdContent) throws Exception {
+	
+	private ExecuteResult stream(Command cmd) throws Exception {
+		
+		return execute(cmd.stream());
+	}
+
+
+	
+	private  ExecuteResult execute(byte[] cmdContent) throws Exception {
 
 		synchronized(port.getObj()) {
 
 			ExecuteResult result=new ExecuteResult();
-		
-			port.writeString(cmdContent);
-			port.getObj().wait(300);  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
-
+			port.setResponse("");  //设置返回为空字符串.因为port 是一直存在的,假如没有更新response ,response 也会一直存在.
+			
+//			port.writeString(cmdContent);
+			boolean exeResult=port.writeBytes(cmdContent);
+			LogUtil.info(cmd.getName()+" execute status is "+exeResult);
+			port.getObj().wait((long)cmd.getTimeout());  //jsscport 中的监听器来激活这个线程.或者超过300ms 就自动激活
 			result.setResult(port.getResponse());
 			return result;
 		}
 
 	}
 
-	public ExecuteResult stream(Command cmd) throws Exception {
-
-		port.writeBytes(cmd.stream());
-
-		return null;
-	}
 
 	
 
@@ -125,8 +136,7 @@ public class ATCommandExecutor implements CommandExecutor,Callable<ExecuteResult
 	@Override
 	public ExecuteResult call() throws Exception {
 		// TODO Auto-generated method stub
-		  ExecuteResult result=executeCmd(cmd); 
-		
+		ExecuteResult result=executeCmd(cmd); 
 		return result;
 	}
 

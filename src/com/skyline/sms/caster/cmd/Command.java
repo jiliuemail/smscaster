@@ -43,6 +43,12 @@ public interface Command {
 	 */
 	byte[] stream();
 	
+
+	int getTimeout();
+	
+	String getName();
+	
+
 	/**
 	 * 设置命令的类型
 	 * @param commandType 命令的类型

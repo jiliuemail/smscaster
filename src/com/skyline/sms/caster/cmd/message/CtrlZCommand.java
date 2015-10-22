@@ -1,10 +1,9 @@
 package com.skyline.sms.caster.cmd.message;
 
 import com.skyline.sms.caster.cmd.AbstractCommand;
-import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.CommandType;
 
-public class CtrlZCommand extends AbstractCommand implements Command{
+public class CtrlZCommand extends AbstractCommand {
 	
 	private static byte[] VALUE = new byte[]{(byte)0x1A};
 	
@@ -19,7 +18,11 @@ public class CtrlZCommand extends AbstractCommand implements Command{
 	}
 
 	
-	
+	@Override
+	public int getTimeout() {
+		// TODO Auto-generated method stub
+		return 10000;
+	}
 	
 
 }

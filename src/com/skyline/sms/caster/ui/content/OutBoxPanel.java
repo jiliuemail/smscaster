@@ -1,5 +1,6 @@
 package com.skyline.sms.caster.ui.content;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.TableColumn;
 
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.pojo.TMessage;
@@ -18,6 +20,7 @@ import com.skyline.sms.caster.service.MessageService;
 import com.skyline.sms.caster.service.impl.MessageServiceImpl;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.DataTable;
+import com.skyline.sms.caster.util.LogUtil;
 
 public class OutBoxPanel extends ContentPanel{
 	
@@ -26,6 +29,7 @@ public class OutBoxPanel extends ContentPanel{
 	
 	private DataTable<TMessage> smsTable;
 	private JPanel smsTablePanel;
+	
 	private MessageService msgService;
 	
 	private final String TOOLBUTTON_DELSMS="sms.caster.outbox.toolbutton.delsms";
@@ -40,7 +44,7 @@ public class OutBoxPanel extends ContentPanel{
 		msgService=new MessageServiceImpl();
 		initToolButton();
 		initSmsTable();
-		updateSmsTable();
+//		updateSmsTable();   //是否可以采用懒加载?
 	}
 		
 	public void initToolButton(){
@@ -48,7 +52,28 @@ public class OutBoxPanel extends ContentPanel{
 		updateSms=new JButton(MessageBundle.getMessage(TOOLBUTTON_UPDATE));
 		addToolButton(delSms);
 		addToolButton(updateSms);
-		
+	
+		delSms.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int[] columnIds=smsTable.getSelectedRows();
+				for(int id:columnIds){
+					System.out.println(id);
+					try {
+						int msgId=(Integer)smsTable.getValueAt(id, 0);
+						msgService.delById(msgId);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						LogUtil.error(e1);
+						//UI 中提示.....
+					}
+				}
+				updateSmsTable();
+				
+			}
+		});
 		
 		updateSms.addActionListener(new ActionListener() {
 			
@@ -62,35 +87,59 @@ public class OutBoxPanel extends ContentPanel{
 		
 	}
 	
+	@Override
+	public void afterDisplay() {
+		updateSmsTable();
+	}
+	
 	
 	public void initSmsTable(){
 		
 		smsTablePanel=new JPanel();
+		smsTablePanel.setLayout(new BorderLayout());
 		
 		List<String> columnNames=new ArrayList<String>();
-		columnNames.add(MessageBundle.getMessage(SMSTABLE_HEAD_SUBJECT));
+		columnNames.add("ID"); //隐藏的一列
 		columnNames.add(MessageBundle.getMessage(SMSTABLE_HEAD_CONTACTOR_NAME));
 		columnNames.add(MessageBundle.getMessage(SMSTABLE_HEAD_CONTACTOR_NUMBER));
+		columnNames.add(MessageBundle.getMessage(SMSTABLE_HEAD_SUBJECT));
 		columnNames.add(MessageBundle.getMessage(SMSTABLE_HEAD_MESSAGE));
 		
 		List<String> fields=new ArrayList<String>();	
-		fields.add("subject");
+		fields.add("id");
 		fields.add("contactName");
 		fields.add("number");
+		fields.add("subject");
 		fields.add("message");
 		
 		smsTable=new DataTable<TMessage>(columnNames, fields);
-
+		TableColumn idColumn=	smsTable.getColumnModel().getColumn(0);
+		//隐藏id 列
+		idColumn.setWidth(0);
+		idColumn.setMaxWidth(0);
+		idColumn.setMinWidth(0);
+		smsTable.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(0); 
+		smsTable.getTableHeader().getColumnModel().getColumn(0).setMinWidth(0);
+		
+		TableColumn nameColumn=	smsTable.getColumn(MessageBundle.getMessage(SMSTABLE_HEAD_CONTACTOR_NAME));
+		nameColumn.setPreferredWidth(150);
+		nameColumn.setMaxWidth(160);
+		nameColumn.setMinWidth(120);
+		
+		TableColumn numberColumn=	smsTable.getColumn(MessageBundle.getMessage(SMSTABLE_HEAD_CONTACTOR_NUMBER));
+		numberColumn.setPreferredWidth(150);
+		numberColumn.setMaxWidth(160);
+		numberColumn.setMinWidth(120);
+		
+		
+		TableColumn subjectColumn=	smsTable.getColumn(MessageBundle.getMessage(SMSTABLE_HEAD_SUBJECT));
+		subjectColumn.setPreferredWidth(200);
+		subjectColumn.setMaxWidth(300);
+		subjectColumn.setMinWidth(150);
+		
 		JScrollPane  scrollSmsTable= new JScrollPane(smsTable);
 		smsTablePanel.add(scrollSmsTable);
 
-//		scrollSmsTable.setPreferredSize(new Dimension(600, 300));
-
-		
-		//		smsTable.setSize(getWidth()-200, getHeight()-200);
-		
-
-	//	smsTablePanel.setPreferredSize(new Dimension(600, 300)); 被覆盖
 		smsTablePanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		
 		setContent(smsTablePanel);
@@ -105,6 +154,9 @@ public class OutBoxPanel extends ContentPanel{
 	
 	public void updateSmsTable(){
 		smsTable.setData(getSms());
-		smsTable.updateUI();
+
+//		smsTable.updateUI();
 	}
+	
+	
 }

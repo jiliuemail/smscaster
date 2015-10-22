@@ -5,7 +5,8 @@ import java.util.regex.Pattern;
 
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
-import com.skyline.sms.caster.service.PortService;
+
+import com.skyline.sms.caster.service.impl.PortServiceImpl;
 
 import jssc.SerialPortList;
 
@@ -23,7 +24,7 @@ public class GetPortsTest {
 		String[] status=new String[rowCount];
 		for(int j=0;j<rowCount;j++){
 			try {
-				status[j]=PortService.getInstance(JsscPort.getInstance(portNames[j])).getPortStatus(); //线性执行,会被阻塞死锁
+				status[j]=PortServiceImpl.getInstance(JsscPort.getInstance(portNames[j])).getPortStatus(); 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

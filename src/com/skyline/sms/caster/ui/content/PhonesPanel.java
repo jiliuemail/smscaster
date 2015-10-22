@@ -1,6 +1,7 @@
 package com.skyline.sms.caster.ui.content;
 
 import java.awt.BorderLayout;
+import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -13,7 +14,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 
 import javax.swing.Box;
@@ -40,9 +46,11 @@ import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.executor.ATCommandExecutor;
-import com.skyline.sms.caster.service.PortService;
+import com.skyline.sms.caster.pojo.PhonePort;
+import com.skyline.sms.caster.service.impl.PortServiceImpl;
 import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
+import com.skyline.sms.caster.ui.component.DataTable;
 import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.util.LogUtil;
 
@@ -53,24 +61,38 @@ public class PhonesPanel extends ContentPanel {
 	private JPanel jpanel;
 	private JPanel phoneInfoPanel;
 
-	private JTable  phoneTable;
-	private JScrollPane phoneListPane;
+	private DataTable<PhonePort>  phonesTable;
 
+	private Map<String, PhonePort> phonePortMap= new HashMap<String, PhonePort>();
 	
+	
+
 	private InputTextField csq;
 	private InputTextField csca;
 	private Command csqCmd=CommandFactory.forOrigin(new CSQ());
 	private Command cscaCmd=CommandFactory.forGet(new CSCA());;
 	
-	public PhonesPanel(String title) {
+	
+	private final String TABLE_HEAD_CHECKBOX_NAME=MessageBundle.getMessage("sms.caster.jtable.phoneTable.checkbox");
+	private final String TABLE_HEAD_PORT_NAME=MessageBundle.getMessage("sms.caster.jtable.phoneTable.port");
+	private final String TABLE_HEAD_STATUS_NAME = MessageBundle.getMessage("sms.caster.jtable.phoneTable.status");
+	
+	
+	private  PhonesPanel(String title) {
 		super(title);
 		initToolBarButton();
 		initContent();
-		
 	}
 
+	private  static class createInstance{
+		private static PhonesPanel phonesPanel=new  PhonesPanel("sms.caster.label.panel.phones");
+	 }
 	
+	public static PhonesPanel getInstance(){
+		return createInstance.phonesPanel;
+	}
 	
+
 	
 	//---添加toolBar
 	public void initToolBarButton(){
@@ -79,12 +101,8 @@ public class PhonesPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					updateStatus(getChoosedRows());
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				
+				updatePortInitStatus(getSelectedPortNames());
 			}
 		});
 		
@@ -94,11 +112,7 @@ public class PhonesPanel extends ContentPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				jpanel.remove(phoneListPane);  //必须先移除,运行initPhoneList() 会修改phoneListPane 指向的对象,就不能移除了.
-				initPhoneList();
-				jpanel.add(phoneListPane,BorderLayout.CENTER);
-				jpanel.updateUI();
+				initPhoneTableData();
 			}
 		});
 		
@@ -117,9 +131,12 @@ public class PhonesPanel extends ContentPanel {
 	//	jpanel.setOpaque(true);
 	//	jpanel.setBackground(Color.BLUE);
 
-		initPhoneList();
-		jpanel.add(phoneListPane,BorderLayout.CENTER);
+		initPhonesTable();
+		JScrollPane phonesPane= new JScrollPane(phonesTable);
+		jpanel.add(phonesPane,BorderLayout.CENTER);
 	
+		
+		
 		initPhoneInfoPanel();
 		jpanel.add(phoneInfoPanel,BorderLayout.SOUTH);
 		
@@ -128,91 +145,128 @@ public class PhonesPanel extends ContentPanel {
 	}
 	
 	
-	public void initPhoneList(){
+	
+	
+	public void initPhonesTable(){
+		List<String> columnNames =new ArrayList<>();
+		columnNames.add(TABLE_HEAD_CHECKBOX_NAME);
+		columnNames.add(TABLE_HEAD_PORT_NAME);
+		columnNames.add(TABLE_HEAD_STATUS_NAME);
 
-		String[] title=getTitle();
- 		Object[][] content=getPhonesListContent();
-		phoneTable=new JTable(content,title);
-		phoneTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		TableColumnModel tcm=phoneTable.getColumnModel();
+		List<String> fields =new ArrayList<>();
+		fields.add("choosed");
+		fields.add("portName");
+		fields.add("status");
 		
-		tcm.getColumn(0).setCellRenderer(new JCheckBoxTableRender());
-		tcm.getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-		tcm.getColumn(0).setPreferredWidth(UIConstants.COMPONENT_WIDTH_UNIT*5); //why can not change the width of column.
+		phonesTable=new DataTable<>(columnNames, fields);
+
+		phonesTable.getColumn(TABLE_HEAD_CHECKBOX_NAME).setCellRenderer(new JCheckBoxTableRender());
+		phonesTable.getColumn(TABLE_HEAD_CHECKBOX_NAME).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+		initPhoneTableData();
 		
-		phoneTable.addMouseListener(new tableMouseAdapter());
-		phoneListPane= new JScrollPane(phoneTable);
-		
-		
+		phonesTable.addMouseListener(new tableMouseAdapter());
 	}
 	
-
 	
-	//获取table 的header 
-	public  String[] getTitle(){
-		String checkboxTitle=MessageBundle.getMessage("sms.caster.jtable.phoneTable.checkbox");
-		String port=MessageBundle.getMessage("sms.caster.jtable.phoneTable.port");
-		String status = MessageBundle.getMessage("sms.caster.jtable.phoneTable.status");
-		String[] title={checkboxTitle,port,status};
-		return title;
+	
+	private  Set<PhonePort> getPhones(){
+		phonePortMap= new HashMap<String, PhonePort>();
+		String[] portNames = JsscPortList.getPortNames();	
+		
+		Set<PhonePort> phonePorts=new TreeSet<>();
+		
+		for(String portName:portNames){
+			PhonePort phonePort =new PhonePort(portName);
+			phonePort.setStatus(getPortInitStatus(portName));
+			phonePorts.add(phonePort);
+			phonePortMap.put(portName, phonePort); 
+		}
+		return phonePorts;
 	}
-
 	
-	//获取电脑上的端口
-	public Object[][] getPhonesListContent() {
-		String[] portNames = JsscPortList.getPortNames();
+	
+	private String  getPortInitStatus(String portName){
+		String status;
+		try {
+			status = PortServiceImpl.getInstance(JsscPort.getInstance(portName)).getPortStatus();
+		} catch (Exception e) {
+			LogUtil.error(e);
+			status=e.getMessage();
+		}
+		return status;
+	}
+	
+	
+	//更新存在端口的初始状态
+		public void updatePortInitStatus(Set<String> portNames) {
 		
-		int rowCount=portNames.length;
-		int columnCount=getTitle().length;
-		
-		String[] status=new String[rowCount];
-		for(int j=0;j<rowCount;j++){
-			try {
-				status[j]=PortService.getInstance(JsscPort.getInstance(portNames[j])).getPortStatus(); 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				status[j]=e.getMessage();
-				LogUtil.error(e);
+			for(String portName:portNames){
+				String status=getPortInitStatus(portName);
+				updatePortStatus(portName, status);
 			}
 		}
 		
-		Object[][] cells = new Object[rowCount][columnCount];
 		
-		for(int i=0;i<rowCount;i++){
-			cells[i][0]=false;
-			cells[i][1]=portNames[i];
-			cells[i][2]=status[i];
-//			LogUtil.info(Arrays.toString(cells[i]));
+		public void  updatePortStatus(String portName,String status){
+			PhonePort phonePort=phonePortMap.get(portName);
+			phonePort.setStatus(status);
+			phonesTable.notifyUpdateRowData(phonePort);
+
+		}
+		
+		
+		public void updatePort(PhonePort phonePort){
+			phonesTable.notifyUpdateRowData(phonePort);
+		}
+		
+		
+		public PhonePort getPhonePortByName(String portName){
+			return phonePortMap.get(portName);
 		}
 		
 
+			
 		
-		return cells;
-		
+	//重新获取和创建所有端口数据	
+	private void initPhoneTableData(){
+		phonesTable.setData(new ArrayList<>(getPhones()));
 	}
 	
-	//获取被table 中被勾选的行
-	public Integer[] getChoosedRows(){
-		List<Integer> selectedRows= new ArrayList<Integer>();
+	
 
-		for(int i=0;i<phoneTable.getRowCount();i++){
-			if((boolean)phoneTable.getValueAt(i, 0)){
+	
+
+	
+	//获取被table 中被勾选的行
+	public List<Integer>  getChoosedRows(){
+		List<Integer> selectedRows= new ArrayList<Integer>();
+		for(int i=0;i<phonesTable.getRowCount();i++){
+			if((boolean)phonesTable.getValueAt(i, phonesTable.getColumn(TABLE_HEAD_CHECKBOX_NAME).getModelIndex())){
 				selectedRows.add(i);
 			}
 		}
-		Integer[] rows=new Integer[selectedRows.size()];
-		return selectedRows.toArray(rows);
+		return selectedRows;
 	}
 	
-	//更新状态列
-	public void updateStatus(Integer[] rows) throws Exception{
 	
-		for(int i :rows){
-			String portName=(String)phoneTable.getValueAt(i, 1);
-			String portStatus=PortService.getInstance(JsscPort.getInstance(portName)).getPortStatus();
-			phoneTable.setValueAt(portStatus, i, 2);
+	/**
+	 * 在发短信的时候要禁止移除选中的端口,否则移除的端口依然会发短信
+	 */
+	public   Set<String> getSelectedPortNames() {
+		//保存已经被选的端口名
+		Set<String> selectedPortNames = new ConcurrentSkipListSet<>(); //支持并发,排序的set
+		selectedPortNames.clear();
+		List<Integer> selectedRows=getChoosedRows();
+		for(Integer row :selectedRows){
+			String portName=(String)phonesTable.getValueAt(row, phonesTable.getColumn(TABLE_HEAD_PORT_NAME).getModelIndex());
+			selectedPortNames.add(portName);
 		}
+
+		return selectedPortNames;
 	}
+	
+
+	
 	
 	
 	//checkbox 渲染器
@@ -227,8 +281,8 @@ public class PhonesPanel extends ContentPanel {
 			return this;
 		}
 	}
-	
-	
+
+
 	
 	
 	
@@ -254,16 +308,22 @@ public class PhonesPanel extends ContentPanel {
 	
 	
 	
+
+
+
+
+
+
 	class tableMouseAdapter extends MouseAdapter{
 		public void mouseClicked(MouseEvent e){
-			int clickRow=phoneTable.convertRowIndexToModel(phoneTable.getSelectedRow());
+			int clickRow=phonesTable.convertRowIndexToModel(phonesTable.getSelectedRow());
 			LogUtil.info("click "+clickRow);
 			if(e.getClickCount()==1){
-				String portName=(String)phoneTable.getValueAt(clickRow, 1);
+				String portName=(String)phonesTable.getValueAt(clickRow, 1);
 				try {
-					
-					ExecuteResult csqValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(csqCmd);
-					ExecuteResult cscaValue=ATCommandExecutor.getInstance(JsscPort.getInstance(portName)).execute(cscaCmd);
+
+					ExecuteResult csqValue=PortServiceImpl.getInstance(JsscPort.getInstance(portName)).execute(csqCmd);
+					ExecuteResult cscaValue=PortServiceImpl.getInstance(JsscPort.getInstance(portName)).execute(cscaCmd);
 					csq.getInputField().setText(ParserRegister.parserCommandResult(csqCmd, csqValue, String.class));
 					csca.getInputField().setText(ParserRegister.parserCommandResult(cscaCmd, cscaValue, String.class));
 				} catch (Exception e1) {

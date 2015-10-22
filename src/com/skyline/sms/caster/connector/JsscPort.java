@@ -15,7 +15,7 @@ public class JsscPort implements Port{
 	private SerialPort serialPort;
 	private SerialPortReader  observer=new SerialPortReader();
 	private Object obj; //通过obj.wait() 和obj.notifyAll 在多线程间通讯 
-
+	private   String response="";
 	private static Map<String,Port> portMap= new HashMap<String, Port>();
 	
 	private  JsscPort(String portName) throws SerialPortException{
@@ -155,12 +155,14 @@ public class JsscPort implements Port{
 
 	}
 
-
-
+@Override
+public void setResponse(String response) {
+	this.response = response;
+}
+	
 	@Override
 	public String getResponse(){
-		
-		return observer.getResponse();
+		return response;
 	}
 	
 	
@@ -178,11 +180,8 @@ public Object getObj(){
 	//内部类:监听者
 	private  class SerialPortReader implements SerialPortEventListener{
 	
-		private   String response="";
+
 		
-		public String getResponse(){
-			return response;
-		}
 		
 		@Override
 		public void serialEvent(SerialPortEvent event) {
@@ -190,10 +189,10 @@ public Object getObj(){
 			// TODO Auto-generated method stub
 			if(event.isRXCHAR()){
 				try {
-					
+					//问题在于readString 读取到了多少的字符串?是返回的部分?是只有输入的字符串,还是包含了反应的字符串?如果反应有延迟则?
 					response=serialPort.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
 					LogUtil.debug("the response from [{0}]  is [{1}] ",serialPort.getPortName(),response);
-					LogUtil.info("response is "+response);
+
 					
 					
 				} catch (Exception e) {

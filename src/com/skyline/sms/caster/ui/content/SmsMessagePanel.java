@@ -116,4 +116,9 @@ public class SmsMessagePanel extends ContentPanel{
 
 		return messages;
 	}
+	
+	@Override
+	public void afterDisplay() {
+		
+	}
 }
