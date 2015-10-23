@@ -11,6 +11,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.ui.data.DataStorer;
@@ -263,6 +264,7 @@ public class DataTable<T> extends JTable {
 			this.editable = editable;
 		}
 		
+
 
 		public void setColumnNames(List<String> columnNames){
 			columnMetas = columnNames;

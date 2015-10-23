@@ -11,7 +11,11 @@ public class CSQ extends ATCommand {
 	}
 
 
-	
+	@Override
+	public int getTimeout() {
+		// TODO Auto-generated method stub
+		return 100;
+	}
 
 
 	

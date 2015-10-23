@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import jssc.SerialPortList;
@@ -62,7 +63,7 @@ public class PhonesPanel extends ContentPanel {
 	private JPanel phoneInfoPanel;
 
 	private DataTable<PhonePort>  phonesTable;
-
+	
 	private Map<String, PhonePort> phonePortMap= new HashMap<String, PhonePort>();
 	
 	
@@ -159,12 +160,27 @@ public class PhonesPanel extends ContentPanel {
 		fields.add("status");
 		
 		phonesTable=new DataTable<>(columnNames, fields);
+		
+		TableColumn checkboxColumn=phonesTable.getColumn(TABLE_HEAD_CHECKBOX_NAME);
+		TableColumn portNameColumn = phonesTable.getColumn(TABLE_HEAD_PORT_NAME);
+		
+		checkboxColumn.setMinWidth(20);
+		checkboxColumn.setMaxWidth(20);
+		portNameColumn.setMinWidth(UIConstants.WIDTH_UNIT);
+		portNameColumn.setMaxWidth(UIConstants.WIDTH_UNIT*2);
+		
+		JCheckBoxTableRender checkboxRender=new JCheckBoxTableRender();  //公用render
+		checkboxColumn.setHeaderRenderer(checkboxRender);
+		checkboxColumn.setCellRenderer(checkboxRender);
+		checkboxColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()));
 
-		phonesTable.getColumn(TABLE_HEAD_CHECKBOX_NAME).setCellRenderer(new JCheckBoxTableRender());
-		phonesTable.getColumn(TABLE_HEAD_CHECKBOX_NAME).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-		initPhoneTableData();
+		
+
+
+		
 		
 		phonesTable.addMouseListener(new tableMouseAdapter());
+		phonesTable.getTableHeader().addMouseListener(new checkboxAdapter());
 	}
 	
 	
@@ -272,12 +288,15 @@ public class PhonesPanel extends ContentPanel {
 	//checkbox 渲染器
 	class JCheckBoxTableRender extends JCheckBox implements TableCellRenderer{
 
+		
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
 			// TODO Auto-generated method stub
-			this.setSelected((boolean)value);
+			if(value instanceof Boolean){
+				this.setSelected((boolean)value);
+			}
 			return this;
 		}
 	}
@@ -307,18 +326,24 @@ public class PhonesPanel extends ContentPanel {
 	
 	
 	
+	@Override
+	public void afterDisplay() {
+		// TODO Auto-generated method stub
+		initPhoneTableData();
+	}
 	
 
 
 
 
 
+	//鼠标事件,更新选择的行对应端口的信号,短信中心等...
 
 	class tableMouseAdapter extends MouseAdapter{
 		public void mouseClicked(MouseEvent e){
 			int clickRow=phonesTable.convertRowIndexToModel(phonesTable.getSelectedRow());
 			LogUtil.info("click "+clickRow);
-			if(e.getClickCount()==1){
+			if(e.getClickCount()>=1){
 				String portName=(String)phonesTable.getValueAt(clickRow, 1);
 				try {
 
@@ -335,5 +360,28 @@ public class PhonesPanel extends ContentPanel {
 			
 		}
 	}
+	
+	//鼠标事件,选择checkbox 行头,则全部选择
+	class checkboxAdapter extends MouseAdapter{
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+			if(e.getClickCount()>=1){
+				if(phonesTable.getTableHeader().columnAtPoint(e.getPoint())==0 ){
+					JCheckBox checkbox=	(JCheckBox)phonesTable.getColumnModel().getColumn(0).getHeaderRenderer();
+					boolean isSelected=!checkbox.isSelected();
+					checkbox.setSelected(isSelected);
+//					phonesTable.getTableHeader().repaint();
+					for(int i=0;i<phonesTable.getRowCount();i++){
+						phonesTable.setValueAt(isSelected, i, 0);
+					}
+				}
+			}
+		}
+		
+	}
+	
+	
 	
 }

@@ -55,34 +55,29 @@ public class MainToolBar extends JToolBar {
 			Set<String> portNames=PhonesPanel.getInstance().getSelectedPortNames();
 
 			for(String portName:portNames){
-				PortService portService=null;
 				try {
 					Port port = JsscPort.getInstance(portName);
-					 portService = PortServiceImpl.getInstance(port);    //需要更新UI 上的状态
-
-					
+					new Thread(new  SendSmsTask(smsList,port)).start();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					LogUtil.error(e1);
+					PhonesPanel.getInstance().updatePortStatus(portName, e1.getMessage());
 				}
-				
-				
-				new Thread(new  SendSmsTask(smsList,portService)).start();
 			}
-			
-			
+	
 		}
-		
 	}
 	
 	class SendSmsTask implements Runnable{
 
 		private List<TMessage> smsList;
-		private PortService portService;
+		private Port port;
 		
-		 public SendSmsTask( List<TMessage> smsList,PortService portService) {
+//		private PortService portService;
+		
+		 public SendSmsTask( List<TMessage> smsList,Port port) {
 			 this.smsList=smsList;
-			 this.portService=portService;
+			 this.port=port;
 			 LogUtil.info("task cout is "+(++taskCount));
 		}
 		
@@ -90,23 +85,25 @@ public class MainToolBar extends JToolBar {
 		public void run() {
 			LogUtil.info("smsList length is "+smsList.size());
 			
+			 PortService portService= PortServiceImpl.getInstance(port);
+	
 			try {
-				portService.init();   //初始化失败则如何处理??? 
+				portService.init();   
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				LogUtil.error(e1);
+				PhonesPanel.getInstance().updatePortStatus(port.getPortName(), e1.getMessage());
 			}
 			
 			
 			for(TMessage sms:smsList){
 				LogUtil.info("sms number is "+sms.getNumber());
 				try {
-
+					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),"sending");
 					ExecuteResult result =portService.sendSms(sms);//出错提示和成功移动到已发送短信
-					
+					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),"Ready");
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LogUtil.error(e);
+					PhonesPanel.getInstance().updatePortStatus(port.getPortName(), e.getMessage());
 				}
 			}
 			

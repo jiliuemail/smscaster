@@ -190,11 +190,10 @@ public Object getObj(){
 			if(event.isRXCHAR()){
 				try {
 					//问题在于readString 读取到了多少的字符串?是返回的部分?是只有输入的字符串,还是包含了反应的字符串?如果反应有延迟则?
+					Thread.currentThread().sleep(10);  //就是为了解决上面的疑问,虽然这个方法有点勉强
 					response=serialPort.readString();  //光标的位置会移动到这个字符流的最后,所以再次port.reading 返回空.
 					LogUtil.debug("the response from [{0}]  is [{1}] ",serialPort.getPortName(),response);
-
-					
-					
+				
 				} catch (Exception e) {
 					LogUtil.error(e);
 
