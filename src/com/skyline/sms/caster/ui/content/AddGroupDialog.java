@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -28,6 +27,7 @@ import com.skyline.sms.caster.pojo.TGroup;
 import com.skyline.sms.caster.pojo.TUser;
 import com.skyline.sms.caster.service.UserService;
 import com.skyline.sms.caster.service.impl.UserServiceImpl;
+import com.skyline.sms.caster.ui.BaseDialog;
 import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.DataList;
 import com.skyline.sms.caster.ui.component.DataTable;
@@ -49,7 +49,7 @@ import com.skyline.sms.caster.util.LogUtil;
  *
  * @since 2015年10月14日
  */
-public class AddGroupDialog extends JDialog {
+public class AddGroupDialog extends BaseDialog {
 	
 	private static final int DIALOG_WIDTH = UIConstants.COMPONENT_WIDTH_UNIT * 62;
 

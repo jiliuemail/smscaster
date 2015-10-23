@@ -1,6 +1,8 @@
 package com.skyline.sms.caster.ui.content;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -23,9 +26,11 @@ import com.skyline.sms.caster.pojo.TGroup;
 import com.skyline.sms.caster.pojo.TUser;
 import com.skyline.sms.caster.service.GroupService;
 import com.skyline.sms.caster.service.impl.GroupServiceImpl;
+import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.DataTable;
 import com.skyline.sms.caster.ui.component.ImageButton;
+import com.skyline.sms.caster.ui.component.MessageLabel;
 import com.skyline.sms.caster.ui.data.storer.GroupDataStorer;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
@@ -48,6 +53,7 @@ public class GroupsPanel extends ContentPanel {
 	private DataTable<TGroup> groupsTable;
 	
 	private JPanel userTablePanel;
+	private JLabel groupMemberLabel;
 	private JScrollPane userTableScrollPane;
 	private DataTable<TUser> userTable;
 	
@@ -158,9 +164,13 @@ public class GroupsPanel extends ContentPanel {
 	}
 	
 	private void initUserTabelPanel(){
+		groupMemberLabel = new MessageLabel("sms.caster.label.panel.groups.member");
+		groupMemberLabel.setBackground(Color.GRAY);
+		groupMemberLabel.setPreferredSize(new Dimension(getWidth(), UIConstants.HEIGHT_UNIT));
 		userTableScrollPane = new JScrollPane(this.userTable);
 		userTablePanel = new JPanel();
 		userTablePanel.setLayout(new BorderLayout());
+		userTablePanel.add(groupMemberLabel, BorderLayout.NORTH);
 		userTablePanel.add(userTableScrollPane, BorderLayout.CENTER);
 		
 		userTableScrollPane.addMouseListener(new MouseAdapter() {
