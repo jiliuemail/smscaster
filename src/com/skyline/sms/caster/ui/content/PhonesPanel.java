@@ -1,28 +1,20 @@
 package com.skyline.sms.caster.ui.content;
 
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.regex.Pattern;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -30,13 +22,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
+
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-
-import jssc.SerialPortList;
-
 import com.skyline.sms.caster.cmd.Command;
 import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.cmd.atcmd.CommandFactory;
@@ -46,7 +34,6 @@ import com.skyline.sms.caster.cmd.parser.ParserRegister;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.JsscPortList;
 import com.skyline.sms.caster.core.MessageBundle;
-import com.skyline.sms.caster.executor.ATCommandExecutor;
 import com.skyline.sms.caster.pojo.PhonePort;
 import com.skyline.sms.caster.service.impl.PortServiceImpl;
 import com.skyline.sms.caster.ui.UIConstants;

@@ -1,5 +1,7 @@
 package com.skyline.sms.caster.ui.component;
 
+import java.awt.Color;
+
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
@@ -22,8 +24,13 @@ public class MessageLabel extends JLabel {
 	@Override
 	public void setText(String text) {
 		super.setText(MessageBundle.getMessage(text));
+		super.setOpaque(true);
 	}
 	
-	
+	@Override
+	public void setBackground(Color bg) {
+		super.setOpaque(true);
+		super.setBackground(bg);
+	}
 
 }

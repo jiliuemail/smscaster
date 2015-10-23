@@ -8,3 +8,4 @@ src/com/skyline/sms/caster/test/Classroom.java
 src/com/skyline/sms/caster/test/Student.hbm.xml
 src/com/skyline/sms/caster/test/Student.java
 test.sql
+/.classpath
