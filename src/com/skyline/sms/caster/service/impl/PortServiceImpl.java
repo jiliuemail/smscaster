@@ -115,11 +115,16 @@ public class PortServiceImpl implements PortService {
 		 try{
 
 
-		 result=executor.execute(CMGS);
-				if(result.getResult().contains(">")){   //会被接收短信的提示所打断吗,或者用for 循环执行多次...
-					 result=executor.execute(SMSContentCommand);
-					result=executor.execute(ctrlZCommand);
-					LogUtil.info("ctrlz "+result.getResult());
+			 result=executor.execute(CMGS);
+		
+			 if(result.getResult()==null){
+				 result.setResult("");
+			 }
+		 
+			 if(result.getResult().contains(">")){   //会被接收短信的提示所打断吗,或者用for 循环执行多次...
+				 	result=executor.execute(SMSContentCommand);
+				 	result=executor.execute(ctrlZCommand);
+				 	LogUtil.info("ctrlz "+result.getResult());
 					
 				}else{
 					executor.execute(escCommand);
