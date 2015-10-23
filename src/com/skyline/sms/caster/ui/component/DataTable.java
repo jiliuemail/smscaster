@@ -367,7 +367,7 @@ public class DataTable<T> extends JTable {
 		}
 		
 		public void setColumnEditable(int columnIndex, boolean editable){
-			if (columnIndex < 0 || columnIndex >= getRowCount()) {
+			if (columnIndex < 0 || columnIndex >= getColumnCount()) {
 				return;
 			}
 			String columnField = columnFields.get(columnIndex);
@@ -379,7 +379,7 @@ public class DataTable<T> extends JTable {
 		}
 		
 		public boolean getColumnEditable(int columnIndex){
-			if (columnIndex < 0 || columnIndex >= getRowCount()) {
+			if (columnIndex < 0 || columnIndex >= getColumnCount()) {
 				return false;
 			}
 			Boolean columnEditable = editableMap.get(columnFields.get(columnIndex));
