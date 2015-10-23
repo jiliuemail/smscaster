@@ -135,7 +135,20 @@ public class HibernateDao<T> implements BaseDao<T> {
 		});
 	}
 	
+	@Override
+	public List<T> findByDetachedCriteria(final DetachedCriteria detachedCriteria){
+		
+		return doHibernateTemplate(new HibernateCallBack<List<T>>() {
 
+			@Override
+			public List<T> doSession(Session session) {
+				// TODO Auto-generated method stub
+				return detachedCriteria.getExecutableCriteria(session).list();
+			}
+		});
+	}
+	
+	
 	protected <R> R doHibernateTemplate(HibernateCallBack<R> callBack){
 		Session session = HibernateSessionFactory.getSession();
         Transaction tx = session.beginTransaction();

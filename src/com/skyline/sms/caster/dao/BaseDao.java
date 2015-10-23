@@ -25,4 +25,6 @@ public interface BaseDao<T> {
     List<T> findByPage(Page page);
     
     List<T> findByDetachedCriteria(DetachedCriteria detachedCriteria, Page page);
+
+	List<T> findByDetachedCriteria(DetachedCriteria detachedCriteria);
 }

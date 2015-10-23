@@ -9,7 +9,7 @@
             <generator class="identity" />
         </id>
         <property name="contactId" type="int">
-            <column name="CONTACT_ID" not-null="true">
+            <column name="CONTACT_ID" >
                 <comment>&#231;&#148;&#168;&#230;&#136;&#183;ID&#230;&#136;&#150;&#232;&#128;&#133;&#231;&#190;&#164;&#231;&#187;&#132;ID</comment>
             </column>
         </property>

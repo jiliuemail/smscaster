@@ -3,9 +3,5 @@
 bin/*
 *.class
 smsdb_10-15.sql
-src/com/skyline/sms/caster/test/Classroom.hbm.xml
-src/com/skyline/sms/caster/test/Classroom.java
-src/com/skyline/sms/caster/test/Student.hbm.xml
-src/com/skyline/sms/caster/test/Student.java
-test.sql
 /.classpath
+/src/hibernate.cfg.xml

@@ -2,6 +2,7 @@ package com.skyline.sms.caster.ui.toolbar;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,12 +13,15 @@ import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.pojo.TMessage;
+import com.skyline.sms.caster.pojo.TMessageSent;
 import com.skyline.sms.caster.service.MessageReceivedService;
 import com.skyline.sms.caster.service.MessageService;
 import com.skyline.sms.caster.service.PortService;
+import com.skyline.sms.caster.service.SentService;
 import com.skyline.sms.caster.service.impl.MessageReceivedServiceImpl;
 import com.skyline.sms.caster.service.impl.MessageServiceImpl;
 import com.skyline.sms.caster.service.impl.PortServiceImpl;
+import com.skyline.sms.caster.service.impl.SentServiceImpl;
 import com.skyline.sms.caster.ui.component.ImageButton;
 import com.skyline.sms.caster.ui.content.PhonesPanel;
 import com.skyline.sms.caster.util.LogUtil;
@@ -30,7 +34,7 @@ public class MainToolBar extends JToolBar {
 	
 	
 	private MessageService msgService= new MessageServiceImpl();
-
+	private SentService msgSentService =new SentServiceImpl();
 	
 	public MainToolBar(){
 		startButton =  new ImageButton("sms.caster.label.button.start");
@@ -110,8 +114,14 @@ public class MainToolBar extends JToolBar {
 					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),result.isOK()+"");
 					//假如发送成功....
 					if(result.isOK()){
-						//移动到已发送
-
+						TMessageSent msgSent = new TMessageSent(sms);
+						Date now =new Date();
+						msgSent.setSentDate(now);
+						msgSent.setCreateDate(now);
+						msgSent.setUpdateDate(now);
+						msgSent.setPortName(port.getPortName());
+						msgSent.setStatus(1);
+						msgSentService.add(msgSent);
 						
 						//删除
 						msgService.delById(sms.getId());

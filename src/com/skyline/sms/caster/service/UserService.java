@@ -17,4 +17,9 @@ public interface UserService {
 	
 	void deleteUser(TUser user) throws Exception;
 
+	TUser findUserByNumber(String number);
+
+	void add(TUser user);
+	
+	
 }

@@ -41,6 +41,22 @@ public class UserServiceImpl implements UserService {
 		}
 		return userDao.findByDetachedCriteria(criteria, page);
 	}
+
+	@Override
+	public TUser findUserByNumber(String number){
+		DetachedCriteria criteria = DetachedCriteria.forClass(TUser.class);
+		criteria.add(Restrictions.eq("number", number));
+		
+		List<TUser> userList=userDao.findByDetachedCriteria(criteria);
+		
+		if(userList.size()>0){
+			return userList.get(0);
+		}
+		
+		return null;
+		
+	}
+	
 	
 
 	@Override
@@ -65,4 +81,8 @@ public class UserServiceImpl implements UserService {
 		userDao.deleteById(user.getId());
 	}
 
+	@Override
+	public void add(TUser user){
+		userDao.insert(user);
+	}
 }

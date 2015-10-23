@@ -33,4 +33,9 @@ public class SentServiceImpl implements SentService{
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				, page);
 	}
+
+	@Override
+	public void add(TMessageSent msg) {
+		sentDao.insert(msg);
+	}
 }

@@ -16,8 +16,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.skyline.sms.caster.pojo.TMessage;
+import com.skyline.sms.caster.pojo.TUser;
 import com.skyline.sms.caster.service.MessageService;
+import com.skyline.sms.caster.service.UserService;
 import com.skyline.sms.caster.service.impl.MessageServiceImpl;
+import com.skyline.sms.caster.service.impl.UserServiceImpl;
 import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.InputField;
@@ -35,11 +38,12 @@ public class SmsMessagePanel extends ContentPanel{
 	
 	private JPanel messagePanel;
 	private JTextArea messageArea;
-	private MessageService msgService;
+	private MessageService msgService=new MessageServiceImpl();;
+	private UserService userService= new UserServiceImpl();
+	
 	
 	public SmsMessagePanel(String title){
 		super(title);
-		msgService=new MessageServiceImpl();
 		initToolButton();
 		init();
 	}
@@ -99,7 +103,7 @@ public class SmsMessagePanel extends ContentPanel{
 
 	}
 	
-	//转换成短信对象
+	//将toNumber 发的短信转换成短信对象
 	public List<TMessage> getMessage(){
 		String phoneNumbers=toNubmerField.getInputField().getText();
 		String[] numbers=phoneNumbers.split(";|,");
@@ -107,15 +111,36 @@ public class SmsMessagePanel extends ContentPanel{
 		String subjectContent=subject.getInputField().getText();
 		List<TMessage> messages = new ArrayList<>();
 		for(String number:numbers){
+			
+			TUser user =getUserByNumber(number);
+			
 			TMessage sms = new TMessage(0, message,number);
 			sms.setContactName(number);
 			sms.setSubject(subjectContent);
+			sms.setContactId(user.getId());
+			sms.setContactType(0); //和user 中的类型不一样.....
+			
 			messages.add(sms);
 
 		}
 
 		return messages;
 	}
+	
+	
+	public TUser getUserByNumber(String number){
+		TUser user =userService.findUserByNumber(number);
+		if(user==null){
+			user = new TUser();
+			user.setNumber(number);
+			user.setUserName(number);
+			userService.add(user);
+		}
+		user =userService.findUserByNumber(number); //重新获取user 的id
+		return user;
+		
+	}
+	
 	
 	@Override
 	public void afterDisplay() {
