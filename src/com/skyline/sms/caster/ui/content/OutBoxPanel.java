@@ -112,6 +112,8 @@ public class OutBoxPanel extends ContentPanel{
 		fields.add("message");
 		
 		smsTable=new DataTable<TMessage>(columnNames, fields);
+		smsTable.setEditable(false);
+		
 		TableColumn idColumn=	smsTable.getColumnModel().getColumn(0);
 		//隐藏id 列
 		idColumn.setWidth(0);

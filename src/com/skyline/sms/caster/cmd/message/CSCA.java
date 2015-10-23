@@ -10,6 +10,10 @@ public class CSCA extends ATCommand{
 		return null;
 	}
 
-
+	@Override
+	public int getTimeout() {
+		// TODO Auto-generated method stub
+		return 100;
+	}
 
 }

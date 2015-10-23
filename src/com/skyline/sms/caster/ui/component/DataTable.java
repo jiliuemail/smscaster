@@ -390,6 +390,7 @@ public class DataTable<T> extends JTable {
 			return getColumnEditable(columnFields.indexOf(fieldName));
 		}
 
+
 		public void setColumnNames(List<String> columnNames){
 			columnMetas = columnNames;
 		}

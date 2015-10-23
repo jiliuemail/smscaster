@@ -32,14 +32,14 @@ public class PortServiceImpl implements PortService {
 	private CommandExecutor executor;
 	
 	
-	private PortServiceImpl(Port port) throws Exception {
+	private PortServiceImpl(Port port)  {
 		this.port = port;
 		executor=ATCommandExecutor.getInstance(port);
 	}
 	
 	private static Map<String,PortService> map=new HashMap<>();
 	
-	public static PortService getInstance(Port port) throws Exception{
+	public static PortService getInstance(Port port) {
 		String portName=port.getPortName();
 		PortService portService = map.get(portName);
 		
@@ -64,7 +64,6 @@ public class PortServiceImpl implements PortService {
 		Command creg=CommandFactory.forGet(new CREG());
 		ExecuteResult result;
 		result = executor.execute(cpin);
-		System.out.println("xxxxxxxx"+port.getPortName() +"result'ok is "+result.isOK()+" error is "+result.isError()+" response is "+result.getResult());
 		if(result.isOK()){
 			
 			result=executor.execute(creg);

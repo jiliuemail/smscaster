@@ -12,8 +12,10 @@ import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.pojo.TMessage;
+import com.skyline.sms.caster.service.MessageReceivedService;
 import com.skyline.sms.caster.service.MessageService;
 import com.skyline.sms.caster.service.PortService;
+import com.skyline.sms.caster.service.impl.MessageReceivedServiceImpl;
 import com.skyline.sms.caster.service.impl.MessageServiceImpl;
 import com.skyline.sms.caster.service.impl.PortServiceImpl;
 import com.skyline.sms.caster.ui.component.ImageButton;
@@ -25,6 +27,10 @@ public class MainToolBar extends JToolBar {
 	private ImageButton startButton;
 	private ImageButton sendButton;
 	private ImageButton receiveButton;
+	
+	
+	private MessageService msgService= new MessageServiceImpl();
+
 	
 	public MainToolBar(){
 		startButton =  new ImageButton("sms.caster.label.button.start");
@@ -46,7 +52,7 @@ public class MainToolBar extends JToolBar {
 	
 	
 	class sendSmsListener implements ActionListener{
-		private MessageService msgService= new MessageServiceImpl();
+		
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -55,34 +61,29 @@ public class MainToolBar extends JToolBar {
 			Set<String> portNames=PhonesPanel.getInstance().getSelectedPortNames();
 
 			for(String portName:portNames){
-				PortService portService=null;
 				try {
 					Port port = JsscPort.getInstance(portName);
-					 portService = PortServiceImpl.getInstance(port);    //需要更新UI 上的状态
-
-					
+					new Thread(new  SendSmsTask(smsList,port)).start();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					LogUtil.error(e1);
+					PhonesPanel.getInstance().updatePortStatus(portName, e1.getMessage());
 				}
-				
-				
-				new Thread(new  SendSmsTask(smsList,portService)).start();
 			}
-			
-			
+	
 		}
-		
 	}
 	
 	class SendSmsTask implements Runnable{
 
 		private List<TMessage> smsList;
-		private PortService portService;
+		private Port port;
 		
-		 public SendSmsTask( List<TMessage> smsList,PortService portService) {
+//		private PortService portService;
+		
+		 public SendSmsTask( List<TMessage> smsList,Port port) {
 			 this.smsList=smsList;
-			 this.portService=portService;
+			 this.port=port;
 			 LogUtil.info("task cout is "+(++taskCount));
 		}
 		
@@ -90,24 +91,40 @@ public class MainToolBar extends JToolBar {
 		public void run() {
 			LogUtil.info("smsList length is "+smsList.size());
 			
+			 PortService portService= PortServiceImpl.getInstance(port);
+	
 			try {
-				portService.init();   //初始化失败则如何处理??? 
+				portService.init();   
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				LogUtil.error(e1);
+				PhonesPanel.getInstance().updatePortStatus(port.getPortName(), e1.getMessage());
 			}
 			
 			
 			for(TMessage sms:smsList){
 				LogUtil.info("sms number is "+sms.getNumber());
 				try {
-
+					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),"sending");
 					ExecuteResult result =portService.sendSms(sms);//出错提示和成功移动到已发送短信
 					
+					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),result.isOK()+"");
+					//假如发送成功....
+					if(result.isOK()){
+						//移动到已发送
+
+						
+						//删除
+						msgService.delById(sms.getId());
+					}
+
+					
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LogUtil.error(e);
+					PhonesPanel.getInstance().updatePortStatus(port.getPortName(), e.getMessage());
 				}
+				
+				
+
 			}
 			
 		}
