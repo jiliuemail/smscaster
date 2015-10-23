@@ -10,14 +10,14 @@ import java.util.Date;
 public class TMessageSent implements java.io.Serializable {
 
 	private Integer id;
-	private int contactId;
+	private Integer contactId;
 	private String contactName;
-	private int contactType;
+	private Integer contactType;
 	private String message;
 	private String portName;
 	private String portNumber;
 	private Date sentDate;
-	private int status;
+	private Integer status;
 	private Date createDate;
 	private Date updateDate;
 	private String number;
@@ -25,6 +25,7 @@ public class TMessageSent implements java.io.Serializable {
 
 	public TMessageSent() {
 	}
+
 
 	
 	public TMessageSent( TMessage msg){
@@ -51,9 +52,9 @@ public class TMessageSent implements java.io.Serializable {
 		this.number = number;
 	}
 
-	public TMessageSent(int contactId, String contactName, int contactType,
+	public TMessageSent(Integer contactId, String contactName, Integer contactType,
 			String message, String portName, String portNumber, Date sentDate,
-			int status, Date createDate, Date updateDate, String number,
+			Integer status, Date createDate, Date updateDate, String number,
 			String subject) {
 		this.contactId = contactId;
 		this.contactName = contactName;
@@ -77,11 +78,11 @@ public class TMessageSent implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public int getContactId() {
+	public Integer getContactId() {
 		return this.contactId;
 	}
 
-	public void setContactId(int contactId) {
+	public void setContactId(Integer contactId) {
 		this.contactId = contactId;
 	}
 
@@ -93,11 +94,11 @@ public class TMessageSent implements java.io.Serializable {
 		this.contactName = contactName;
 	}
 
-	public int getContactType() {
+	public Integer getContactType() {
 		return this.contactType;
 	}
 
-	public void setContactType(int contactType) {
+	public void setContactType(Integer contactType) {
 		this.contactType = contactType;
 	}
 
@@ -133,11 +134,11 @@ public class TMessageSent implements java.io.Serializable {
 		this.sentDate = sentDate;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

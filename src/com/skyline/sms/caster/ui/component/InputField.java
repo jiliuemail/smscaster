@@ -1,5 +1,6 @@
 package com.skyline.sms.caster.ui.component;
 
+import java.awt.Dimension;
 import java.awt.Insets;
 
 import javax.swing.JComponent;
@@ -114,5 +115,8 @@ public class InputField<C extends JComponent> extends JPanel {
 		return (int)Math.max(inputLabel.getPreferredSize().getHeight(), inputField.getPreferredSize().getHeight()) + insets.top + insets.bottom;
 	}
 		
-
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(getWidth(), getHeight());
+	}
 }

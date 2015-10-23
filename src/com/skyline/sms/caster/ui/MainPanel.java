@@ -23,6 +23,7 @@ import com.skyline.sms.caster.ui.content.ContactsPanel;
 import com.skyline.sms.caster.ui.content.GroupsPanel;
 import com.skyline.sms.caster.ui.content.OutBoxPanel;
 import com.skyline.sms.caster.ui.content.PhonesPanel;
+import com.skyline.sms.caster.ui.content.SentPanel;
 import com.skyline.sms.caster.ui.content.SmsMessagePanel;
 import com.skyline.sms.caster.ui.toolbar.MainToolBar;
 
@@ -51,6 +52,7 @@ public class MainPanel extends JPanel {
 	private ContentPanel groupsPanel;
 	private ContentPanel phonesPanel;
 	private ContentPanel outboxPanel;
+	private ContentPanel sentPanel;
 	
 	private Dimension contentSize;
 	private CardLayout cardLayout;
@@ -68,6 +70,7 @@ public class MainPanel extends JPanel {
 		initGroupsPanel();
 		initPhonesPanel();
 		initOutboxPanel();
+		initSentPanel();
 	}
 
 	private void initPanelSize() {
@@ -190,5 +193,10 @@ public class MainPanel extends JPanel {
 	private void initOutboxPanel(){
 		outboxPanel=new OutBoxPanel("sms.caster.label.panel.outbox");
 		registryContentPanel(UIConstants.OUTBOX_PANEL_KEY, outboxButton,outboxPanel);
+	}
+	
+	private void initSentPanel(){
+		sentPanel = new SentPanel("sms.caster.label.panel.sent");
+		registryContentPanel(UIConstants.SENT_PANEL_KEY, sentButton,sentPanel);
 	}
 }

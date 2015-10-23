@@ -28,5 +28,6 @@ public interface UIConstants {
 	public static final String GROUPS_PANEL_KEY = "groupsPanel";
 	public static final String PHONES_PANEL_KEY = "phonesPanel";
 	public static final String OUTBOX_PANEL_KEY = "outboxPanel";
+	public static final String SENT_PANEL_KEY = "sentPanel";
 
 }

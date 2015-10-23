@@ -56,7 +56,7 @@ public class ContentPanel extends JPanel {
 			toolPanel.setBounds(0, UIConstants.HEIGHT_UNIT, getWidth(), UIConstants.HEIGHT_UNIT);
 		}
 		if (content != null) {
-			int topHeight = UIConstants.HEIGHT_UNIT * 2 + 15;
+			int topHeight = UIConstants.HEIGHT_UNIT * 2 + 1;
 			content.setBounds(0, topHeight, getWidth(), getHeight() - topHeight);
 		}
 	}

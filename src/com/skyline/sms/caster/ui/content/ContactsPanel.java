@@ -41,6 +41,7 @@ import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.FormatUtil;
 import com.skyline.sms.caster.util.LogUtil;
+import com.skyline.sms.caster.util.StringUtil;
 
 public class ContactsPanel extends ContentPanel {
 	
@@ -55,6 +56,10 @@ public class ContactsPanel extends ContentPanel {
 	private JScrollPane scrollPane;
 	private DataTable<TUser> usersTable;
 	
+	private JPanel searchPanel;
+	private InputTextField userNameInput;
+	private InputTextField userNumberInput;
+	
 	private JPanel insertPanel;
 	private ImagePanel personPanel;
 	private InputPanel insertInputPanel;
@@ -66,7 +71,7 @@ public class ContactsPanel extends ContentPanel {
 	private InputTextField nameInput;
 	private InputTextField numberInput;
 	private InputTextField createDateInput;
-	private InputCheckBoxs groupList;
+	private InputCheckBoxs<TGroup> groupList;
 	
 	private ImageButton searchButton;
 	private ImageButton addButton;
@@ -82,6 +87,7 @@ public class ContactsPanel extends ContentPanel {
 	public ContactsPanel(String title) {
 		super(title);
 		initTable();
+		initSearchPanel();
 		initTabelPanel();
 		initInsertPanel();
 		initOuterPanel();
@@ -138,10 +144,20 @@ public class ContactsPanel extends ContentPanel {
 		fireInsertInput();
 	}
 	
+	private void initSearchPanel(){
+		searchPanel = new JPanel();
+		searchPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		userNameInput = new InputTextField(TABLE_HEADER_USER_NAME, 50);
+		userNumberInput = new InputTextField(TABLE_HEADER_USER_NUMBER, 50);
+		searchPanel.add(userNameInput);
+		searchPanel.add(userNumberInput);
+	}
+	
 	private void initTabelPanel(){
 		scrollPane = new JScrollPane(this.usersTable);
 		tablePanel = new JPanel();
 		tablePanel.setLayout(new BorderLayout());
+		tablePanel.add(searchPanel, BorderLayout.NORTH);
 		tablePanel.add(scrollPane, BorderLayout.CENTER);
 		
 		scrollPane.addMouseListener(new MouseAdapter() {
@@ -190,7 +206,7 @@ public class ContactsPanel extends ContentPanel {
 				modified = true;
 			}
 		});
-		groupList = new InputCheckBoxs(TABLE_HEADER_USER_GROUP, checkBoxs);
+		groupList = new InputCheckBoxs<TGroup>(TABLE_HEADER_USER_GROUP, checkBoxs);
 		groupList.setFieldWidth(UIConstants.COMPONENT_WIDTH_UNIT * 50);
 		insertInputPanel.addInputField(nameInput);
 		insertInputPanel.addInputField(numberInput);
@@ -342,7 +358,16 @@ public class ContactsPanel extends ContentPanel {
 	
 	private void updateTable(){
 		try {
-			usersTable.setData(userService.findUsers(new TUser(), new Page()));
+			TUser user = new TUser();
+			String userName = userNameInput.getInputField().getText();
+			if (StringUtil.hasText(userName)) {
+				user.setUserName(userName);
+			}
+			String userNumber = userNumberInput.getInputField().getText();
+			if (StringUtil.hasText(userNumber)) {
+				user.setNumber(userNumber);
+			}
+			usersTable.setData(userService.findUsers(user, new Page()));
 		} catch (Exception e1) {
 			LogUtil.error(e1);
 			DialogUtil.showSearchError(tablePanel);

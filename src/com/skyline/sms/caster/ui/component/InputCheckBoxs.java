@@ -1,13 +1,9 @@
 package com.skyline.sms.caster.ui.component;
 
-public class InputCheckBoxs extends InputField<CheckBoxsPanel> {
+public class InputCheckBoxs<T> extends InputField<CheckBoxsPanel<T>> {
 
-	public InputCheckBoxs(String label, CheckBoxsPanel inputField) {
+	public InputCheckBoxs(String label, CheckBoxsPanel<T> inputField) {
 		super(label, inputField);
-		// TODO Auto-generated constructor stub
 	}
-
-	
-	
 
 }
