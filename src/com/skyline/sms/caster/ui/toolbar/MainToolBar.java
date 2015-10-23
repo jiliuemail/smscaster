@@ -12,8 +12,10 @@ import com.skyline.sms.caster.cmd.ExecuteResult;
 import com.skyline.sms.caster.connector.JsscPort;
 import com.skyline.sms.caster.connector.Port;
 import com.skyline.sms.caster.pojo.TMessage;
+import com.skyline.sms.caster.service.MessageReceivedService;
 import com.skyline.sms.caster.service.MessageService;
 import com.skyline.sms.caster.service.PortService;
+import com.skyline.sms.caster.service.impl.MessageReceivedServiceImpl;
 import com.skyline.sms.caster.service.impl.MessageServiceImpl;
 import com.skyline.sms.caster.service.impl.PortServiceImpl;
 import com.skyline.sms.caster.ui.component.ImageButton;
@@ -25,6 +27,10 @@ public class MainToolBar extends JToolBar {
 	private ImageButton startButton;
 	private ImageButton sendButton;
 	private ImageButton receiveButton;
+	
+	
+	private MessageService msgService= new MessageServiceImpl();
+
 	
 	public MainToolBar(){
 		startButton =  new ImageButton("sms.caster.label.button.start");
@@ -46,7 +52,7 @@ public class MainToolBar extends JToolBar {
 	
 	
 	class sendSmsListener implements ActionListener{
-		private MessageService msgService= new MessageServiceImpl();
+		
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -100,11 +106,25 @@ public class MainToolBar extends JToolBar {
 				try {
 					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),"sending");
 					ExecuteResult result =portService.sendSms(sms);//出错提示和成功移动到已发送短信
-					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),"Ready");
+					
+					PhonesPanel.getInstance().updatePortStatus(port.getPortName(),result.isOK()+"");
+					//假如发送成功....
+					if(result.isOK()){
+						//移动到已发送
+
+						
+						//删除
+						msgService.delById(sms.getId());
+					}
+
+					
 				} catch (Exception e) {
 					LogUtil.error(e);
 					PhonesPanel.getInstance().updatePortStatus(port.getPortName(), e.getMessage());
 				}
+				
+				
+
 			}
 			
 		}

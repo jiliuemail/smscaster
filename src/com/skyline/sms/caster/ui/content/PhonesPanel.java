@@ -147,6 +147,9 @@ public class PhonesPanel extends ContentPanel {
 		fields.add("status");
 		
 		phonesTable=new DataTable<>(columnNames, fields);
+
+		phonesTable.setEditable(false);
+		phonesTable.setColumnEditable(0, true);
 		
 		TableColumn checkboxColumn=phonesTable.getColumn(TABLE_HEAD_CHECKBOX_NAME);
 		TableColumn portNameColumn = phonesTable.getColumn(TABLE_HEAD_PORT_NAME);

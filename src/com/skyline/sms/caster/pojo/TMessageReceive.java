@@ -22,6 +22,9 @@ public class TMessageReceive implements java.io.Serializable {
 	public TMessageReceive() {
 	}
 
+	
+
+	
 	public TMessageReceive(String contactNumber, String message, String portName, int replyStatus, Date createDate,
 			Date updateDate) {
 		this.contactNumber = contactNumber;

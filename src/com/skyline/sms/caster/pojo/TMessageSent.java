@@ -26,6 +26,16 @@ public class TMessageSent implements java.io.Serializable {
 	public TMessageSent() {
 	}
 
+	
+	public TMessageSent( TMessage msg){
+		contactName=msg.getContactName();
+		number=msg.getNumber();
+		message=msg.getMessage();
+		subject=msg.getSubject();
+		
+	}
+	
+	
 	public TMessageSent(int contactId, String contactName, int contactType,
 			String message, String portName, Date sentDate, int status,
 			Date createDate, Date updateDate, String number) {
