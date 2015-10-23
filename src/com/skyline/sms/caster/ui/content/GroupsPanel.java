@@ -3,6 +3,7 @@ package com.skyline.sms.caster.ui.content;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -30,11 +31,13 @@ import com.skyline.sms.caster.ui.UIConstants;
 import com.skyline.sms.caster.ui.component.ContentPanel;
 import com.skyline.sms.caster.ui.component.DataTable;
 import com.skyline.sms.caster.ui.component.ImageButton;
+import com.skyline.sms.caster.ui.component.InputTextField;
 import com.skyline.sms.caster.ui.component.MessageLabel;
 import com.skyline.sms.caster.ui.data.storer.GroupDataStorer;
 import com.skyline.sms.caster.util.CollectionUtil;
 import com.skyline.sms.caster.util.DialogUtil;
 import com.skyline.sms.caster.util.LogUtil;
+import com.skyline.sms.caster.util.StringUtil;
 
 public class GroupsPanel extends ContentPanel {
 	
@@ -51,6 +54,9 @@ public class GroupsPanel extends ContentPanel {
 	private JPanel groupsTablePanel;
 	private JScrollPane groupsTableScrollPane;
 	private DataTable<TGroup> groupsTable;
+	
+	private JPanel searchPanel;
+	private InputTextField groupNameInput;
 	
 	private JPanel userTablePanel;
 	private JLabel groupMemberLabel;
@@ -72,6 +78,7 @@ public class GroupsPanel extends ContentPanel {
 	public GroupsPanel(String title) {
 		super(title);
 		initGroupsTable();
+		initSearchPanel();
 		initGroupsTabelPanel();
 		initUserTable();
 		initUserTabelPanel();
@@ -120,6 +127,12 @@ public class GroupsPanel extends ContentPanel {
 		groupsTable.setDataStorer(new GroupDataStorer());
 	}
 	
+	private void initSearchPanel(){
+		searchPanel = new JPanel();
+		searchPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		groupNameInput = new InputTextField(TABLE_HEADER_GROUP_NAME, 50);
+		searchPanel.add(groupNameInput);
+	}
 	
 	private void initUserTable(){
 		List<String> columnNames = new ArrayList<String>();
@@ -147,6 +160,7 @@ public class GroupsPanel extends ContentPanel {
 		groupsTableScrollPane = new JScrollPane(this.groupsTable);
 		groupsTablePanel = new JPanel();
 		groupsTablePanel.setLayout(new BorderLayout());
+		groupsTablePanel.add(searchPanel, BorderLayout.NORTH);
 		groupsTablePanel.add(groupsTableScrollPane, BorderLayout.CENTER);
 		
 		groupsTableScrollPane.addMouseListener(new MouseAdapter() {
@@ -225,7 +239,12 @@ public class GroupsPanel extends ContentPanel {
 	private void updateGroupsTable(){
 		groupsTable.clearSelection();
 		try {
-			groupsTable.setData(groupService.findGroups(new TGroup(), new Page()));
+			TGroup group = new TGroup();
+			String groupName = groupNameInput.getInputField().getText();
+			if (StringUtil.hasText(groupName)) {
+				group.setGroupName(groupName);
+			}
+			groupsTable.setData(groupService.findGroups(group, new Page()));
 		} catch (Exception e1) {
 			LogUtil.error(e1);
 			DialogUtil.showSearchError(userTablePanel);

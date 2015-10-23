@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<TUser> findUsers(TUser user, Page page) throws Exception {
 		return userDao.findByDetachedCriteria(DetachedCriteria.forClass(TUser.class)
+				.add(Example.create(user).enableLike(MatchMode.ANYWHERE))
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				, page);
 	}
