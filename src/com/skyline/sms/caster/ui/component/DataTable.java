@@ -4,13 +4,16 @@ package com.skyline.sms.caster.ui.component;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import com.skyline.sms.caster.core.MessageBundle;
 import com.skyline.sms.caster.ui.data.DataStorer;
@@ -134,10 +137,76 @@ public class DataTable<T> extends JTable {
 		updateUI();
 	}
 
-	public boolean isEditable() {
-		return tabelMedel.isEditable();
+	public List<T> getData() {
+		return tabelMedel.getData();
 	}
 
+	public DataStorer<T> getDataStorer() {
+		return tabelMedel.getDataStorer();
+	}
+
+	/**
+	 * 根据列号设置该列是否可以编辑
+	 * @param columnIndex 列号
+	 * @param editable true：可编辑， false：不可编辑
+	 */
+	public void setColumnEditable(int columnIndex, boolean editable) {
+		tabelMedel.setColumnEditable(columnIndex, editable);
+	}
+
+	/**
+	 * 根据列名设置该列是否可以编辑
+	 * @param fieldName 列名
+	 * @param editable true：可编辑， false：不可编辑
+	 */
+	public void setColumnEditable(String fieldName, boolean editable) {
+		tabelMedel.setColumnEditable(fieldName, editable);
+	}
+
+	/**
+	 * 根据列号获取该列是否可以编辑
+	 * @param columnIndex 列号
+	 * @return true：可编辑， false：不可编辑
+	 */
+	public boolean getColumnEditable(int columnIndex) {
+		return tabelMedel.getColumnEditable(columnIndex);
+	}
+
+	/**
+	 * 根据列名获取该列是否可以编辑
+	 * @param fieldName 列名
+	 * @return true：可编辑， false：不可编辑
+	 */
+	public boolean getColumnEditable(String fieldName) {
+		return tabelMedel.getColumnEditable(fieldName);
+	}
+
+	public String getColumnName(int column) {
+		return tabelMedel.getColumnName(column);
+	}
+
+	/**
+	 * 获取行数
+	 */
+	public int getRowCount() {
+		return tabelMedel.getRowCount();
+	}
+
+	/**
+	 * 获取列数
+	 */
+	public int getColumnCount() {
+		return tabelMedel.getColumnCount();
+	}
+	
+	/**
+	 * 获取当前表格是否可以编辑
+	 * @return  <code>true<code>:可编辑，默认值，<code>false<code>:不可以编辑（只读）
+	 */
+	public boolean isEditable(){
+		return tabelMedel.isEditable();
+	}
+	
 	/**
 	 * 设置当前表格是否可以被编辑
 	 * @param editable <code>true<code>:可编辑，默认值，<code>false<code>:不可以编辑（只读）
@@ -149,7 +218,39 @@ public class DataTable<T> extends JTable {
 	public void addTableModelListener(TableModelListener l) {
 		tabelMedel.addTableModelListener(l);
 	}
-
+	
+	/**
+	 * 固定列宽
+	 * @param columnIndex 列号
+	 * @param columnWidth 列宽
+	 */
+	public void setColumWidth(int columnIndex, int columnWidth){
+		if (columnIndex < 0 || columnIndex > getColumnCount()) {
+			return;
+		}else{
+			TableColumn column = getColumnModel().getColumn(columnIndex);
+			column.setMaxWidth(columnWidth);
+			column.setMinWidth(columnWidth);
+			repaint();
+		}
+	}
+	
+	/**
+	 * 获取列宽
+	 * @param columnIndex 列号
+	 * @return 列宽
+	 */
+	public int getColumnWidth(int columnIndex){
+		if (columnIndex < 0 || columnIndex > getColumnCount()) {
+			return 0;
+		}else{
+			return getColumnModel().getColumn(columnIndex).getWidth();
+		}
+	}
+	
+//////////////////////
+//	TableModel		
+//////////////////////
 	
 	class DateTableCellRenderer extends DefaultTableCellRenderer {
 		protected void setValue(Object value) {
@@ -169,9 +270,11 @@ public class DataTable<T> extends JTable {
 		private DataStorer<T> dataStorer;
 		
 		private boolean editable = true;
+		private Map<String, Boolean> editableMap;
 		
 		public DataTabelMedel(List<T> data, List<String> columnNames, List<String> fields) {
 			updateRecords = new ArrayList<T>();
+			editableMap = new HashMap<String, Boolean>();
 			setColumnNames(columnNames);
 			setColumnFields(fields);
 			setData(data);
@@ -263,6 +366,29 @@ public class DataTable<T> extends JTable {
 			this.editable = editable;
 		}
 		
+		public void setColumnEditable(int columnIndex, boolean editable){
+			if (columnIndex < 0 || columnIndex >= getRowCount()) {
+				return;
+			}
+			String columnField = columnFields.get(columnIndex);
+			editableMap.put(columnField, editable);
+		}
+		
+		public void setColumnEditable(String fieldName, boolean editable){
+			setColumnEditable(columnFields.indexOf(fieldName), editable);
+		}
+		
+		public boolean getColumnEditable(int columnIndex){
+			if (columnIndex < 0 || columnIndex >= getRowCount()) {
+				return false;
+			}
+			Boolean columnEditable = editableMap.get(columnFields.get(columnIndex));
+			return (columnEditable == null ? editable : columnEditable) ;
+		}
+		
+		public boolean getColumnEditable(String fieldName){
+			return getColumnEditable(columnFields.indexOf(fieldName));
+		}
 
 		public void setColumnNames(List<String> columnNames){
 			columnMetas = columnNames;
@@ -289,7 +415,7 @@ public class DataTable<T> extends JTable {
 
 		@Override
 		public int getColumnCount() {
-			return columnMetas.size();
+			return columnFields.size();
 		}
 		
 		@Override
@@ -298,7 +424,7 @@ public class DataTable<T> extends JTable {
 			if (Date.class.isAssignableFrom(getColumnClass(columnIndex))) {
 				return false;
 			}
-			return editable;
+			return getColumnEditable(columnIndex);
 		}
 		
 		
