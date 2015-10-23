@@ -124,7 +124,7 @@ public class MainToolBar extends JToolBar {
 						msgSentService.add(msgSent);
 						
 						//删除
-						msgService.delById(sms.getId());
+		//				msgService.delById(sms.getId());
 					}
 
 					

@@ -135,8 +135,9 @@ public class SmsMessagePanel extends ContentPanel{
 			user.setNumber(number);
 			user.setUserName(number);
 			userService.add(user);
+			user =userService.findUserByNumber(number); //重新获取user 的id
 		}
-		user =userService.findUserByNumber(number); //重新获取user 的id
+
 		return user;
 		
 	}

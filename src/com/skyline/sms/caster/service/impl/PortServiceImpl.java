@@ -118,6 +118,7 @@ public class PortServiceImpl implements PortService {
 			 result=executor.execute(CMGS);
 		
 			 if(result.getResult()==null){
+
 				 result.setResult("");
 			 }
 		 

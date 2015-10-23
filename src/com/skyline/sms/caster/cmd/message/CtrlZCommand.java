@@ -21,7 +21,7 @@ public class CtrlZCommand extends AbstractCommand {
 	@Override
 	public int getTimeout() {
 		// TODO Auto-generated method stub
-		return 10000;
+		return 30000;
 	}
 	
 
