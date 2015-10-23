@@ -19,7 +19,7 @@
             </column>
         </property>
         <property name="number" type="string">
-            <column name="NUMBER" length="100" not-null="true">
+            <column name="NUMBER" length="20" not-null="true" unique="true">
                 <comment>&#181;&#231;&#187;&#176;&#186;&#197;&#194;&#235;&#161;&#162;&#202;&#214;&#187;&#250;&#186;&#197;&#194;&#235;</comment>
             </column>
         </property>

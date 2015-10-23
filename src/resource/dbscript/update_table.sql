@@ -7,3 +7,4 @@ alter table smsdb.t_message_sent add column SUBJECT varchar(50) comment "短信�
 
 -- 2015-10-19
 ALTER TABLE `smsdb`.`T_GROUP` ADD(`CREATE_DATE` DATETIME NOT NULL COMMENT '注册时间');
+ALTER TABLE `smsdb`.`T_USER` MODIFY COLUMN `NUMBER` VARCHAR(20) NOT NULL UNIQUE COMMENT '电话号码、手机号码';
